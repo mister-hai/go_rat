@@ -5,7 +5,7 @@ each concept has its own faucets, traits, and actions
 
 /*/
 
-package go_practice
+package go_rat
 
 import "encoding/json"
 

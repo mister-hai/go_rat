@@ -1,78 +1,5 @@
-/******************************************************************************
-WORK IN PROGRESS
-COMMAND AND CONTROL SERVER IN UPCOMMING POST
-/******************************************************************************
-
-This is a Remote Administration Tool, Target Binary
-    AKA: RAT
-
-    written in Golang
-
-    As a practice in learning Golang
-
-    And as a tutorial for "the Church Of The Subhacker" Wiki
-
-    This tutorial assumes some familiarity with programming concepts, languages,
-	 and networking
-
-
-=================================================================
-	KNOWN GOOD DEBIAN VM CONFIGURATION:
-		Project Folder Structure
-			mkdir ~/Desktop/go_practice
-			mkdir ~/Desktop/go_practice/src/
-			touch ~/Desktop/go_practice/src/go_practice.go
-			touch ~/Desktop/go_practice/src/go_practice2.go
-
-		Install the recomended go extension in VSCode
-			- ctrl+shift+p - type in "Go : install tools"
-			- select all the check boxes
-
-		~/.bashrc:
-			export GOPATH=/home/user/Desktop/go_practice
-			export GOROOT=/home/user/go
-			export GOMODCACHE=/home/user/Desktop/go_practice/src
-			export PATH=$GOROOT:$GOPATH/bin:$PATH:/home/user/.local/bin:/home/user/go/bin
-
-		settings.json in VSCODE:
-
-	{
-    	"window.zoomLevel": 2,
-    	"workbench.editorAssociations": [
-        	{
-            	"viewType": "jupyter.notebook.ipynb",
-            	"filenamePattern": "*.ipynb"
-        	}
-    	],
-    	"go.goroot": "/home/moop/go",
-    	"go.installDependenciesWhenBuilding": true,
-    	"go.buildOnSave": "workspace",
-    	"go.formatTool": "gofmt",
-    	"go.languageServerFlags": [
-        	"-rpc.trace"
-      	]
-	}
-
-	Open the terminal in VSCode and type in
-		- go mod init go_practice
-
-	THINGS SHOULD WORK DO NOT USE THE SUSPEND/SAVE STATE FUNCTION
-	YOU WILL BREAK THE INSTALL (at least I did), just shut down the VM
-	with the shutdown command
-
-	... Careful changing the formatter to "gofmt" it hung my VM
-
-	USEFUL GO COMMANDS:
-
-
-
-	USEFUL GO TIPS:
-		-DO NOT USE existing names in modules PERIOD, you will confuse the linter/compiler
-			e.g. "color" is a module name so you cant use "color" as a variable name
-*/
-
 // make our module
-package go_practice
+package go_rat
 
 // import the libraries we need
 import (
@@ -289,9 +216,9 @@ of the following functions
 func tcp_network_io() {
 
 	//generic error printing
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	//if err != nil {
+	//	fmt.Println(err)
+	//	return
+	//}
 
 }

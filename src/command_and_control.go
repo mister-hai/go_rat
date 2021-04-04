@@ -17,7 +17,7 @@
 /*/
 
 // make our module
-package go_practice
+package go_rat
 
 // import the libraries we need
 
