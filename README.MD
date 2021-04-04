@@ -2,16 +2,19 @@
 WORK IN PROGRESS
 
 This is a Remote Administration Tool
+
     AKA: RAT
 
     written in Golang
 
-    As a practice in learning Golang
+As a practice in learning Golang, reverse engineering, secure coding 
+practices and post exploitation programming. The code will be drafted 
+with a focus on clean, logically organized, well documentated structure.
 
     And as a tutorial for "the Church Of The Subhacker" Wiki
 
-    This tutorial assumes some familiarity with programming concepts, languages,
-	 and networking
+This tutorial assumes some familiarity with programming concepts, languages,
+    and networking
 
 
 	KNOWN GOOD DEBIAN VM CONFIGURATION:
@@ -74,9 +77,15 @@ This is a Remote Administration Tool
             git config --global user.email "email_id"
             git remote add origin https://github.com/user_name/MyTestProject.git
 
+        - git create new project
+            git init MyTestProject
 
         - workflow to commit ALL files in project to github
-            git init MyTestProject
+         must be done after putting files in folder, be careful not to confuse github
+         by swapping files around. if github isnt aware of specific changes it breaks stuff
+         just avoid using the web interface to modify files in the repository on important projects until you understand how github expects changes to occur.
+         Its ok to download packages from the web interface but you should clone them
+         with "git clone" in the terminal
             git add .
             git commit -m "some_message_NARF!"
             git push origin master (OR main OR whatever the branch name is)

