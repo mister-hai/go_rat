@@ -1,4 +1,8 @@
-// make our module
+/*/
+This file contains the global variables we need to allow our functions to
+share various things between them. Try to avoid having too many of these.
+And limit thier scope/context within which you use them
+/*/
 package go_rat
 
 // import the libraries we need

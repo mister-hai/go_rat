@@ -110,7 +110,7 @@ func file_hash(path string) []byte {
 	/*/
 	     copy file buffer to hash compute buffer
 		 the underscore character "_" is called a "blank identifier"
-		 it allows you to ignore left side values
+		 it allows you to ignore return values
 		 in this case, we are acting like the regular return value
 		 doesnt exist and if there is an error, log that error and exit
 		 otherwise, finish copying from buffer to buffer

@@ -98,3 +98,5 @@ This tutorial assumes some familiarity with programming concepts, languages,
 	USEFUL GO TIPS:
 		-DO NOT USE existing names in modules PERIOD, you will confuse the linter/compiler
 			e.g. "color" is a module name so you cant use "color" as a variable name
+
+Every project I start turns into something enourmous... why do I do these things to myself?
