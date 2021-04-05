@@ -2,10 +2,7 @@
 WORK IN PROGRESS
 
 This is a Remote Administration Tool
-
-    AKA: RAT
-
-    written in Golang
+written in Golang
 
 As a practice in learning Golang, reverse engineering, secure coding 
 practices and post exploitation programming. The code will be drafted 
@@ -13,8 +10,7 @@ with a focus on clean, logically organized, well documentated structure.
 
     And as a tutorial for "the Church Of The Subhacker" Wiki
 
-This tutorial assumes some familiarity with programming concepts, languages,
-    and networking
+This tutorial assumes some familiarity with programming concepts, languages, and networking
 
 
 	KNOWN GOOD DEBIAN VM CONFIGURATION:

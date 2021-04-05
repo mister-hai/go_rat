@@ -37,7 +37,7 @@ func json_extract(text string, command_struct go_rat.Command) {
 		second parameter is the address of the struct
 		we want to store our arsed data in
 	/*/
-	go_rat.error_printer("wat")
+	error_printer("wat")
 	json.Unmarshal([]byte(text), &command_struct)
 
 }
