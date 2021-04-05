@@ -16,7 +16,7 @@
 =================================================================
 /*/
 
-// make our module
+// we have to name the module after the folder its in
 package go_rat
 
 // import the libraries we need

