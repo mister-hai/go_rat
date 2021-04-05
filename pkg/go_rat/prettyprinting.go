@@ -5,6 +5,17 @@ package go_rat
 
 // import the libraries we need
 import (
+	/*/  IMPORTING MODULES YOU FIND ONLINE
+	in the terminal in VSCODE, while in the package root directory,
+	append the following imports, as is, to the command "go get"
+
+	Example:
+
+	go get github.com/hashicorp/mdns
+
+	And it will install the modules to the
+	GOMODCACHE directory
+	/*/
 	"github.com/fatih/color"
 )
 

