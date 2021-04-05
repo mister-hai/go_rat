@@ -17,7 +17,7 @@
 /*/
 
 // we have to name the module after the folder its in
-package go_rat
+package command_binary
 
 // import the libraries we need
 
@@ -54,6 +54,16 @@ var remote_tcpaddr string = "192.168.0.2" + remote_tcpport
 var remote_udpport string = ":1337"
 var remote_udpaddr string = remote_tcpaddr + remote_udpport
 /*/
+
+// we need objects to represent a compromised computer
+type Zombie struct {
+}
+
+// and a set of compromised computers
+type ZombieHorde struct {
+}
+
+// and a function to perform actinos with them
 func something_nice() {
 
 }
