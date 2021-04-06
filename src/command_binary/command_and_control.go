@@ -16,7 +16,6 @@
 =================================================================
 /*/
 
-// we have to name the module after the folder its in
 package command_binary
 
 // import the libraries we need

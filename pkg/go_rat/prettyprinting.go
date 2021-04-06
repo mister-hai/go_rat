@@ -20,7 +20,7 @@ import (
 )
 
 // Colorized error printing to see what we are doing
-func error_printer(error_object error, message string) {
+func Error_printer(error_object error, message string) {
 
 	//error_as_string, err := fmt.Errorf(error_object.Error())
 	color.Red(error_object.Error(), message)
@@ -29,7 +29,7 @@ func error_printer(error_object error, message string) {
 // debugging feedback function
 // prints colored text for easy visual identification of data
 // color_int (1,red)(2,green)(3,blue)(4,yellow)
-func debug_print(color_int int8, message string) {
+func Debug_print(color_int int8, message string) {
 	//if color_int
 	switch color_int {
 	//is 1

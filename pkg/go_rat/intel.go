@@ -12,6 +12,8 @@ import (
 
 	// necessary for gathering process information
 	"github.com/shirou/gopsutil/process"
+	// necessary for getting netowork information
+	"github.com/cakturk/go-netstat/netstat"
 )
 
 /*
@@ -25,6 +27,29 @@ the rat is in residence on
 //return _, nil
 
 //}
+
+// ToDo: add functions for IPv6 connections
+
+// GetTCPConnections returns a slice describing TCP connections
+func GetTCPConnections() ([]netstat.SockTabEntry, error) {
+
+	// TCP sockets
+	socks, err := netstat.TCPSocks(netstat.NoopFilter)
+	if err != nil {
+		return nil, err
+	}
+	return socks, err
+}
+
+// GetUDPConnections returns a slice describing UDP connections
+func GetUDPConnections() ([]netstat.SockTabEntry, error) {
+	// UDP sockets
+	socks, err := netstat.UDPSocks(netstat.NoopFilter)
+	if err != nil {
+		return nil, err
+	}
+	return socks, err
+}
 
 // Procs returns a slice of process objects
 // Look at "PrintProcSummary()" and "PrintProcDetails()" for examples on displaying the process info
