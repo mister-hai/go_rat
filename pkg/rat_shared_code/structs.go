@@ -65,7 +65,7 @@ type HostIntel struct {
 // code from:
 // https://github.com/bluesentinelsec/OffensiveGoLang/blob/master/pkg/windows/discovery/os.go
 // OSinfo provides basic information about the target operating system
-type OSinfo struct {
+type OSInfo struct {
 	ProductName      string
 	ReleaseID        string
 	CurrentBuild     string

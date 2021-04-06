@@ -12,6 +12,13 @@ with a focus on clean, logically organized, well documentated structure.
 
 This tutorial assumes some familiarity with programming concepts, languages, and networking
 
+This project uses code from the following sources, please support every communities efforts to educate others by adding to the pool of available knowledge
+     
+     -https://github.com/bluesentinelsec/OffensiveGoLang.git
+
+     -https://medium.com/@mat285/encrypting-streams-in-go-6cff6062a107
+
+
 
 	KNOWN GOOD DEBIAN VM CONFIGURATION:
 
