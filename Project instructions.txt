@@ -1,0 +1,7 @@
+This file will contain the instructions on setting up the VM to begin development
+on your very first go project.
+
+Download latest debian stable iso.
+Install VM in VirtualBox
+Install nginx via apt
+follow instructions in project readme.md

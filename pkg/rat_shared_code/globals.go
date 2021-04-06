@@ -27,6 +27,14 @@ import (
 	// necessary for multicast DNS
 )
 
+// This gets set by the script that generates the binary
+// for the target.
+
+var BEACON_ON_START bool
+
+// can be one of four options, http, tcp, udp, dns
+var BACON_TYPE string
+
 // declaring global variables to share our
 // network information between scopes
 // these are for TCP/UDP specifically
@@ -35,10 +43,6 @@ var Local_tcpaddr_LAN net.TCPAddr
 var Local_tcpaddr_WAN net.TCPAddr
 var Local_udpaddr_LAN net.UDPAddr
 var Local_udpaddr_WAN net.UDPAddr
-
-// Command And Control
-// At the top level scope (module level)
-// you declare with a simple "="
 
 // instanced with a value assigned
 var Remote_tcpport string = ":1337"

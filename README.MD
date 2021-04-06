@@ -20,7 +20,7 @@ This project uses code from the following sources, please support every communit
 
 
 
-	KNOWN GOOD DEBIAN VM CONFIGURATION:
+KNOWN GOOD DEBIAN VM CONFIGURATION:
 
         Download the Go language package for Linux
             - place in ~/ directory
