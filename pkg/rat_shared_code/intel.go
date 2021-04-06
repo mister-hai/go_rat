@@ -14,6 +14,8 @@ import (
 	"github.com/shirou/gopsutil/process"
 	// necessary for getting netowork information
 	"github.com/cakturk/go-netstat/netstat"
+	// Software information Enumeration
+	"golang.org/x/sys/windows/registry"
 )
 
 /*
@@ -49,6 +51,31 @@ func GetUDPConnections() ([]netstat.SockTabEntry, error) {
 		return nil, err
 	}
 	return socks, err
+}
+
+// code from:
+// https://github.com/bluesentinelsec/OffensiveGoLang/blob/master/pkg/windows/discovery/os.go
+// GetOSinfo returns information about the target system OS
+func GetOSinfo() (OSinfo, error) {
+	var osInfo OSinfo
+	key := `SOFTWARE\Microsoft\Windows NT\CurrentVersion`
+
+	k, err := registry.OpenKey(registry.LOCAL_MACHINE, key, registry.QUERY_VALUE)
+	if err != nil {
+		return osInfo, err
+	}
+	defer k.Close()
+	osInfo.InstallationType, _, _ = k.GetStringValue("InstallationType")
+	osInfo.ProductID, _, _ = k.GetStringValue("ProductId")
+	osInfo.ProductName, _, _ = k.GetStringValue("ProductName")
+	osInfo.RegisteredOwner, _, _ = k.GetStringValue("RegisteredOwner")
+	osInfo.ReleaseID, _, _ = k.GetStringValue("ReleaseId")
+	osInfo.CurrentBuild, _, _ = k.GetStringValue("CurrentBuild")
+	// ToDo: convert epoc times to readable format
+	osInfo.InstallDate, _, _ = k.GetIntegerValue("InstallDate")
+	osInfo.InstallTime, _, _ = k.GetIntegerValue("InstallTime")
+
+	return osInfo, nil
 }
 
 // Procs returns a slice of process objects

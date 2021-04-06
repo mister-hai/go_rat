@@ -18,8 +18,25 @@ import (
 // some of this code is broken intentionally, if you are analyzing this
 // section as a reviewer or developer, please provide input on
 // clever ways to break it further
-func Encrpyt_file(file_handle string, output_buffer []byte) {
+//func Encrypt_file(file_handle string, output_buffer []byte) {
+//}
 
+func (s *StreamEncrypter) Read(p []byte) (int, error) {
+	n, readErr := s.Source.Read(p)
+	if n > 0 {
+		s.Stream.XORKeyStream(p[:n], p[:n])
+		err := writeHash(s.Mac, p[:n])
+		if err != nil {
+			return n, ex.New(err)
+		}
+		return n, readErr
+	}
+	return 0, io.EOF
+
+}
+func Encrypt_file(file string, key string, output_buffer []byte) {
+	encrypter, _ := StreamEncrypter(key, reader)
+	io.Copy(file, encrypter)
 }
 
 func Hash_auth_check(password string) {

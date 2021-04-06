@@ -52,6 +52,7 @@ var PHONEHOME_TCP net.TCPAddr
 var PHONEHOME_UDP net.UDPAddr
 
 //-----NAME-------------TYPE-----
+var Mega_important_encryption_key string
 
 // Admin Password in an obvious place
 // TODO: set these for "hardmode" section
@@ -62,4 +63,6 @@ var Sha512_admin_pass_preencrypted crypto.Hash
 var Sha256_hash_admin crypto.Hash
 var New_admin_hash = Sha256_hash_admin.New()
 var Wat = New_admin_hash.Sum([]byte("admin"))
+
+// multi-cast DNS Server. for LAN communication
 var Mdns_server mdns.Server
