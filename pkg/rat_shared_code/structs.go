@@ -5,7 +5,7 @@ each concept has its own faucets, traits, and actions
 
 /*/
 
-package go_rat
+package rat_shared_code
 
 import (
 	"encoding/json"

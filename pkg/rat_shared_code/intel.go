@@ -4,7 +4,7 @@ This file contains the code for gathering host intelligence
 		https://github.com/bluesentinelsec/OffensiveGoLang/blob/master/pkg/windows/discovery/processes.go
 /*/
 
-package go_rat
+package rat_shared_code
 
 // import the libraries we need
 import (

@@ -3,7 +3,7 @@ This file contains the functions necessary for input and output
 from files, networks, software, etc...
 
 /*/
-package go_rat
+package rat_shared_code
 
 import (
 	"encoding/json"
