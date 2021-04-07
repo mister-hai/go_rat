@@ -3,7 +3,7 @@ This file contains the functions used for hashing and encrypting/decrypting
 Text and files in both a form suitable for streaming connections and a form
 suitable for individual entities.
 /*/
-package rat_shared_code
+package Rat_shared_code
 
 import (
 	"crypto"

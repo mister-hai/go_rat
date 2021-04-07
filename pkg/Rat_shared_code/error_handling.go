@@ -1,7 +1,7 @@
 /*/
 This file contains functions for printing in color and formatting
 /*/
-package rat_shared_code
+package Rat_shared_code
 
 // import the libraries we need
 import (

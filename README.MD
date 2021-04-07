@@ -48,7 +48,7 @@ KNOWN GOOD DEBIAN VM CONFIGURATION:
             	"filenamePattern": "*.ipynb"
         	}
     	],
-    	"go.goroot": "/home/moop/go",
+    	"go.goroot": "/home/user/go",
     	"go.installDependenciesWhenBuilding": true,
     	"go.buildOnSave": "workspace",
     	"go.formatTool": "gofmt",
