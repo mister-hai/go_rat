@@ -5,7 +5,7 @@ each concept has its own faucets, traits, and actions
 
 /*/
 
-package Rat_shared_code
+package shared_code
 
 import (
 	"crypto/cipher"
