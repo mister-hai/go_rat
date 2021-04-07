@@ -1,4 +1,4 @@
-#$/bin/bash
+#!/bin/bash
 
 #The build script will build a generic command and control executable file
 # and a custom zombie executable, that has various values set

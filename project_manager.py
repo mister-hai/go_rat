@@ -1,4 +1,4 @@
-#$/usr/bin/python3
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 ################################################################################
 ##                      Makes project and builds binaries                     ##
@@ -173,15 +173,13 @@ Enter your selection using a single integer:
         menu_selection = input()
         # yes I validate like a fool
         # users are foolish
-        if str.isdigit(menu_selection)     \
-          and (len(menu_selection) == 1) \
-          and menu_selection > 4:
-            if menu_selection ==1:
-                pass
+        if str.isdigit(menu_selection) and (len(menu_selection) == 1) and menu_selection > 4:
+            if menu_selection   ==1:
+                self.init_project()
             elif menu_selection == 2:
-                pass
+                self.install_dependencies()
             elif menu_selection == 3:
-                pass
+                self.build_zombie_for_target()
             elif menu_selection == 4:
                 pass
     
@@ -202,4 +200,5 @@ Enter your selection using a single integer:
         '''fed with values from the variables at the top of this file '''
         os.chdir(TARGET_SRC_DIRECTORY)
         exec_command("go build {}".format())
-        pass
+    
+    def build_command_center():
