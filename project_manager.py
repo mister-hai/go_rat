@@ -57,23 +57,29 @@ except ImportError as derp:
 ################################################################################
 ##############                      VARS                       #################
 ################################################################################
-PROJECT_NAME         = "go_rat"
-PROJECT_DIRECTORY    = "/home/moop/Desktop/go_rat/"
+PROJECT_NAME            = "go_rat"
+PROJECT_DIRECTORY       = "/home/moop/Desktop/go_rat"
+SHARED_CODE_DIRECTORY   = "/pkg/shared_code"
+TARGET_SRC_DIRECTORY    = PROJECT_DIRECTORY + "/src/target_binary"
+COMMAND_SRC_DIRECTORY   = PROJECT_DIRECTORY + "/src/command_binary"
 # I want to modify some variables in the globals file 
 # so we can compile custom binaries from generic code
 # holding initial critical information
-GLOBALS_FILE     = PROJECT_DIRECTORY
+GLOBALS_FILE     = PROJECT_DIRECTORY + SHARED_CODE_DIRECTORY
 possible_targets = {"windows": ["386","amd64","arm"],
                     "linux"  : ["386","amd64","arm","arm64"],
                     "android": ["386","amd64","arm","arm64"],
                     "darwin" : ["amd64","arm64"],
                     }
+# TO BUILD FOR A DIFFERENT OS/ARCH
+# CGO_ENABLED MUST BE SET TO "0"
+CGOENV = 'CGO_ENABLED="1"'
 # this should be set to the platform you want to build the binary for
 BUILD_TARGET_OS      = "windows"
 BUILD_TARGET_ARCH    = "amd64"
 # set the folloiwing ENV vars to build specific targets
 # otherwise GO compiler defaults to host specs
-env_var_target_os    = os.environ["GOOS"] = BUILD_TARGET_OS
+env_var_target_os    = os.environ["GOOS"]   = BUILD_TARGET_OS
 env_var_target_arch  = os.environ["GOARCH"] = BUILD_TARGET_ARCH
 # add entries as necessary to reflect go.mod file entries
 PROJECT_DEPENDENCIES = ["github.com/fatih/color",
@@ -153,14 +159,47 @@ def exec_command(command, blocking = True, shell_env = True):
 ##############                 MEAT N TATERS                   #################
 ################################################################################
 # PYTHON3 script to initialize a new project with the go_rat module
-def init_project():
-    '''Initializes the folder this script resides in as a go project'''
-    os.chdir(PROJECT_DIRECTORY)
-    subprocess.Popen("go mod init {}".format(PROJECT_NAME))
+class GoRatManager():
+    def __init__(self):
+        self. start_menu = '''
+Enter your selection using a single integer:
 
-def install_dependencies(utility_to_use = "go get"):
-    if utility_to_use == "go get":
-        for dependency_url in PROJECT_DEPENDENCIES:
-            exec_command("go get {}".format(dependency_url))
+1. Initialize project : {project_name}
+2. Install Dependencies to GOPATH
+3. Build Target for Windows
+4. Build Command And Control For Linux
+'''.format(project_name = PROJECT_NAME)
+        blueprint(self.start_menu)
+        menu_selection = input()
+        # yes I validate like a fool
+        # users are foolish
+        if str.isdigit(menu_selection)     \
+          and (len(menu_selection) == 1) \
+          and menu_selection > 4:
+            if menu_selection ==1:
+                pass
+            elif menu_selection == 2:
+                pass
+            elif menu_selection == 3:
+                pass
+            elif menu_selection == 4:
+                pass
+    
+    def edit_globals(self, globals_file = GLOBALS_FILE):
+        file_to_modify = open(globals_file, "w")
 
-def build_zombie_for_target()
+    def init_project(self):
+        '''Initializes the folder this script resides in as a go project'''
+        os.chdir(PROJECT_DIRECTORY)
+        subprocess.Popen("go mod init {}".format(PROJECT_NAME))
+
+    def install_dependencies(self, utility_to_use = "go get"):
+        if utility_to_use == "go get":
+            for dependency_url in PROJECT_DEPENDENCIES:
+                exec_command("go get {}".format(dependency_url))
+
+    def build_zombie_for_target(self, target_arch: str, target_os : str):
+        '''fed with values from the variables at the top of this file '''
+        os.chdir(TARGET_SRC_DIRECTORY)
+        exec_command("go build {}".format())
+        pass

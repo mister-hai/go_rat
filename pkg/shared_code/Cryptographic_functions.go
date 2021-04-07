@@ -9,18 +9,23 @@ import (
 	"crypto"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"os"
 )
 
-// might change parameters
+/*/ might change parameters
 // this function is for the encryption of files in one of four schemes
 // some of this code is broken intentionally, if you are analyzing this
 // section as a reviewer or developer, please provide input on
 // clever ways to break it further
-//func Encrypt_file(file_handle string, output_buffer []byte) {
-//}
+/*/
+func Encrypt_file(file_handle string, output_buffer []byte) {
+	file_bytes, derp := ioutil.ReadFile(file_handle)
 
+}
+
+/*/
 func (s *StreamEncrypter) Read(p []byte) (int, error) {
 	n, readErr := s.Source.Read(p)
 	if n > 0 {
@@ -38,6 +43,7 @@ func Encrypt_file(file string, key string, output_buffer []byte) {
 	encrypter, _ := StreamEncrypter(key, reader)
 	io.Copy(file, encrypter)
 }
+/*/
 
 func Hash_auth_check(password string) {
 	//Various Hashes, in order of increasing security

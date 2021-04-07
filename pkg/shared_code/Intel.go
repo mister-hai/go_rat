@@ -7,7 +7,7 @@ This file contains the code for gathering host intelligence
 
 /*/
 
-package Rat_shared_code
+package shared_code
 
 // import the libraries we need
 import (
