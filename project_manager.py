@@ -42,6 +42,30 @@ import traceback
 import subprocess
 from pathlib import Path
 from importlib import import_module
+import argparse
+
+PROGRAM_DESCRIPTION = "Project Manager for the Church of the Subhacker - GO_RAT tutorial"
+parser = argparse.ArgumentParser(description=PROGRAM_DESCRIPTION)
+parser.add_argument('--zombietarget',
+                                 dest    = 'zombietarget',
+                                 action  = "store" ,
+                                 default = "windows", 
+                                 help    = "Build target OS for Zombie Binaries " )
+parser.add_argument('--hosttarget',
+                                 dest    = 'hosttarget',
+                                 action  = "store" ,
+                                 default = "" ,
+                                 help    = "" )
+parser.add_argument('--',
+                                 dest    = '',
+                                 action  = "store" ,
+                                 default = '' ,
+                                 help    = "" )
+parser.add_argument('--',
+                                 dest    = '',
+                                 action  = "store" ,
+                                 default = '/' ,
+                                 help    = "" )
 
 try:
     import colorama
@@ -54,6 +78,9 @@ except ImportError as derp:
     print("[-] NO COLOR PRINTING FUNCTIONS AVAILABLE, Install the Colorama Package from pip")
     COLORMEQUALIFIED = False
 
+# Never had to do this before
+if __name__ == "main":
+    arguments = parser.parse_args()
 ################################################################################
 ##############                      VARS                       #################
 ################################################################################
@@ -76,6 +103,7 @@ CGOENV = 'CGO_ENABLED'# ="1"
 # this should be set to the platform you want to build the binary for
 BUILD_TARGET_OS      = "windows"
 BUILD_TARGET_ARCH    = "amd64"
+wat = possible_targets.get(BUILD_TARGET_OS) 
                                 # HONK!
 env_var_target_os    = os.environ["GOOS"]   = BUILD_TARGET_OS
 env_var_target_arch  = os.environ["GOARCH"] = BUILD_TARGET_ARCH
@@ -95,41 +123,25 @@ PROJECT_DEPENDENCIES = ["github.com/fatih/color",
 # holding initial critical information
 GLOBALS_FILE      = PROJECT_DIRECTORY + SHARED_CODE_DIRECTORY
 globals_to_modify =  {BEACON_ON_START
-
-//if BEACON_ON_START == true {
-// can be one of four options, http, tcp, udp, dns
-// Default is TCP callback
-var BACON_TYPE string = "tcp"
-
-//}
-// declaring global variables to share our
-// network information between scopes
-// these are for TCP/UDP specifically
-
-// we set these variables manually for now
-// I will eventually make a python script to set these automatically
-// COMMAND AND CONTROL ADDRESSES
-// WE ARE LOCAL, ZOMBIE IS REMOTE!
-var commandIP net.IP = net.ParseIP("192.168.0.2")
-var TCPPORT int = 1337
-var UDPPORT int = 1338
-var Local_tcpaddr_LAN net.TCPAddr = net.TCPAddr{IP: commandIP, Port: TCPPORT}
-var Local_udpaddr_LAN net.UDPAddr = net.UDPAddr{IP: commandIP, Port: UDPPORT}
-
-var Local_tcpaddr_WAN net.TCPAddr
-var Local_udpaddr_WAN net.UDPAddr
-
-// these are set to a IP on the LAN
-// you would set these
-var Remote_tcpport string = ":1337"
-var Remote_tcpaddr string = "192.168.0.2" + Remote_tcpport
-var Remote_udpport string = ":1338"
-var Remote_udpaddr string = Remote_tcpaddr + Remote_udpport
-var Remote_http_addr string
-var Remote_ftp_addr string
-var Remote_dns_addr string
-var PHONEHOME_TCP net.TCPAddr
-var PHONEHOME_UDP net.UDPAddr
+                        # can be one of four options, http, tcp, udp, dns
+                        var BACON_TYPE string = "tcp"
+                        # WE ARE LOCAL, ZOMBIE IS REMOTE!
+                        commandIP net.IP = net.ParseIP("192.168.0.2")
+                    TCPPORT int = 1337
+                        UDPPORT int = 1338
+                        Local_tcpaddr_LAN net.TCPAddr = net.TCPAddr{IP: commandIP, Port: TCPPORT}
+                        Local_udpaddr_LAN net.UDPAddr = net.UDPAddr{IP: commandIP, Port: UDPPORT}
+                        Local_tcpaddr_WAN net.TCPAddr
+                        Local_udpaddr_WAN net.UDPAddr
+                        var Remote_tcpport string = ":1337"
+                        var Remote_tcpaddr string = "192.168.0.2" + Remote_tcpport
+                        var Remote_udpport string = ":1338"
+                        var Remote_udpaddr string = Remote_tcpaddr + Remote_udpport
+                        var Remote_http_addr string
+                        var Remote_ftp_addr string
+                        var Remote_dns_addr string
+                        var PHONEHOME_TCP net.TCPAddr
+                        var PHONEHOME_UDP net.UDPAddr
 
 //-----NAME-------------TYPE-----
 var Mega_important_encryption_key string
@@ -269,7 +281,10 @@ Enter your selection using a single integer:
     
     def build_command_center(self, name):
         '''Builds command center/server for THIS MACHINE '''
+        #this will be broken HARD
         # set env vars
+        BUILD_TARGET_OS      = "linux"
+        BUILD_TARGET_ARCH    = "amd64"
         os.chdir(COMMAND_SRC_DIRECTORY)
         exec_command("go build {} -o {}".format(name))
 
