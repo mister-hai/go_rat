@@ -75,6 +75,7 @@ try:
     if TESTING == True:
         COLORMEQUALIFIED = True
 except ImportError as derp:
+    herp_a = derp
     print("[-] NO COLOR PRINTING FUNCTIONS AVAILABLE, Install the Colorama Package from pip")
     COLORMEQUALIFIED = False
 
@@ -224,15 +225,17 @@ Enter your selection using a single integer:
             menu_selection = input()
             # yes I validate like a fool
             # users are foolish
-            if str.isdigit(menu_selection) and (len(menu_selection) == 1) and menu_selection > 4:
-                if menu_selection   =="1":
-                    pass # self.init_project()
-                elif menu_selection == "2":
-                    pass # self.install_dependencies()
-                elif menu_selection == "3":
-                    pass # self.build_zombie_for_target()
-                elif menu_selection == "4":
-                    pass
+            if str.isdigit(menu_selection) \
+                and (len(menu_selection) == 1) \
+                and menu_selection > 4:
+                    if menu_selection   =="1":
+                        pass # self.init_project()
+                    elif menu_selection == "2":
+                        pass # self.install_dependencies()
+                    elif menu_selection == "3":
+                        pass # self.build_zombie_for_target()
+                    elif menu_selection == "4":
+                        pass
         except Exception:
             error_printer("[-] Failure in GoRatManager.__init__")
 
@@ -246,9 +249,10 @@ Enter your selection using a single integer:
                 each_line.strip(["a", "e", "s"])
                 # matches the line of code to item in the dictionary
                 if each_line == any(globals_dict.keys()):
-                    each_line.replace(globals_dict)
-                    
-
+                    # here we are matching two strings and replacing the line 
+                    # in globals.go with the same thing but appending the value
+                    # of the key to add information
+                    each_line.replace(each_line + globals_dict.get(each_line))
 
     def init_project(self):
         '''Initializes the folder this script resides in as a go project'''
@@ -263,17 +267,23 @@ Enter your selection using a single integer:
     def build_zombie_for_target(self,name, target_arch: str, target_os : str):
         '''fed with values from the variables at the top of this file '''
         os.chdir(TARGET_SRC_DIRECTORY)
-        exec_command("go build {}{}-o {} ".format())
+        exec_command("go build -o {} ".format(name))
     
-    def build_command_center(self, name):
+    def build_command_center(self, package_name):
         '''Builds command center/server for THIS MACHINE '''
         # set env vars
         # BUILD_TARGET_OS      = "linux"
         # BUILD_TARGET_ARCH    = "amd64"
+        # env GOOS=linux GOARCH=arm64 go build -o prepnode_arm64
         os.chdir(COMMAND_SRC_DIRECTORY)
-        os.environ["GOOS"]   = BUILD_TARGET_OS
-        os.environ["GOARCH"] = BUILD_TARGET_ARCH
-        exec_command("go build -o {}".format(name))
+        #os.environ["GOOS"]   = BUILD_TARGET_OS
+        #os.environ["GOARCH"] = BUILD_TARGET_ARCH
+        exec_command("env GOOS={} GOARCH={} go build -o {}".format(
+                        BUILD_TARGET_OS,
+                        BUILD_TARGET_ARCH,
+                        package_name)
+                    )
+        exec_command("go build main.go")
 
 try:    
     if __name__ == "main":
