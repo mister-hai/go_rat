@@ -56,6 +56,11 @@ parser.add_argument('--hosttarget',
                                  action  = "store" ,
                                  default = "" ,
                                  help    = "" )
+#############################################################
+##
+##  Seems we need two more arguments for arch on both zombie/control
+##
+#############################################################
 parser.add_argument('--zombieIP',
                                  dest    = 'zombieIO',
                                  action  = "store" ,
@@ -228,13 +233,14 @@ Enter your selection using a single integer:
             if str.isdigit(menu_selection) \
                 and (len(menu_selection) == 1) \
                 and menu_selection > 4:
-                    if menu_selection   =="1":
+                # I'm not sure this is correct
+                    if menu_selection   == 1:
                         pass # self.init_project()
-                    elif menu_selection == "2":
+                    elif menu_selection == 2:
                         pass # self.install_dependencies()
-                    elif menu_selection == "3":
+                    elif menu_selection == 3:
                         pass # self.build_zombie_for_target()
-                    elif menu_selection == "4":
+                    elif menu_selection == 4:
                         pass
         except Exception:
             error_printer("[-] Failure in GoRatManager.__init__")
@@ -256,16 +262,20 @@ Enter your selection using a single integer:
 
     def init_project(self):
         '''Initializes the folder this script resides in as a go project'''
-        os.chdir(PROJECT_DIRECTORY)
+        # oops, forgot to uncomment something
+        #os.chdir(PROJECT_DIRECTORY)
         subprocess.Popen("go mod init {}".format(PROJECT_NAME))
 
     def install_dependencies(self, utility_to_use = "go get"):
+        ''' gonna expand this later to wget/tar -xvf the github repo
+OR git clone '''
         if utility_to_use == "go get":
             for dependency_url in PROJECT_DEPENDENCIES:
                 exec_command("go get {}".format(dependency_url))
 
     def build_zombie_for_target(self,name, target_arch: str, target_os : str):
         '''fed with values from the variables at the top of this file '''
+        ## And maybe you need to set some things to build the right binary
         os.chdir(TARGET_SRC_DIRECTORY)
         exec_command("go build -o {} ".format(name))
     

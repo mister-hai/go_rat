@@ -17,8 +17,10 @@ import (
 
 // struct to represent an OS command from the wire
 // we will be shoving a JSON payload into this
+// directly from the tcp stream
 type Command struct {
-	Task_id         int
+	Task_id int
+	//store as raw message for now, want to do everything procedurally
 	json_input      json.RawMessage
 	command_string  string
 	info_message    string

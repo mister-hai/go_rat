@@ -82,13 +82,14 @@ func HTTPRetriever(method string, http_addr string) []byte {
 // Command type
 // This gets placed in a loop to handle net.Conn type
 // containing json AFTER AUTH
-func Json_extract(text string, command_struct Command) {
+func Json_extract(text string) {
 	/*/
 		use Unmarshal if we expect our data to be pure JSON
 		second parameter is the address of the struct
 		we want to store our arsed data in
 	/*/
-
+	// NewCommand contained in core.go
+	command_struct := NewCommand(text)
 	json.Unmarshal([]byte(text), &command_struct)
 }
 
