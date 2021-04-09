@@ -2,6 +2,9 @@
 This file contains the global variables we need to allow our functions to
 share various things between them. Try to avoid having too many of these.
 And limit thier scope/context within which you use them
+
+Go language "thing" Called "exports":
+	- To make something available from the module source, you have to capitalize it
 /*/
 package shared_code
 
