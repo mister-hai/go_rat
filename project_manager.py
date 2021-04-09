@@ -123,7 +123,8 @@ PROJECT_DEPENDENCIES = ["github.com/fatih/color",
                         "golang.org/x/sys/windows/registry",
                         "github.com/shirou/gopsutil/process",
                         "github.com/cakturk/go-netstat/netstat",
-                        "github.com/shirou/gopsutil/disk"]
+                        "github.com/shirou/gopsutil/disk",
+                        "github.com/godbus/dbus/v5"]
 
 ###############################################################################
 #                            GLOBAL CONFIG

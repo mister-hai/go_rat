@@ -1,5 +1,5 @@
 /*/
-This file contains the code for gathering host intelligence
+This file contains platform independant code for gathering host intelligence
 	-uses code from the following sources of open source information
 		https://github.com/bluesentinelsec/OffensiveGoLang/
 
@@ -16,8 +16,6 @@ package shared_code
 import (
 	"net"
 
-	// necessary for gathering process information
-
 	// necessary for getting netowork information
 	"github.com/cakturk/go-netstat/netstat"
 	// Software information Enumeration
@@ -33,7 +31,7 @@ That calls the others depending on the request from the
 Command and Control binary
 */
 //This is available outside the module because it is capitalized
-func GatherIntell(intel_struct HostIntel) (HostIntel, error) {
+func GatherIntel(intel_struct HostIntel) HostIntel {
 	// maybe you could add some logic to control this thing?
 	// using that function that makes a new struct
 
@@ -41,12 +39,8 @@ func GatherIntell(intel_struct HostIntel) (HostIntel, error) {
 	//
 	// lets you declare things very simply like this
 	intel_container := NewHostIntel()
-	herp, derp := get_interfaces(intel_container)
-	if derp != nil {
-		Error_printer(derp, "generic error, fix me plz lol <3!")
-		return false
-	}
-	return true
+	get_interfaces(intel_container)
+	return *intel_container
 }
 
 // this is not available outside the module because it is NOT capitalized

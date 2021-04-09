@@ -3,6 +3,8 @@ This file contain the structs for making basic types necessary in
 "defining the reality" , that is to say, we are making "concepts"
 each concept has its own faucets, traits, and actions
 
+Resources:
+	- https://gobyexample.com/structs
 /*/
 
 package shared_code
