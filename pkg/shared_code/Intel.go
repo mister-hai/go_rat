@@ -61,19 +61,20 @@ func get_interfaces(intel_struct *HostIntel) bool {
 //https://github.com/bluesentinelsec/OffensiveGoLang/blob/master/pkg/windows/discovery/hardrives.go
 
 // GetDrives iterates through the alphabet to return a list of mounted drives
-func GetDrives(intel_struct *HostIntel) []disk.PartitionStat {
+func GetDrives(intel_struct *HostIntel) bool {
 	herp, derp := disk.Partitions(true)
 	if derp != nil {
 		Error_printer(derp, "generic error, fix me plz lol <3!")
 		return false
 	}
+	intel_struct.DriveInformation = herp
 	return true
 }
 
 // ToDo: add functions for IPv6 connections
 
 // GetTCPConnections returns a slice describing TCP connections
-func GetTCPConnections(intel_struct *HostIntel) []netstat.SockTabEntry {
+func GetTCPConnections(intel_struct *HostIntel) bool {
 
 	// TCP sockets
 	herp, derp := netstat.TCPSocks(netstat.NoopFilter)
@@ -81,16 +82,18 @@ func GetTCPConnections(intel_struct *HostIntel) []netstat.SockTabEntry {
 		Error_printer(derp, "generic error, fix me plz lol <3!")
 		return false
 	}
+	intel_struct.TCPConnections = herp
 	return true
 }
 
 // GetUDPConnections returns a slice describing UDP connections
-func GetUDPConnections(intel_struct *HostIntel) []netstat.SockTabEntry {
+func GetUDPConnections(intel_struct *HostIntel) bool {
 	// UDP sockets
 	herp, derp := netstat.UDPSocks(netstat.NoopFilter)
 	if derp != nil {
 		Error_printer(derp, "generic error, fix me plz lol <3!")
 		return false
 	}
+	intel_struct.UDPConnections = herp
 	return true
 }
