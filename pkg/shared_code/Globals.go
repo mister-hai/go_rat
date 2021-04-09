@@ -25,6 +25,10 @@ import (
 	"github.com/hashicorp/mdns"
 )
 
+// THIS GETS SET BY ProjectManager.py
+// defines what code is compiled into the final binary
+var BUILD_TARGET_OS string = "linux"
+
 // This gets set by the script that generates the binary
 // for the target.
 var BEACON_ON_START bool

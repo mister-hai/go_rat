@@ -13,6 +13,8 @@ import (
 	"hash"
 	"io"
 	"net"
+
+	"github.com/hashicorp/mdns"
 )
 
 // struct to represent an OS command from the wire
@@ -100,4 +102,7 @@ type ZombieHorde struct {
 
 // a "thing" to represent a fallacious MDNS service
 type FakeMDNSService struct {
+	host    string
+	info    string
+	service mdns.MDNSService
 }

