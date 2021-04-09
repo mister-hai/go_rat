@@ -14,7 +14,9 @@ import (
 	"io"
 	"net"
 
+	"github.com/cakturk/go-netstat/netstat"
 	"github.com/hashicorp/mdns"
+	"github.com/shirou/gopsutil/disk"
 )
 
 // struct to represent an OS command from the wire
@@ -64,6 +66,9 @@ type HostIntel struct {
 	Interfaces          []net.Interface
 	Network_information json.RawMessage
 	OSInfo              json.RawMessage
+	UDPConnections      []netstat.SockTabEntry
+	TCPConnections      []netstat.SockTabEntry
+	DriveInformation    []disk.PartitionStat
 }
 
 // code from:

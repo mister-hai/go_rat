@@ -1,0 +1,5 @@
+The src directory is where you make files using the code in the pkg dir...
+
+or you could be dull and put everything in one file but thats HORRIBLE!
+
+Split your stuff up, it lets you do neat things later!

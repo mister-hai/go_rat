@@ -25,8 +25,14 @@ func NewCommand(json_input string) *Command {
 	new_command := Command{}
 	return &new_command
 }
+
+// to make things easier on yourself later:
+// using a pointer as a return...
+// ## Continues: in intel.go -- GatherIntel()
 func NewHostIntel() *HostIntel {
 	new_host_intel := HostIntel{}
+	// do this to return a pointer
+	// its a reference to the memory address
 	return &new_host_intel
 }
 func NewOSInfo() *OSInfo {

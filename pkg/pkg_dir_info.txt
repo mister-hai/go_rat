@@ -1,0 +1,4 @@
+the pkg dir is where individual modules, or "packages" are stored 
+These are the common base of code with which you make your binaries
+
+Each folder is its own module
