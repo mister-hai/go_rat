@@ -1,0 +1,27 @@
+# /lib/systemd/system/awesome_micro_service.service
+[Unit]
+Description=Awesome Micro Service
+ConditionPathExists=/home/user/service/awesome_micro_service
+After=network.target
+
+[Service]
+Type=simple
+User=<service_user>
+Group=<service_group>
+LimitNOFILE=1024
+
+Restart=on-failure
+RestartSec=10
+startLimitIntervalSec=60
+Environment="SECRET=shhhh"
+
+WorkingDirectory=/home/user/service
+ExecStart=/home/user/service/path_to_micro_service
+
+PermissionsStartOnly=true
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=awesome_micro_service
+
+[Install]
+WantedBy=multi-user.target

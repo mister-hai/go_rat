@@ -127,7 +127,8 @@ PROJECT_DEPENDENCIES = ["github.com/fatih/color",
                         "github.com/shirou/gopsutil/process",
                         "github.com/cakturk/go-netstat/netstat",
                         "github.com/shirou/gopsutil/disk",
-                        "github.com/godbus/dbus/v5"]
+                        "github.com/godbus/dbus/v5",
+                        "github.com/rainycape/dl"]
 
 ###############################################################################
 #                            GLOBAL CONFIG
@@ -278,6 +279,7 @@ Enter your selection using a single integer:
         ''' gonna expand this later to wget/tar -xvf the github repo
 OR git clone '''
         if utility_to_use == "go get":
+            # hmm an unused variable... 
             for dependency_url in PROJECT_DEPENDENCIES:
                 exec_command("go get {}".format("skid")) # dependency_url))
 

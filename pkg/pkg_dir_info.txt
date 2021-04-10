@@ -2,3 +2,18 @@ the pkg dir is where individual modules, or "packages" are stored
 These are the common base of code with which you make your binaries
 
 Each folder is its own module
+
+Shared code: The main RAT shared codebase
+    
+    - each function is currently being moved into it's own file
+         in a subfolder for functions previously in a single file
+    
+    - the purpose of this is to enable the usage of build flags as
+        as a way of picking and choosing code to compile, for the
+        smallest binary possible, with only the functions necessary
+        for the target system
+
+R2Pipe     : A go Language Extension for interaction with Radare2
+    - an automated disassembly process will be implemented for quick 
+        examination of your compiled binaries for self study
+

