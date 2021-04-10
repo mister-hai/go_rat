@@ -1,7 +1,7 @@
 
 WORK IN PROGRESS
 
-This is a Remote Administration Tool
+This is a Remote Administration Tool Framework
 written in Golang
 
 As a practice in learning Golang, reverse engineering, secure coding 
@@ -29,6 +29,15 @@ Minor update:
 
     Use the python init/build script once it is finished, it will streamline the process
 
+
+Major Update:
+
+    This officially a "framework", it's going to have a "custom build tag system"
+    managed by python files to only compile whats necessary for the attack
+    This is why all the code has been moved to subfolders... it's going to be broken 
+    up even more! Every function in it's own file with a build tag!
+
+    I think... probably going to be some small changes to the process.
 
 
 KNOWN GOOD DEBIAN VM CONFIGURATION:
@@ -95,6 +104,11 @@ KNOWN GOOD DEBIAN VM CONFIGURATION:
             git init MyTestProject
 
         - workflow to commit ALL files in project to github
+            - password based commits are going away soon, BOO!
+            - its because people are shit at decent passwords and microsoft 
+                doesnt want a superbad breach to affect people too badly
+                    (its thier own damn fault)
+
          must be done after putting files in folder, be careful not to confuse github
          by swapping files around. if github isnt aware of specific changes it breaks stuff
          just avoid using the web interface to modify files in the repository on important projects until you understand how github expects changes to occur.

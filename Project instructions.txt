@@ -1,7 +1,15 @@
 This file will contain the instructions on setting up the VM to begin development
 on your very first go project.
 
-Download latest debian stable iso.
-Install VM in VirtualBox
-Install nginx via apt
-follow instructions in project readme.md to get started developing
+Which also happens to be a full fledged hacking framework that you have to build yourself I guess
+
+I mean, it's still for learning FIRST... but It has too many features to be anything else now.
+
+With great power comes great responsibility... do good work
+
+
+You shouldnt need this but these are the first steps:
+
+    - Download latest debian stable iso.
+    - Install VM in VirtualBox
+    - follow instructions in project readme.md to get started developing
