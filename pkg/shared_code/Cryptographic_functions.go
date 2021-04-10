@@ -45,6 +45,14 @@ func Encrypt_file(file string, key string, output_buffer []byte) {
 }
 /*/
 
+/*
+function to hash a string to compare against the hardcoded password
+ never hardcode a password in plaintext
+ we use the strongest we can and a good password...
+
+ For the porpoises of this tutorial, we use a weak password.
+*/
+
 func Hash_auth_check(password string) {
 	//Various Hashes, in order of increasing security
 	// dont use this
@@ -72,7 +80,7 @@ function to get the hash of a file for integrity checking
 		- generic error printing
 /*/
 func File_hash(path string) []byte {
-	file_hash := crypto.SHA256.New()
+	file_hash := crypto.MD5.New()
 	file_input, err := os.Open(path)
 	if err != nil {
 		// print the error

@@ -41,7 +41,10 @@ var BEACON_ON_START bool
 // Default is TCP callback
 var BACON_TYPE string = "tcp"
 
-//}
+// payload to send for post request in BeaconHTTP() in file /src/beacons.go
+var BEACONPOSTPAYLOAD string = "{'beacon_payload' : {'auth_string' : 'dont be a fool, pack your tool'}}"
+
+//
 // declaring global variables to share our
 // network information between scopes
 // these are for TCP/UDP specifically

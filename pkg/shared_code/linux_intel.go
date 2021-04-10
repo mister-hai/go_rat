@@ -20,7 +20,22 @@ import (
 	"github.com/godbus/dbus/v5"
 )
 
-func main() {
+//function to execute command in a linux environment
+func exec_command(command_string string, shell_arguments []string) *Command {
+	attributes := os.ProcAttr{
+		Dir: "./",
+		// Env not used
+		// File not used
+	}
+	herp, derp := os.StartProcess("shell command", shell_arguments, &attributes)
+	if derp != nil {
+		Error_printer(derp, "generic error, fix me plz lol <3!")
+		return false
+	}
+	herp.Pid
+	return true
+}
+func lolzcopypasta() {
 	fmt.Println("Starting dbus example")
 
 	// Get a handle on the system bus. There are two types

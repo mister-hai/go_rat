@@ -31,16 +31,17 @@ That calls the others depending on the request from the
 Command and Control binary
 */
 //This is available outside the module because it is capitalized
-func GatherIntel(intel_struct HostIntel) HostIntel {
+func GatherIntel(intel_container *HostIntel) *HostIntel {
 	// maybe you could add some logic to control this thing?
-	// using that function that makes a new struct
 
-	//## Contintued from the NwHostIntel() Function declaration
+	//## Contintued from the NewHostIntel() Function declaration
 	//
 	// lets you declare things very simply like this
-	intel_container := NewHostIntel()
 	get_interfaces(intel_container)
-	return *intel_container
+	GetTCPConnections(intel_container)
+	GetUDPConnections(intel_container)
+	GetDrives(intel_container)
+	return intel_container
 }
 
 // this is not available outside the module because it is NOT capitalized

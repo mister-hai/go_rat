@@ -19,11 +19,25 @@ import (
 	"github.com/fatih/color"
 )
 
+// this function is for backend usage, use the function
+//rat_error()
+// to replace the log and print for errors
 // Colorized error printing to see what we are doing
+// maybe have the error printer also take a struct, with the assignment
+// being attempted, have the error assigned to it?
 func Error_printer(error_object error, message string) {
 
 	//error_as_string, err := fmt.Errorf(error_object.Error())
 	color.Red(error_object.Error(), message)
+}
+
+// if "message" is empty, will simply log the error
+// and respond as if it were the "log" function
+func RatLogError(error_object error, message string) error {
+	if message != nil {
+
+	}
+	return error_object
 }
 
 // debugging feedback function

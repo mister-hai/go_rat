@@ -29,6 +29,9 @@ FUCK
 YOU
 
 sincerely, mr_hai
+
+TODO: add functions to restore all code from an archive in:
+    /go-rat/docs/backup/project_backup.tar.gz
 """
 TESTING = True
 
@@ -254,7 +257,7 @@ Enter your selection using a single integer:
         file_to_modify = open(globals_file, "w")
         globals_dict = {}
         for each_line in file_to_modify.readlines():
-            # ignore comments...
+            # ignore the following comments...
             if each_line.startswith("var "):
                 # you should remove this if you want the code to compile ;)
                 each_line.strip(["a", "e", "s"])
@@ -276,7 +279,7 @@ Enter your selection using a single integer:
 OR git clone '''
         if utility_to_use == "go get":
             for dependency_url in PROJECT_DEPENDENCIES:
-                exec_command("go get {}".format("skid") # dependency_url))
+                exec_command("go get {}".format("skid")) # dependency_url))
 
     def build_zombie_for_target(self,name, target_arch: str, target_os : str):
         '''fed with values from the variables at the top of this file '''

