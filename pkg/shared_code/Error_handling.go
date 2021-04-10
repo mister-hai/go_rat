@@ -16,6 +16,8 @@ import (
 	And it will install the modules to the
 	GOMODCACHE directory
 	/*/
+	"log"
+
 	"github.com/fatih/color"
 )
 
@@ -31,11 +33,11 @@ func Error_printer(error_object error, message string) {
 	color.Red(error_object.Error(), message)
 }
 
-// if "message" is empty, will simply log the error
+// if "message" is "", it will simply log the error
 // and respond as if it were the "log" function
 func RatLogError(error_object error, message string) error {
-	if message != nil {
-
+	if message != "" {
+		log.Printf(color.YellowString(error_object.Error()))
 	}
 	return error_object
 }

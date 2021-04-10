@@ -39,3 +39,8 @@ func NewOSInfo() *OSInfo {
 	new_os_info := OSInfo{}
 	return &new_os_info
 }
+
+func NewFakeMDNSService() *FakeMDNSService {
+	new_mdns_service := FakeMDNSService{}
+	return &new_mdns_service
+}

