@@ -5,6 +5,8 @@ package ErrorHandling
 
 // import the libraries we need
 import (
+	log "github.com/sirupsen/logrus"
+
 	"github.com/fatih/color"
 )
 
@@ -18,17 +20,26 @@ func ErrorPrinter(derp error, message string) error {
 	return derp
 }
 
-// if "message" is "", it will simply log the error
-// and respond as if it were the "log" function
-func RatLogError(derp error, message string) error {
-	if message != "" {
-		log.Print(color.YellowString(derp.Error()))
-	}
+// use this instead of the regular logging functions
+// returns the errors but adds them to a log while printing a
+// message to the screen for your viewing pleasure
+// responds to log level changes, will affect other logging activities
+func RatLogError(derp error, message string, logfile string) error {
+	log.SetFormatter(&log.JSONFormatter{})
+	// print to terminal for debug purposes
+	// we can do either:
+	//logs, derp := os.OpenFile(logfile, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
 	return derp
 }
 
-func ShowLogs(LinesToPrint int) {
+func ShowLogs(LinesToPrint int, loglevel string) {
+	// set log thingie to use json so our json file
+	// can be used
 	log.SetFormatter(&log.JSONFormatter{})
+	//switch loglevel{
+	//	case "error":
+	//		log.ErrorLevel
+
 }
 
 // debugging feedback function

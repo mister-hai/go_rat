@@ -26,13 +26,15 @@ import (
 	/*/
 	// necessary for multicast DNS
 	"github.com/hashicorp/mdns"
+	"github.com/sirupsen/logrus"
 )
 
 // THIS GETS SET BY ProjectManager.py
 // defines what code is compiled into the final binary
 var BUILD_TARGET_OS string = "linux"
 
-// names of the files for the logs
+// variables for logs
+var LoggerInstance = logrus.New()
 var ZOMBIESLOGFILE string = "zombielegs.logs"
 var COMMANDLOGFILE string = "comlog.flog"
 
