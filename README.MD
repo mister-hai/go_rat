@@ -16,9 +16,17 @@ This tutorial assumes some familiarity with programming concepts, languages, and
 
 This project uses code from the following sources, please support every communities efforts to educate others by adding to the pool of available knowledge
      
-     -https://github.com/bluesentinelsec/OffensiveGoLang.git
+    - https://github.com/bluesentinelsec/OffensiveGoLang.git
 
-     -https://medium.com/@mat285/encrypting-streams-in-go-6cff6062a107
+    - https://medium.com/@mat285/encrypting-streams-in-go-6cff6062a107
+     
+    - https://snowscan.io/custom-crypter/
+
+    - https://trstringer.com/systemd-inhibitor-locks/
+
+    - https://github.com/dirtycow/dirtycow.github.io/wiki/PoCs
+
+    
 
 
 This code can be used to inadvertently break the law if you do not know what you are doing
