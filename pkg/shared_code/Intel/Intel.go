@@ -10,10 +10,11 @@ This file contains platform independant code for gathering host intelligence
 	IF YOU WANT NINJA CODE, YOU NEED TO CODE THAT BEHAVIOR IN!
 /*/
 
-package shared_code
+package Intel
 
 // import the libraries we need
 import (
+	shared_code "go_rat/pkg/shared_code/Core"
 	"net"
 
 	// necessary for getting netowork information
@@ -31,7 +32,7 @@ That calls the others depending on the request from the
 Command and Control binary
 */
 //This is available outside the module because it is capitalized
-func GatherIntel(intel_container *HostIntel) *HostIntel {
+func GatherIntel(intel_container *shared_code.HostIntel) *shared_code.HostIntel {
 	// maybe you could add some logic to control this thing?
 
 	//## Contintued from the NewHostIntel() Function declaration
@@ -45,13 +46,13 @@ func GatherIntel(intel_container *HostIntel) *HostIntel {
 }
 
 // this is not available outside the module because it is NOT capitalized
-func get_interfaces(intel_struct *HostIntel) bool {
+func get_interfaces(intel_struct *shared_code.HostIntel) bool {
 	// error check everything!
 	// return true or false depending on error
 	// Get all network interfaces
 	herp, derp := net.Interfaces()
 	if derp != nil {
-		Error_printer(derp, "generic error, fix me plz lol <3!")
+		shared_code.Error_printer(derp, "generic error, fix me plz lol <3!")
 		return false
 	}
 	intel_struct.Interfaces = herp

@@ -3,16 +3,14 @@ This file contains the functions necessary for input and output
 from files, networks, software, etc...
 
 /*/
-package shared_code
+package Core
 
 import (
 	"encoding/json"
-	"io/ioutil"
-	"log"
-	"net/http"
 )
 
-// this function is to extract JSON data from HTTP Server on C&C
+/*/ this function is to extract JSON data from HTTP Server on C&C
+
 func HTTPRetriever(method string, http_addr string) []byte {
 	switch method {
 	case "get":
@@ -21,17 +19,19 @@ func HTTPRetriever(method string, http_addr string) []byte {
 			log.Fatalln(derp)
 		}
 		//We Read the response body on the line below.
-		body, err := ioutil.ReadAll(response.Body)
+		// body replaced with _ temporarily
+		_, err := ioutil.ReadAll(response.Body)
 		if err != nil {
 			log.Fatalln(err)
 		}
 		//Convert the body to json, we are relying on the fact that the C&C
 		// only ever responds in pure JSON
-		json.Unmarshal(body)
+		//json.Unmarshal(body)
 	}
 }
 
-//
+/*/
+
 // This function of for extracting messages sent in json into the
 // Command type
 // This gets placed in a loop to handle net.Conn type
@@ -45,15 +45,4 @@ func Json_extract(text string) {
 	// NewCommand contained in core.go
 	command_struct := NewCommand(text)
 	json.Unmarshal([]byte(text), &command_struct)
-}
-
-/*/
-Function for packing up a string to send down the wire to the command and control
-/*/
-func Json_pack(json_string string, outgoing_message OutgoingMessage) []byte {
-	encoded_json, err := json.Marshal(json_string)
-	if err != nil {
-		Error_printer(err, "[-] Problem with JSON packing function")
-	}
-	return encoded_json
 }

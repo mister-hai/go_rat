@@ -6,7 +6,7 @@ And limit thier scope/context within which you use them
 Go language "thing" Called "exports":
 	- To make something available from the module source, you have to capitalize it
 /*/
-package shared_code
+package Core
 
 // import the libraries we need
 import (

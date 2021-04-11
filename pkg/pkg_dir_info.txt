@@ -2,6 +2,13 @@ the pkg dir is where individual modules, or "packages" are stored
 These are the common base of code with which you make your binaries
 
 Each folder is its own module
+    each child folder is another module, inside that module
+    so each file in a folder, is going to be declared as:
+    
+        package {that foldername}
+    
+    and must be exported even higher, to be accessed in src
+
 
 Shared code: The main RAT shared codebase
     

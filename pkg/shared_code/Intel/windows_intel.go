@@ -7,7 +7,7 @@ We are using the feature outlined in :
 
 /*/
 
-package shared_code
+package Intel
 
 // import the libraries we need
 import ( // necessary for gathering process information

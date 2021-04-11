@@ -3,13 +3,12 @@ This file contains the functions used for hashing and encrypting/decrypting
 Text and files in both a form suitable for streaming connections and a form
 suitable for individual entities.
 /*/
-package shared_code
+package Crypto
 
 import (
 	"crypto"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"os"
 )
@@ -21,7 +20,7 @@ import (
 // clever ways to break it further
 /*/
 func Encrypt_file(file_handle string, output_buffer []byte) {
-	file_bytes, derp := ioutil.ReadFile(file_handle)
+	//file_bytes, derp := ioutil.ReadFile(file_handle)
 
 }
 

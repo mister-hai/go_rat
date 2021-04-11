@@ -32,8 +32,6 @@ import (
 	"net"
 )
 
-// function to provide outbound connections via threading
-//-----------------Local IP---------Remote IP---------PORT-------
 func Tcp_outbound(laddr net.TCPAddr, raddr net.TCPAddr, port int8) {
 	// the network functions return two objects
 	// a connection
@@ -59,7 +57,7 @@ func Tcp_outbound(laddr net.TCPAddr, raddr net.TCPAddr, port int8) {
 		}
 		// need to create the struct! The one that holds the data!
 		// The data for Commands
-		shared_code.Json_extract(netData)
+		shared_code.Core.Json_extract(netData)
 
 	}
 	//sending wat!?!?

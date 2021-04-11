@@ -10,7 +10,7 @@ Uses code / information, from the following sources:
 
 /*/
 
-package shared_code
+package Intel
 
 import (
 	"fmt"

@@ -1,7 +1,7 @@
 /*/
 This file contains functions for printing in color and formatting
 /*/
-package shared_code
+package ErrorHandling
 
 // import the libraries we need
 import (

