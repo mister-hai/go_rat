@@ -24,22 +24,20 @@ import (
 // this function is for backend usage, use the function
 //rat_error()
 // to replace the log and print for errors
-// Colorized error printing to see what we are doing
-// maybe have the error printer also take a struct, with the assignment
-// being attempted, have the error assigned to it?
-func Error_printer(error_object error, message string) {
+func ErrorPrinter(derp error, message string) error {
 
 	//error_as_string, err := fmt.Errorf(error_object.Error())
-	color.Red(error_object.Error(), message)
+	color.Red(derp.Error(), message)
+	return derp
 }
 
 // if "message" is "", it will simply log the error
 // and respond as if it were the "log" function
-func RatLogError(error_object error, message string) error {
+func RatLogError(derp error, message string) error {
 	if message != "" {
-		log.Printf(color.YellowString(error_object.Error()))
+		log.Print(color.YellowString(derp.Error()))
 	}
-	return error_object
+	return derp
 }
 
 // debugging feedback function

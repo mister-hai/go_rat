@@ -13,6 +13,8 @@ package Intel
 import ( // necessary for gathering process information
 	// necessary for getting netowork information
 	// Software information Enumeration
+	"go_rat/pkg/shared_code/Core"
+	"go_rat/pkg/shared_code/ErrorHandling"
 	"io"
 	"log"
 	"os/user"
@@ -24,12 +26,13 @@ import ( // necessary for gathering process information
 
 // GetCPUmodel inserts information about the target system's CPU model
 // into a hostintel struct
-func GetCPUmodel(intel_struct HostIntel) {
+func GetCPUmodel(intel_struct Core.HostIntel) (derp error) {
 	key := `HARDWARE\DESCRIPTION\System\CentralProcessor\0`
 	regValue := "Identifier"
 	k, derp := registry.OpenKey(registry.LOCAL_MACHINE, key, registry.QUERY_VALUE)
 	if derp != nil {
-		Error_printer(derp, "Generic Error Message Plz Fix! LOL <3 OP SUX")
+		ErrorHandling.Error_printer(derp, "Generic Error Message Plz Fix! LOL <3 OP SUX")
+		return derp
 	}
 	defer k.Close()
 
@@ -37,7 +40,7 @@ func GetCPUmodel(intel_struct HostIntel) {
 	if derp != nil {
 		Error_printer(derp, "Generic Error Message Plz Fix! LOL <3 OP SUX")
 	}
-	return v, derp
+	return derp
 }
 
 // GetCPUname returns the target system's CPU name

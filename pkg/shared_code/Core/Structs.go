@@ -38,6 +38,10 @@ type Command struct {
 	Failure_message string
 }
 
+type RatProcess struct {
+	Pid int
+}
+
 // container for Commands
 type CommandSet struct {
 	// temporarily declared as string during development so
