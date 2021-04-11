@@ -40,6 +40,7 @@ var BEACON_ON_START bool
 // can be one of four options, http, tcp, udp, dns
 // Default is TCP callback
 var BACON_TYPE string = "tcp"
+var BEACONHTTPTYPE string = "get"
 
 // payload to send for post request in BeaconHTTP() in file /src/beacons.go
 var BEACONPOSTPAYLOAD string = "{'beacon_payload' : {'auth_string' : 'dont be a fool, pack your tool'}}"

