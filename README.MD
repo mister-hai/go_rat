@@ -128,3 +128,4 @@ KNOWN GOOD DEBIAN VM CONFIGURATION:
 			e.g. "color" is a module name so you cant use "color" as a variable name
 
 Every project I start turns into something enourmous... why do I do these things to myself?
+When this project is complete, if you use it to make money, I am gonna fuck yur day up

