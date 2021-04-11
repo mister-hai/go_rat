@@ -1,20 +1,6 @@
 /*/
 Uses code from:
 https://snowscan.io/custom-crypter/
-/*/
-
-package CryptographicFunctions
-
-import (
-	"crypto/rand"
-	"fmt"
-	"os"
-
-	"golang.org/x/crypto/salsa20"
-)
-
-func main() {
-	fmt.Printf("Shellcode code crypter\n")
 
 	// execve shellcode /bin/sh
 	in := []byte{
@@ -27,6 +13,32 @@ func main() {
 		0x43}
 
 	out := make([]byte, len(in))
+
+	// Generate a random 24 bytes nonce
+	nonce := make([]byte, 24)
+	if _, err := rand.Read(nonce); err != nil {
+		panic(err)
+	}
+
+
+/*/
+
+package CryptographicFunctions
+
+import (
+	"crypto/rand"
+	"fmt"
+	"os"
+
+	"golang.org/x/crypto/salsa20"
+)
+
+// really a byte encrypter
+// thats all it is, no black magic
+// get your hex chars from objdump and go
+func ShellcodeEncrypter(bytes_in []byte) {
+
+	out := make([]byte, len(bytes_in))
 
 	// Generate a random 24 bytes nonce
 	nonce := make([]byte, 24)

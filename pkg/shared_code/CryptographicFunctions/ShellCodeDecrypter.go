@@ -43,8 +43,6 @@ func ShellCodeDecrypter(bytes_in []byte, nonce []byte, key *[32]byte) {
 	out := make([]byte, len(bytes_in))
 
 	salsa20.XORKeyStream(out, bytes_in, nonce, key)
-
-	fmt.Printf("Decrypted shellcode: ")
 	for _, element := range out {
 		fmt.Printf("%#x,", element)
 	}

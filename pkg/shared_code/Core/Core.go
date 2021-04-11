@@ -32,7 +32,7 @@ func exec_command(command_struct *Command) *RatProcess {
 	return &new_process
 }
 
-func AnyToString(filename string) (string, error) {
+func FileToString(filename string) (string, error) {
 	filebuffer, derp := ioutil.ReadFile(filename)
 	if derp != nil {
 		ErrorHandling.RatLogError(derp, "[-] ERROR: Cannot Convert Data Object to String")

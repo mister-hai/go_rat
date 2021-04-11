@@ -13,6 +13,7 @@ require (
 	github.com/mattn/go-isatty v0.0.12 // indirect
 	github.com/miekg/dns v1.1.41 // indirect
 	github.com/nknorg/encrypted-stream v1.0.0 // indirect
+	github.com/rainycape/dl v0.0.0-20151222075243-1b01514224a1 // indirect
 	github.com/shirou/gopsutil v3.21.3+incompatible
 	github.com/sirupsen/logrus v1.8.1 // indirect
 	github.com/tklauser/go-sysconf v0.3.5 // indirect
