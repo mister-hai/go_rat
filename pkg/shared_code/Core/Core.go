@@ -10,7 +10,7 @@ import (
 	"os"
 )
 
-//function to execute command in a linux environment
+//function to execute command
 // Takes a Command struct
 // returns RatProcess struct
 func exec_command(command_struct *Command) *RatProcess {
