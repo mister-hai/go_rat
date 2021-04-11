@@ -110,7 +110,7 @@ func BeaconHTTP(command_http string, method string) (herp *http.Response, derp e
 		//case "post":
 		http_response, derp := BeaconHTTPPost(command_http)
 		if derp != nil {
-			ErrorHandling.RatLogError(derp, "[-] Beacon GET failed to connect to command, stopping beacon")
+			ErrorHandling.RatLogError(derp, "[-] Beacon POST failed to connect to command, stopping beacon")
 			return http_response, derp
 		}
 	} else {

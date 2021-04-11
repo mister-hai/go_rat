@@ -49,11 +49,19 @@ from importlib import import_module
 import argparse
 
 PROGRAM_DESCRIPTION = "Project Manager for the Church of the Subhacker - GO_RAT tutorial"
+
+# This is how you use Argparse
+# type programname.py --help
+# to show the options and help text
 parser = argparse.ArgumentParser(description=PROGRAM_DESCRIPTION)
 parser.add_argument('--zombietarget',
+                                # variable name to store as
                                  dest    = 'zombietarget',
+                                # what you are doing with provided value
                                  action  = "store" ,
+                                 # default value
                                  default = "windows", 
+                                 # help text
                                  help    = "Build target OS for Zombie Binaries " )
 parser.add_argument('--hosttarget',
                                  dest    = 'hosttarget',
@@ -64,7 +72,7 @@ parser.add_argument('--hosttarget',
 ##
 ##  Seems we need two more arguments for arch on both zombie/control
 ##  Then you need to add those options to the command thats executed
-## 
+##  Down in the Functions at the bottom
 #############################################################
 parser.add_argument('--zombieIP',
                                  dest    = 'zombieIO',
@@ -77,11 +85,13 @@ parser.add_argument('--hostIP',
                                  default = '/' ,
                                  help    = "IP address for the Command And Control Server" )
 
+# From the documentation on colorama
 try:
     import colorama
     from colorama import init
     init()
     from colorama import Fore, Back, Style
+# Not from the documentation on colorama
     if TESTING == True:
         COLORMEQUALIFIED = True
 except ImportError as derp:
@@ -90,8 +100,12 @@ except ImportError as derp:
     COLORMEQUALIFIED = False
 
 # Never had to do this before, all the way up here!
+# usually this goes at the bottom and the main file has very little in it
+# everything in a single file is kinda bad
 if __name__ == "main":
     arguments = parser.parse_args()
+    from project_dependencies import GO_DEPENDENCIES,PYTHON_DEPENDENCIES
+
 ################################################################################
 ##############                      VARS                       #################
 ################################################################################
@@ -120,8 +134,6 @@ BUILD_TARGET_ARCH    = "amd64"
         # HONK!
 os.environ["GOOS"]   = BUILD_TARGET_OS
 os.environ["GOARCH"] = BUILD_TARGET_ARCH
-
-from project_dependencies import GO_DEPENDENCIES
 
 ###############################################################################
 #                            GLOBAL CONFIG
@@ -230,8 +242,6 @@ Enter your selection using a single integer:
         blueprint(self.start_menu)
         try:
             menu_selection = input()
-            # yes I validate like a fool
-            # users are foolish
             if str.isdigit(menu_selection) \
                 and (len(menu_selection) == 1) \
                 and menu_selection > 4:
@@ -273,8 +283,8 @@ Enter your selection using a single integer:
 OR git clone '''
         if utility_to_use == "go get":
             # hmm an unused variable... 
-            for dependency_url in PROJECT_DEPENDENCIES:
-                exec_command("go get {}".format("skid")) # dependency_url))
+            for dependency_url in GO_DEPENDENCIES:
+                exec_command("go get {}".format("dependency_url"))
 
     def build_zombie_for_target(self,name, target_arch: str, target_os : str):
         '''fed with values from the variables at the top of this file '''
