@@ -14,6 +14,7 @@ require (
 	github.com/miekg/dns v1.1.41 // indirect
 	github.com/nknorg/encrypted-stream v1.0.0 // indirect
 	github.com/shirou/gopsutil v3.21.3+incompatible
+	github.com/sirupsen/logrus v1.8.1 // indirect
 	github.com/tklauser/go-sysconf v0.3.5 // indirect
 	github.com/tklauser/numcpus v0.2.2 // indirect
 	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2 // indirect

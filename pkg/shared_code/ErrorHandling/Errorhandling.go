@@ -5,24 +5,11 @@ package ErrorHandling
 
 // import the libraries we need
 import (
-	/*/  IMPORTING MODULES YOU FIND ONLINE
-	in the terminal in VSCODE, while in the package root directory,
-	append the following imports, as is, to the command "go get"
-
-	Example:
-
-	go get github.com/hashicorp/mdns
-
-	And it will install the modules to the
-	GOMODCACHE directory
-	/*/
-	"log"
-
 	"github.com/fatih/color"
 )
 
 // this function is for backend usage, use the function
-//rat_error()
+//RatLogError()
 // to replace the log and print for errors
 func ErrorPrinter(derp error, message string) error {
 
@@ -38,6 +25,10 @@ func RatLogError(derp error, message string) error {
 		log.Print(color.YellowString(derp.Error()))
 	}
 	return derp
+}
+
+func ShowLogs(LinesToPrint int) {
+	log.SetFormatter(&log.JSONFormatter{})
 }
 
 // debugging feedback function

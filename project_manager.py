@@ -120,15 +120,8 @@ BUILD_TARGET_ARCH    = "amd64"
         # HONK!
 os.environ["GOOS"]   = BUILD_TARGET_OS
 os.environ["GOARCH"] = BUILD_TARGET_ARCH
-# add entries as necessary to reflect go.mod file entries
-PROJECT_DEPENDENCIES = ["github.com/fatih/color",
-                        "github.com/hashicorp/mdns",
-                        "golang.org/x/sys/windows/registry",
-                        "github.com/shirou/gopsutil/process",
-                        "github.com/cakturk/go-netstat/netstat",
-                        "github.com/shirou/gopsutil/disk",
-                        "github.com/godbus/dbus/v5",
-                        "github.com/rainycape/dl"]
+
+from project_dependencies import GO_DEPENDENCIES
 
 ###############################################################################
 #                            GLOBAL CONFIG

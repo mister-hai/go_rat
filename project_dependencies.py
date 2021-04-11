@@ -10,7 +10,8 @@ GO_DEPENDENCIES = ["github.com/fatih/color",
                         "github.com/cakturk/go-netstat/netstat",
                         "github.com/shirou/gopsutil/disk",
                         "github.com/godbus/dbus/v5",
-                        "github.com/rainycape/dl"]
+                        "github.com/rainycape/dl",
+                        "github.com/sirupsen/logrus"]
 
 #installed via "pip3 install"
 PYTHON_DEPENDENCIES = ["donut-shellcode","","","",""]

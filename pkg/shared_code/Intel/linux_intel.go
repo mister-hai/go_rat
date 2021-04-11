@@ -14,7 +14,6 @@ package Intel
 
 import (
 	"fmt"
-	"go_rat/pkg/shared_code/Core"
 	"go_rat/pkg/shared_code/ErrorHandling"
 	"os"
 	"syscall"
@@ -22,36 +21,14 @@ import (
 	"github.com/godbus/dbus/v5"
 )
 
-//function to execute command in a linux environment
-// returns RatProcess struct
-func exec_command(command_string string, shell_arguments []string) *Core.RatProcess {
-	attributes := os.ProcAttr{
-		Dir: "./",
-		// Env not used
-		// File not used
-	}
-
-	herp, derp := os.StartProcess("shell command", shell_arguments, &attributes)
-	if derp != nil {
-		ErrorHandling.Error_printer(derp, "generic error, fix me plz lol <3!")
-		return
-	}
-	new_process := Core.RatProcess{
-		Pid: herp.Pid,
-	}
-	return &new_process
-}
-func lolzcopypasta() {
-	fmt.Println("Starting dbus example")
-
+func DbusFuckery(someshithereidunno string) error{
 	// Get a handle on the system bus. There are two types
 	// of buses: system and session. The system bus is for
 	// handling system-wide operations (like in this case,
 	// shutdown). The session bus is a per-user bus.
-	conn, err := dbus.SystemBus()
+	herp, derp := dbus.SystemBus()
 	if err != nil {
-		fmt.Printf("error getting system bus: %v\n", err)
-		os.Exit(1)
+		ErrorHandling.RatLogError(derp,"[-] ERROR: Cannot Connect to DBus!")
 	}
 	defer conn.Close()
 
@@ -81,7 +58,6 @@ func lolzcopypasta() {
 	).Store(&fd)
 	if err != nil {
 		fmt.Printf("error storing file descriptor: %v\n", err)
-		os.Exit(1)
 	}
 	fmt.Printf("Inhibitor file descriptor: %d\n", fd)
 
@@ -94,12 +70,7 @@ func lolzcopypasta() {
 		dbus.WithMatchMember("PrepareForShutdown"),
 	)
 	if err != nil {
-		fmt.Printf("error adding match signal: %v\n", err)
-		os.Exit(1)
 	}
-
-	fmt.Println("Waiting for shutdown signal")
-
 	// AddMatch is already called, but we need to setup a signal
 	// handler, which is just a channel.
 	shutdownSignal := make(chan *dbus.Signal, 1)
@@ -119,6 +90,3 @@ func lolzcopypasta() {
 			os.Exit(1)
 		}
 	}
-
-	fmt.Println("Completed")
-}
