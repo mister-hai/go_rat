@@ -26,7 +26,6 @@ import (
 	/*/
 	// necessary for multicast DNS
 	"github.com/hashicorp/mdns"
-	"github.com/sirupsen/logrus"
 )
 
 // THIS GETS SET BY ProjectManager.py
@@ -34,7 +33,6 @@ import (
 var BUILD_TARGET_OS string = "linux"
 
 // variables for logs
-var LoggerInstance = logrus.New()
 var ZOMBIESLOGFILE string = "zombielegs.logs"
 var COMMANDLOGFILE string = "comlog.flog"
 
