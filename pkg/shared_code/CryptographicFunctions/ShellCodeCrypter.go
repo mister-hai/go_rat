@@ -54,33 +54,7 @@ func ShellcodeEncrypter(bytes_in []byte) {
 	var key [32]byte
 	copy(key[:], key_slice[:])
 
-	fmt.Printf("Key len: %d bytes\n", len(key))
-
-	fmt.Printf("Key: ")
-	for _, element := range key {
-		fmt.Printf("%#x,", element)
-	}
-	fmt.Printf("\n")
-
-	fmt.Printf("Nonce: ")
-	for _, element := range nonce {
-		fmt.Printf("%#x,", element)
-	}
-	fmt.Printf("\n")
-
-	fmt.Printf("Original shellcode: ")
-
-	for _, element := range in {
-		fmt.Printf("%#x,", element)
-	}
-	fmt.Printf("\n")
 	salsa20.XORKeyStream(out, in, nonce, &key)
-
-	fmt.Printf("Encrypted shellcode: ")
-	for _, element := range out {
-		fmt.Printf("%#x,", element)
-	}
-	fmt.Printf("\n")
 
 	for _, element := range out {
 		if element == 0 {

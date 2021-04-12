@@ -1,6 +1,21 @@
 /*/
 Uses code from:
 https://snowscan.io/custom-crypter/
+
+Compiling the decrypter uses:
+	go build -o decrypter decrypter.go.
+
+There is however another step that needs to be executed
+after for the shellcode to work. By default (in newer Golang
+versions at least), the stack memory space is not marked
+executable so our shellcode won’t work since it resides on the stack:
+
+To resolve this problem we can make the stack executable again by using the
+execstack tool as follows. The shellcode is successfully decrypted
+and executed, spawning /bin/sh.
+
+>$ execstack -s decrypter
+
 /*/
 
 package CryptographicFunctions

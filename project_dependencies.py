@@ -11,7 +11,8 @@ GO_DEPENDENCIES = ["github.com/fatih/color",
                         "github.com/shirou/gopsutil/disk",
                         "github.com/godbus/dbus/v5",
                         "github.com/rainycape/dl",
-                        "github.com/sirupsen/logrus"]
+                        "github.com/sirupsen/logrus",
+                        "github.com/rainycape/dl",]
 
 #installed via "pip3 install"
-PYTHON_DEPENDENCIES = ["donut-shellcode","","","",""]
+PYTHON_DEPENDENCIES = ["r2pipe","","","",""]

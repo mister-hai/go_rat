@@ -31,6 +31,7 @@ import (
 // THIS GETS SET BY ProjectManager.py
 // defines what code is compiled into the final binary
 var BUILD_TARGET_OS string = "linux"
+var ZOMBIEFILENAME string = "rat.exe"
 
 // variables for logs
 var ZOMBIESLOGFILE string = "zombielegs.logs"
