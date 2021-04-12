@@ -163,7 +163,20 @@ class ObjDumpDisassembler(Disassembler):
             error_printer("[-] Interpreter Message: exec_command() failed!")        
     
     def exec_objdump(self, input):
-        self.exec_command('objdump')
+        ''' 
+        Command to execute , place command line args here
+        '''
+        command = "objdump"
+        self.exec_command(command = command)
+    
+    def ParseObjDumpOutput(self):
+        '''
+        Returns a string with newlines and text and HEXCODES
+        WE WANT THOSE HEX VALUES
+        '''
+        pass
+
 
 
 if __name__== "main":
+    Disassembler(arguments.file_input)
