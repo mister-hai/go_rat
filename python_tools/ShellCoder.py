@@ -33,6 +33,7 @@ TESTING = True
 ################################################################################
 ##############                    IMPORTS                      #################
 ################################################################################
+import re
 import sys,os
 import logging
 import pkgutil
@@ -80,7 +81,7 @@ parser.add_argument('--disassembler',
                                  dest    = 'disassembler',
                                  action  = "store" ,
                                  default = "radare2", 
-                                 help    = "Options can be objdump or radare2" )
+                                 help    = "Options can be objdump || radare2 || python" )
 
 if __name__== "main":
     arguments = parser.parse_args
@@ -107,6 +108,22 @@ def error_printer(message):
     else:
         redprint(message + ''.join(trace.format_exception_only()))
 
+def exec_command(command, blocking = True, shell_env = True):
+    '''Runs a command with subprocess.Popen'''
+    try:
+        if blocking == True:
+            step = subprocess.Popen(command,shell=shell_env,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+            output, error = step.communicate()
+            for output_line in output.decode().split('\n'):
+                self.objdump_output = self.objdump_output + output_line
+            for error_lines in error.decode().split('\n'):
+                self.objdump_error = self.objdump_error + error_lines
+        elif blocking == False:
+            # TODO: not implemented yet                
+            pass
+    except Exception:
+        error_printer("[-] Interpreter Message: exec_command() failed!")        
+
 class Disassembler():
     def __new__(cls, FileInput):
         if arguments.disassembler == "radare2":
@@ -131,7 +148,7 @@ class Radare2Disassembler(Disassembler):
         herp = DisassembledFile()
         self.FileInput = FileInput
         self.radarpipe = r2pipe.open(FileInput)
-        self.data     = {}
+        #self.data     = {}
         setattr(herp, "Symbols", self.radarpipe.cmdj("isj"))
         setattr(herp, "Sections", self.radarpipe.cmdj("iSj"))
         setattr(herp, "Info", self.radarpipe.cmdj("ij"))
@@ -144,38 +161,64 @@ class Radare2Disassembler(Disassembler):
 class ObjDumpDisassembler(Disassembler):
     def __init__(self, file_input):
         self.file_input = file_input
-
-    def exec_command(self, command, blocking = True, shell_env = True):
-        '''Runs a command with subprocess.Popen'''
+        self.bestregexyet = "\t(?:[0-9a-f]{2} *){1,7}\t"
+        self.start_of_main = "[0-9]*<main>:"
+        self.hexstring = []
+        self.asdf = []
+        self.shellcode = []
+        # do the thing
+        self.exec_objdump(self.file_input)
+        # get the hex
         try:
-            if blocking == True:
-                step = subprocess.Popen(command,shell=shell_env,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-                output, error = step.communicate()
-                for output_line in output.decode().split('\n'):
-                    self.objdump_output = self.objdump_output + output_line
-                for error_lines in error.decode().split('\n'):
-                    self.objdump_error = self.objdump_error + error_lines
-            elif blocking == False:
-                # TODO: not implemented yet                
-                pass
+            self.objdump_input = open("objdump-{}.txt".format(file_input), "r")
         except Exception:
-            error_printer("[-] Interpreter Message: exec_command() failed!")        
-    
+            error_printer("[-] Could not open file : objdump-{}.txt".format(file_input))
+
     def exec_objdump(self, input):
         ''' 
         Command to execute , place command line args here
         '''
-        command = "objdump"
-        self.exec_command(command = command)
+        command = "objdump -d {} >> objdump-{}.txt".format(input,input)
+        exec_command(command = command)
     
     def ParseObjDumpOutput(self):
         '''
         Returns a string with newlines and text and HEXCODES
         WE WANT THOSE HEX VALUES
         '''
+
+        for line_of_text in objdump_input:
+            if line_of_text != None:
+                hex_match = re.search(bestregexyet,line_of_text, re.I)
+                if hex_match != None:
+                    shellcode.append(hex_match[0].replace("\t","").replace("\n", ""))
+
+        for each in shellcode:
+            asdf.append(each.strip())
+
+        for line in asdf:
+            for hexval in line.split(" "):
+                hexstring.append("/x" + hexval)
+
+
+class PythonDisassembler():
+    ''' pure python solution to getting binary as hex'''
+
+    def __init__(self, file_input):
+        try:
+            open(file= file_input)
+    
+
+
+class TestCompiler():
+    def __init__(self, input_src, compiler_flags):
+        GCCCommand = 'gcc -pflags'
+        subprocess.Popen()
+
+#finding an executable to test on
+class DissTest():
+    def __init__(self):
         pass
-
-
 
 if __name__== "main":
     Disassembler(arguments.file_input)
