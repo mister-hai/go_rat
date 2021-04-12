@@ -26,6 +26,8 @@ No salt
 sincerely, mr_hai
 
 """
+
+PROGRAM_DESCRIPTION = "Shellcoder"
 TESTING = True
 
 ################################################################################
@@ -40,8 +42,27 @@ import subprocess
 from pathlib import Path
 from importlib import import_module
 import argparse
+try:
+    import colorama
+    from colorama import init
+    init()
+    from colorama import Fore, Back, Style
+# Not from the documentation on colorama
+    if TESTING == True:
+        COLORMEQUALIFIED = True
+except ImportError as derp:
+    herp_a = derp
+    print("[-] NO COLOR PRINTING FUNCTIONS AVAILABLE, Install the Colorama Package from pip")
+    COLORMEQUALIFIED = False
 
-PROGRAM_DESCRIPTION = "Shellcode"
+redprint          = lambda text: print(Fore.RED + ' ' +  text + ' ' + Style.RESET_ALL) if (COLORMEQUALIFIED == True) else print(text)
+blueprint         = lambda text: print(Fore.BLUE + ' ' +  text + ' ' + Style.RESET_ALL) if (COLORMEQUALIFIED == True) else print(text)
+greenprint        = lambda text: print(Fore.GREEN + ' ' +  text + ' ' + Style.RESET_ALL) if (COLORMEQUALIFIED == True) else print(text)
+yellow_bold_print = lambda text: print(Fore.YELLOW + Style.BRIGHT + ' {} '.format(text) + Style.RESET_ALL) if (COLORMEQUALIFIED == True) else print(text)
+
+is_method          = lambda func: inspect.getmembers(func, predicate=inspect.ismethod)
+LOGLEVEL            = 'DEV_IS_DUMB'
+LOGLEVELS           = [1,2,3,'DEV_IS_DUMB']
 
 parser = argparse.ArgumentParser(description=PROGRAM_DESCRIPTION)
 parser.add_argument('--file_input',
@@ -64,27 +85,6 @@ parser.add_argument('--disassembler',
 if __name__== "main":
     arguments = parser.parse_args
     
-try:
-    import colorama
-    from colorama import init
-    init()
-    from colorama import Fore, Back, Style
-# Not from the documentation on colorama
-    if TESTING == True:
-        COLORMEQUALIFIED = True
-except ImportError as derp:
-    herp_a = derp
-    print("[-] NO COLOR PRINTING FUNCTIONS AVAILABLE, Install the Colorama Package from pip")
-    COLORMEQUALIFIED = False
-
-redprint          = lambda text: print(Fore.RED + ' ' +  text + ' ' + Style.RESET_ALL) if (COLORMEQUALIFIED == True) else print(text)
-blueprint         = lambda text: print(Fore.BLUE + ' ' +  text + ' ' + Style.RESET_ALL) if (COLORMEQUALIFIED == True) else print(text)
-greenprint        = lambda text: print(Fore.GREEN + ' ' +  text + ' ' + Style.RESET_ALL) if (COLORMEQUALIFIED == True) else print(text)
-yellow_bold_print = lambda text: print(Fore.YELLOW + Style.BRIGHT + ' {} '.format(text) + Style.RESET_ALL) if (COLORMEQUALIFIED == True) else print(text)
-
-is_method          = lambda func: inspect.getmembers(func, predicate=inspect.ismethod)
-LOGLEVEL            = 'DEV_IS_DUMB'
-LOGLEVELS           = [1,2,3,'DEV_IS_DUMB']
 ################################################################################
 ##############                 INTERNAL FUNkS                  #################
 ################################################################################
@@ -112,9 +112,10 @@ class Disassembler():
         if arguments.disassembler == "radare2":
             try:
                 import r2pipe
+                Radare2Disassembler(FileInput=FileInput)
             except ImportError:
                 error_printer("[-] R2PIPE not installed, falling back to objdump")
-                ObjDumpDisassembler(FileInput)
+                ObjDumpDisassembler(FileInput=FileInput)
         elif arguments.disassembler == "objdump":
             ObjDumpDisassembler(FileInput)
     def __init__(self):
@@ -122,12 +123,9 @@ class Disassembler():
 
 # metaclass to represent a disassembled file
 class DisassembledFile():
-    def __init__(self, FileInput):
-        self.fileinput = FileInput
+    def __init__(self):
+        pass
         
-
-
-# dont use this yet, it's for another file
 class Radare2Disassembler(Disassembler):
     def __init__(self, FileInput):
         self.FileInput = FileInput
