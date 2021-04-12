@@ -20,4 +20,4 @@ PYTHON_DEPENDENCIES = ["r2pipe","","","",""]
 GITHUBREPOS = ["github.com/BorjaMerino/Windows-One-Way-Stagers",
                "github.com/swisskyrepo/PayloadsAllTheThings",
                "github.com/gentilkiwi/mimikatz",
-               "","",""]
+               "github.com/lucyoa/kernel-exploits","",""]

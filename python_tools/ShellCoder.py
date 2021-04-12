@@ -128,16 +128,17 @@ class DisassembledFile():
         
 class Radare2Disassembler(Disassembler):
     def __init__(self, FileInput):
+        herp = DisassembledFile()
         self.FileInput = FileInput
         self.radarpipe = r2pipe.open(FileInput)
         self.data     = {}
-        self.Symbols  = self.radarpipe.cmdj("isj")
-        self.Sections = self.radarpipe.cmdj("iSj")
-        self.Info     = self.radarpipe.cmdj("ij")
-        self.arch     = self.Info["bin"]["arch"]
-        self.bintype  = self.Info["bin"]["bintype"]
-        self.bits     = self.Info["bin"]["bits"]
-        self.binos    = self.Info["bin"]["os"]
+        setattr(herp, "Symbols", self.radarpipe.cmdj("isj"))
+        setattr(herp, "Sections", self.radarpipe.cmdj("iSj"))
+        setattr(herp, "Info", self.radarpipe.cmdj("ij"))
+        setattr(herp, "arch", getattr(herp, "Info")["bin"]["arch"])
+        setattr(herp, "bintype", getattr(herp, "Info")["bin"]["bintype"])
+        setattr(herp, "bits", getattr(herp, "Info")["bin"]["bits"])
+        setattr(herp, "binos", getattr(herp, "Info")["bin"]["os"])
 
 
 class ObjDumpDisassembler(Disassembler):
