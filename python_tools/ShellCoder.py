@@ -43,37 +43,22 @@ import argparse
 
 PROGRAM_DESCRIPTION = "Shellcode"
 
-# This is how you use Argparse
-# type programname.py --help
-# to show the options and help text
 parser = argparse.ArgumentParser(description=PROGRAM_DESCRIPTION)
 parser.add_argument('--file_input',
-                                # variable name to store as
                                  dest    = 'bin_file',
-                                # what you are doing with provided value
                                  action  = "store" ,
-                                 # default value
                                  default = "./a.out", 
-                                 # help text
                                  help    = "Binary file, currently only linux ELF supported " )
 parser.add_argument('--salt',
-                                # variable name to store as
                                  dest    = 'salt',
-                                # what you are doing with provided value
                                  action  = "store" ,
-                                 # default value
                                  default = "/dev/rand", 
-                                 # help text
                                  help    = "Salty jar of ... something, defaults to /dev/rand" )
 
 parser.add_argument('--disassembler',
-                                # variable name to store as
                                  dest    = 'disassembler',
-                                # what you are doing with provided value
                                  action  = "store" ,
-                                 # default value
                                  default = "radare2", 
-                                 # help text
                                  help    = "Options can be objdump or radare2" )
 
 if __name__== "main":
@@ -122,39 +107,31 @@ def error_printer(message):
     else:
         redprint(message + ''.join(trace.format_exception_only()))
 
-#metaclass to represent a file
-# we use this class, and it will return the inherited class
-class BadFile():
-    def __init__(self, FileInput : str):
+class Disassembler():
+    def __new__(cls, FileInput):
         if arguments.disassembler == "radare2":
-            import r2pipe
-            self.radarpipe = r2pipe.open(FileInput)
-            self.data      = {}
-        
+            try:
+                import r2pipe
+            except ImportError:
+                error_printer("[-] R2PIPE not installed, falling back to objdump")
+                ObjDumpDisassembler(FileInput)
         elif arguments.disassembler == "objdump":
             ObjDumpDisassembler(FileInput)
+    def __init__(self):
+        pass
 
-
-# metaclass to represent a disassembled file, this file is returned by the base class
-# when we feed the base class the arguments
-class DisassembledFile(BadFile):
-    def __new__(cls):
-    #def __init__(self):
-        cls.data     = {}
-        cls.Symbols  = cls.radarpipe.cmdj("isj")
-        cls.Sections = cls.radarpipe.cmdj("iSj")
-        cls.Info     = cls.radarpipe.cmdj("ij")
-        cls.arch     = cls.Info["bin"]["arch"]
-        cls.bintype  = cls.Info["bin"]["bintype"]
-        cls.bits     = cls.Info["bin"]["bits"]
-        cls.binos    = cls.Info["bin"]["os"]
-        return super.__new__
-
-class Radare2Disassembler():
-    #def __new__(cls, FileInput):
-    #    return super.__new__
+# metaclass to represent a disassembled file
+class DisassembledFile():
     def __init__(self, FileInput):
-        self.FileInput 
+        self.fileinput = FileInput
+        
+
+
+# dont use this yet, it's for another file
+class Radare2Disassembler(Disassembler):
+    def __init__(self, FileInput):
+        self.FileInput = FileInput
+        self.radarpipe = r2pipe.open(FileInput)
         self.data     = {}
         self.Symbols  = self.radarpipe.cmdj("isj")
         self.Sections = self.radarpipe.cmdj("iSj")
@@ -165,7 +142,7 @@ class Radare2Disassembler():
         self.binos    = self.Info["bin"]["os"]
 
 
-class ObjDumpDisassembler():
+class ObjDumpDisassembler(Disassembler):
     def __init__(self, file_input):
         self.file_input = file_input
 
@@ -176,7 +153,7 @@ class ObjDumpDisassembler():
                 step = subprocess.Popen(command,shell=shell_env,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
                 output, error = step.communicate()
                 for output_line in output.decode().split('\n'):
-                    self.objdump_output = self.objdump_error + output_line
+                    self.objdump_output = self.objdump_output + output_line
                 for error_lines in error.decode().split('\n'):
                     self.objdump_error = self.objdump_error + error_lines
             elif blocking == False:
@@ -190,7 +167,3 @@ class ObjDumpDisassembler():
 
 
 if __name__== "main":
-    if arguments.disassembler == "radare2":
-        Radare2Disassembler(file_input = arguments.bin_file)
-    else:
-        COMMAND = "objdump"
