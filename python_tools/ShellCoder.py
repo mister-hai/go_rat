@@ -78,8 +78,6 @@ parser.add_argument('--disassembler',
 
 if __name__== "main":
     arguments = parser.parse_args
-    if arguments.disassembler == "radare2":
-        import r2pipe
     
 try:
     import colorama
@@ -100,7 +98,8 @@ greenprint        = lambda text: print(Fore.GREEN + ' ' +  text + ' ' + Style.RE
 yellow_bold_print = lambda text: print(Fore.YELLOW + Style.BRIGHT + ' {} '.format(text) + Style.RESET_ALL) if (COLORMEQUALIFIED == True) else print(text)
 
 is_method          = lambda func: inspect.getmembers(func, predicate=inspect.ismethod)
-
+LOGLEVEL            = 'DEV_IS_DUMB'
+LOGLEVELS           = [1,2,3,'DEV_IS_DUMB']
 ################################################################################
 ##############                 INTERNAL FUNkS                  #################
 ################################################################################
@@ -123,32 +122,73 @@ def error_printer(message):
     else:
         redprint(message + ''.join(trace.format_exception_only()))
 
-def exec_command(command, blocking = True, shell_env = True):
-    '''Runs a command with subprocess.Popen'''
-    try:
-        if blocking == True:
-            step = subprocess.Popen(command,shell=shell_env,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-            output, error = step.communicate()
-            for output_line in output.decode().split('\n'):
-                blueprint(output_line)
-            for error_lines in error.decode().split('\n'):
-                redprint(error_lines)
-        elif blocking == False:
-            # TODO: not implemented yet                
-            pass
-    except Exception:
-        error_printer("[-] Interpreter Message: exec_command() failed!")
+#metaclass to represent a file
+# we use this class, and it will return the inherited class
+class BadFile():
+    def __init__(self, FileInput : str):
+        if arguments.disassembler == "radare2":
+            import r2pipe
+            self.radarpipe = r2pipe.open(FileInput)
+            self.data      = {}
+        
+        elif arguments.disassembler == "objdump":
+            ObjDumpDisassembler(FileInput)
+
+
+# metaclass to represent a disassembled file, this file is returned by the base class
+# when we feed the base class the arguments
+class DisassembledFile(BadFile):
+    def __new__(cls):
+    #def __init__(self):
+        cls.data     = {}
+        cls.Symbols  = cls.radarpipe.cmdj("isj")
+        cls.Sections = cls.radarpipe.cmdj("iSj")
+        cls.Info     = cls.radarpipe.cmdj("ij")
+        cls.arch     = cls.Info["bin"]["arch"]
+        cls.bintype  = cls.Info["bin"]["bintype"]
+        cls.bits     = cls.Info["bin"]["bits"]
+        cls.binos    = cls.Info["bin"]["os"]
+        return super.__new__
 
 class Radare2Disassembler():
-    def __init__(self, file_input):
-        self.file_input = file_input
-        pass
+    #def __new__(cls, FileInput):
+    #    return super.__new__
+    def __init__(self, FileInput):
+        self.FileInput 
+        self.data     = {}
+        self.Symbols  = self.radarpipe.cmdj("isj")
+        self.Sections = self.radarpipe.cmdj("iSj")
+        self.Info     = self.radarpipe.cmdj("ij")
+        self.arch     = self.Info["bin"]["arch"]
+        self.bintype  = self.Info["bin"]["bintype"]
+        self.bits     = self.Info["bin"]["bits"]
+        self.binos    = self.Info["bin"]["os"]
+
 
 class ObjDumpDisassembler():
     def __init__(self, file_input):
         self.file_input = file_input
-        pass
-       
+
+    def exec_command(self, command, blocking = True, shell_env = True):
+        '''Runs a command with subprocess.Popen'''
+        try:
+            if blocking == True:
+                step = subprocess.Popen(command,shell=shell_env,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+                output, error = step.communicate()
+                for output_line in output.decode().split('\n'):
+                    self.objdump_output = self.objdump_error + output_line
+                for error_lines in error.decode().split('\n'):
+                    self.objdump_error = self.objdump_error + error_lines
+            elif blocking == False:
+                # TODO: not implemented yet                
+                pass
+        except Exception:
+            error_printer("[-] Interpreter Message: exec_command() failed!")        
+    
+    def exec_objdump(self, input):
+        self.exec_command('objdump')
+
+
 if __name__== "main":
     if arguments.disassembler == "radare2":
         Radare2Disassembler(file_input = arguments.bin_file)

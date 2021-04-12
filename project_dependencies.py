@@ -16,3 +16,8 @@ GO_DEPENDENCIES = ["github.com/fatih/color",
 
 #installed via "pip3 install"
 PYTHON_DEPENDENCIES = ["r2pipe","","","",""]
+
+GITHUBREPOS = ["github.com/BorjaMerino/Windows-One-Way-Stagers",
+               "github.com/swisskyrepo/PayloadsAllTheThings",
+               "github.com/gentilkiwi/mimikatz",
+               "","",""]
