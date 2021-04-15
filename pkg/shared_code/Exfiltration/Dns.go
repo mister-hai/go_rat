@@ -50,7 +50,7 @@ func DNSExfiltration(ByteArrayInput []byte, DestZone string, MaxMsgSize uint16) 
 	var marker string = "herpAderpNotAPerp"
 	// the dns zone to send the queries to.
 	DestZone = ""
-
+	
 	// 90 bytes wide, thats the number given by the original source...
 	// Which doesnt make sense? the final structure to fit this into only
 	// allows :

