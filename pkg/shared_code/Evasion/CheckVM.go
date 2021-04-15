@@ -3,7 +3,7 @@ Uses Code from:
 https://github.com/bluesentinelsec/OffensiveGoLang/blob/master/pkg/windows/evasion/checkVM.go
 
 
-This file checks to see if we are in a VM or chroot or... whatever
+This file checks to see if we are in a VM or chroot or... well I gotta code all of that
 /*/
 
 package Evasion

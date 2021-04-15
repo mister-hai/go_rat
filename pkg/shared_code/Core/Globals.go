@@ -35,7 +35,7 @@ var ZOMBIEFILENAME string = "rat.exe"
 
 // variables for logs
 var ZOMBIESLOGFILE string = "zombielegs.logs"
-var COMMANDLOGFILE string = "comlog.flog"
+var COMMANDLOGFILE string = "comlog.slog"
 
 // This gets set by the script that generates the binary
 // for the target.

@@ -46,7 +46,7 @@ func ShellcodeEncrypter(bytes_in []byte) {
 		panic(err)
 	}
 
-	// Generate a random 32 bytes key
+	// Generate a random 32 bytes buffer for key
 	key_slice := make([]byte, 32)
 
 	if _, err := rand.Read(key_slice); err != nil {

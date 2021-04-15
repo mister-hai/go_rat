@@ -28,15 +28,13 @@ import (
 
 // struct to represent an OS command from the wire
 // we will be shoving a JSON payload into this
-// directly from the tcp stream
 type Command struct {
 	Task_id int
-	//store as raw message for now, want to do everything procedurally
-	Json_input      json.RawMessage
-	Command_string  string
-	Info_message    string
-	Success_message string
-	Failure_message string
+	//store as raw message for now
+	Json_input json.RawMessage
+	//{Command_string
+	//	Success_message
+	//		Failure_message}
 }
 
 // represents a process started by the RAT
@@ -100,7 +98,7 @@ type HostIntel struct {
 // code from:
 // https://github.com/bluesentinelsec/OffensiveGoLang/blob/master/pkg/windows/discovery/os.go
 // OSinfo provides basic information about the target operating system
-type OSInfo struct {
+type WinInfo struct {
 	ProductName      string
 	ReleaseID        string
 	CurrentBuild     string
@@ -109,6 +107,11 @@ type OSInfo struct {
 	InstallDate      uint64
 	InstallTime      uint64
 	ProductID        string
+}
+
+//using information compiled here
+//
+type LinuxInfo struct {
 }
 
 /*
@@ -137,3 +140,43 @@ type FakeMDNSService struct {
 	Info    string
 	Service mdns.MDNSService
 }
+
+/*/
+Must have a way of constructing new structs,
+they are structures, you must build them
+only need a constructor if they need parameters assigned at birth
+/*/
+
+// cant have multiple commands without something to represent a CommandSet
+// Only one per entity, currently.
+// future revisions will have multiple CommandSets
+func NewCommandSet() *CommandSet {
+	return &CommandSet{}
+}
+
+//todo: add assignments
+// function to create a new Command Struct
+// we want to return the memory address
+// not the contents of that memory address
+// We also expect there to be a json input already prepared
+func NewCommand(json_input string) *Command {
+	new_command := Command{}
+	return &new_command
+}
+
+//todo: add assignments
+// to make things easier on yourself later:
+// using a pointer as a return...
+/*/ ## Continues: in intel.go -- GatherIntel()
+func NewHostIntel() *HostIntel {
+	new_host_intel := HostIntel{}
+	// do this to return a pointer
+	// its a reference to the memory address
+	return &new_host_intel
+}
+
+func NewFakeMDNSService() *FakeMDNSService {
+	new_mdns_service := FakeMDNSService{}
+	return &new_mdns_service
+}
+/*/

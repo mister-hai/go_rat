@@ -1,14 +1,22 @@
 /*/
-This file contains the functions necessary for new commands and stuff lol
-
+This file contains the functions necessary for executing commands, and controlling IO
+https://gist.github.com/denji/12b3a568f092ab951456
 /*/
 package Core
 
 import (
 	"go_rat/pkg/shared_code/ErrorHandling"
-	"io/ioutil"
+	"log"
+	"net/http"
 	"os"
 )
+
+// trying out something I just learned
+// attaching functions to types via pointers?
+//  item to modify----- name of new func--- return types
+func (MessageWrapper *AESPacket) Lex() (message *AESPacket, derp error) {
+
+}
 
 //function to execute command
 // Takes a Command struct
@@ -32,52 +40,73 @@ func exec_command(command_struct *Command) *RatProcess {
 	return &new_process
 }
 
-func FileToString(filename string) (string, error) {
-	filebuffer, derp := ioutil.ReadFile(filename)
-	if derp != nil {
-		ErrorHandling.RatLogError(derp, "[-] ERROR: Cannot Convert Data Object to String")
+/*/
+func hTTPServerCore(w http.ResponseWriter, req *http.Request) {
+	w.Header().Set("Content-Type", "text/plain")
+	w.Write([]byte("Hola migo, donde esta me gato loco?.\n"))
+	// fmt.Fprintf(w, "This is an example server.\n")
+	// io.WriteString(w, "This is an example server.\n")
+}
+/*/
+func HttpsServerCore(w http.ResponseWriter, req *http.Request) {
+	w.Header().Set("Content-Type", "text/plain")
+	w.Write([]byte("Hola migo, donde esta me gato loco?.\n"))
+	http.HandleFunc("/hello", func(rw http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/plain")
+		w.Write([]byte("Hola migo, donde esta me gato loco?.\n"))
+
+	})
+	err := http.ListenAndServeTLS(":443", "server.crt", "server.key", nil)
+	if err != nil {
+		log.Fatal("ListenAndServe: ", err)
 	}
-	fileasstring := string(filebuffer)
-	return fileasstring, derp
 }
 
 /*/
-Must have a way of constructing new structs,
-they are structures, you must build them
-only need a constructor if they need parameters assigned at birth
+func HttpsServerCore() {
+	log.SetFlags(log.Lshortfile)
+
+	cer, err := tls.LoadX509KeyPair("server.crt", "server.key")
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	config := &tls.Config{Certificates: []tls.Certificate{cer}}
+	ln, err := tls.Listen("tcp", ":443", config)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer ln.Close()
+
+	for {
+		conn, err := ln.Accept()
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+		go handleConnection(conn)
+	}
+}
+
+func handleConnection(conn net.Conn) {
+	defer conn.Close()
+	r := bufio.NewReader(conn)
+	for {
+		msg, err := r.ReadString('\n')
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		println(msg)
+
+		n, err := conn.Write([]byte("world\n"))
+		if err != nil {
+			log.Println(n, err)
+			return
+		}
+	}
+}
 /*/
-
-// cant have multiple commands without something to represent a CommandSet
-// Only one per entity, currently.
-// future revisions will have multiple CommandSets
-func NewCommandSet() *CommandSet {
-	return &CommandSet{}
-}
-
-// function to create a new Command Struct
-// we want to return the memory address
-// not the contents of that memory address
-// We also expect there to be a json input already prepared
-func NewCommand(json_input string) *Command {
-	new_command := Command{}
-	return &new_command
-}
-
-// to make things easier on yourself later:
-// using a pointer as a return...
-// ## Continues: in intel.go -- GatherIntel()
-func NewHostIntel() *HostIntel {
-	new_host_intel := HostIntel{}
-	// do this to return a pointer
-	// its a reference to the memory address
-	return &new_host_intel
-}
-func NewOSInfo() *OSInfo {
-	new_os_info := OSInfo{}
-	return &new_os_info
-}
-
-func NewFakeMDNSService() *FakeMDNSService {
-	new_mdns_service := FakeMDNSService{}
-	return &new_mdns_service
-}

