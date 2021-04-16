@@ -37,37 +37,34 @@ import (
 
 // This function uses the Salsa20 to encrypt a byte field
 // with a variable sized nonce
-func ByteSizedSalsa(bytes_in []byte, NonceSize int) (Salsa []byte, derp error) {
+func ByteSizedSalsa(bytes_in []byte, EncryptionKey []byte) (Salsa []byte, derp error) {
 	var p *big.Int
+	var key [32]byte
 	out := make([]byte, len(bytes_in))
-	// Generate a random 24 bytes nonce
-	herp := make([]byte, 24)
-	p, derp = rand.Prime(rand.Reader, NonceSize)
+	// Generate a random 32 bytes nonce
+	// make buffer
+	herp := make([]byte, 32)
+	// make random 32 bit prime number
+	p, derp = rand.Prime(rand.Reader, 32)
+	//copy number into buffer
 	nonce, derp := copy(herp, p)
 	if derp != nil {
 		ErrorHandling.ErrorPrinter(derp, "generic error, fix me plz lol <3!")
-		//return
 	}
 
-	// Generate a random 32 bytes buffer for key
-	key_slice := make([]byte, 32)
 
-	slice, derp := rand.Read(key_slice)
 	if derp != nil {
 		ErrorHandling.ErrorPrinter(derp, "generic error, fix me plz lol <3!")
-		//return
 	}
-	var key [32]byte
-	copy(key[:], key_slice[:])
-
+	// I was advised not to make my own unless I was a professional mathermind
+	// this is the easy cheater way, use someone elses work
 	salsa20.XORKeyStream(out, in, nonce, &key)
 
 	for _, element := range out {
 		if element == 0 {
-			fmt.Printf("##########################\n")
-			fmt.Printf("WARNING null byte detected\n")
-			fmt.Printf("##########################\n")
-			os.Exit(1)
+			ErrorHandling.ErrorPrinter(derp, "generic error, fix me plz lol <3!")
+			//return
+			}
 		}
 	}
 }
