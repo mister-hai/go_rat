@@ -20,6 +20,8 @@ ln -sf server.rsa.crt server.crt
 package CryptographicFunctions
 
 import (
+	"bytes"
+	"compress/zlib"
 	"crypto"
 	"crypto/aes"
 	"crypto/cipher"
@@ -30,6 +32,7 @@ import (
 	"encoding/pem"
 	"fmt"
 	"go_rat/pkg/shared_code/Core"
+	"go_rat/pkg/shared_code/ErrorHandling"
 	"io"
 	"io/ioutil"
 	"log"
@@ -45,6 +48,27 @@ import (
 func Encrypt_file(file_handle string, output_buffer []byte) {
 	//file_bytes, derp := ioutil.ReadFile(file_handle)
 
+}
+
+// function to use zlib to compress a byte array
+func ZCompress(input []byte) (herp []byte, derp error) {
+	var b bytes.Buffer
+	w := zlib.NewWriter(&b)
+	w.Write([]byte("hello, world\n"))
+	w.Close()
+}
+
+//function to use zlib to decompress a byte array
+func ZDecompress(input []byte) (herp []byte, derp error) {
+	b := bytes.NewReader(input)
+	decrypted_bytes, derp := zlib.NewReader(b)
+	if derp != nil {
+		ErrorHandling.ErrorPrinter(derp, "generic error, fix me plz lol <3!")
+		//return
+	}
+	io.Copy(herp, decrypted_bytes)
+	decrypted_bytes.Close()
+	return herp, derp
 }
 
 /*/

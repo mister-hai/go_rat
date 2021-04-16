@@ -28,29 +28,34 @@ package CryptographicFunctions
 import (
 	"crypto/rand"
 	"fmt"
+	"go_rat/pkg/shared_code/ErrorHandling"
+	"math/big"
 	"os"
 
 	"golang.org/x/crypto/salsa20"
 )
 
-// really a byte encrypter
-// thats all it is, no black magic
-// get your hex chars from objdump and go
-func ShellcodeEncrypter(bytes_in []byte) {
-
+// This function uses the Salsa20 to encrypt a byte field
+// with a variable sized nonce
+func ByteSizedSalsa(bytes_in []byte, NonceSize int) (Salsa []byte, derp error) {
+	var p *big.Int
 	out := make([]byte, len(bytes_in))
-
 	// Generate a random 24 bytes nonce
-	nonce := make([]byte, 24)
-	if _, err := rand.Read(nonce); err != nil {
-		panic(err)
+	herp := make([]byte, 24)
+	p, derp = rand.Prime(rand.Reader, NonceSize)
+	nonce, derp := copy(herp, p)
+	if derp != nil {
+		ErrorHandling.ErrorPrinter(derp, "generic error, fix me plz lol <3!")
+		//return
 	}
 
 	// Generate a random 32 bytes buffer for key
 	key_slice := make([]byte, 32)
 
-	if _, err := rand.Read(key_slice); err != nil {
-		panic(err)
+	slice, derp := rand.Read(key_slice)
+	if derp != nil {
+		ErrorHandling.ErrorPrinter(derp, "generic error, fix me plz lol <3!")
+		//return
 	}
 	var key [32]byte
 	copy(key[:], key_slice[:])
