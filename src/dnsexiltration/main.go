@@ -151,13 +151,13 @@ func ZCompress(input []byte) (herp bytes.Buffer, derp error) {
 }
 func ZDecompress(DataIn []byte) (DataOut []byte) {
 	var buff []byte
-	b := bytes.NewReader(buff)
-	r, derp := zlib.NewReader(b)
+	byte_reader := bytes.NewReader(buff)
+	ZReader, derp := zlib.NewReader(byte_reader)
 	if derp != nil {
 		ErrorHandling.ErrorPrinter(derp, "generic error, fix me plz lol <3!")
 	}
-	Copy(DataOut, r)
-	r.Close()
+	io.Copy(ZReader, byte_reader)
+	ZReader.Close()
 	return DataOut
 }
 
@@ -238,29 +238,13 @@ func ChaChaLovesBytes(bytes_in []byte, EncryptionKey []byte, nonce []byte) (Sals
 	}
 	// I was advised not to make my own unless I was a professional mathermind
 	// this is the easy cheater way, use someone elses work
-
-	pass := "Hello"
-	msg := "Pass"
-
 	key := sha256.Sum256([]byte(pass))
 	herp, derp := chacha20poly1305.NewX(key[:])
+	//nonce := make([]byte, chacha20poly1305.NonceSizeX)
 
-	if pass == "" {
-		a := make([]byte, 32)
-		copy(key[:32], a[:32])
-		aead, _ = chacha20poly1305.NewX(a)
-	}
-	if msg == "" {
-		a := make([]byte, 32)
-		msg = string(a)
+	HaChaChaCha := herp.Seal(nil, nonce, bytes_in, nil)
 
-	}
-
-	nonce := make([]byte, chacha20poly1305.NonceSizeX)
-
-	HaChaChaCha := aead.Seal(nil, nonce, []byte(msg), nil)
-
-	plaintext, _ := aead.Open(nil, nonce, ciphertext, nil)
+	//plaintext, _ := herp.Open(nil, nonce, HaChaChaCha, nil)
 
 	copy(DataOut, HaChaChaCha)
 	for _, element := range out {
