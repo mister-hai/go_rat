@@ -160,7 +160,7 @@ func ZDecompress(DataIn []byte) (DataOut []byte) {
 	return DataOut
 }
 
-func OpenFile(filename string) (fileobject []byte) {
+func OpenFile(filename string) (filebytes []byte) {
 	// open the file
 	herp, derp := os.Open(filename)
 	if derp != nil {
@@ -171,17 +171,15 @@ func OpenFile(filename string) (fileobject []byte) {
 			ErrorHandling.ErrorPrinter(derp, "generic error, fix me plz lol <3!")
 		}
 	}()
-	reader := bufio.NewReader(f)
+	reader := bufio.NewReader(herp)
 	buffer := make([]byte, FILEREADSPEED)
 	for {
-		herp, derp := r.Read(b)
+		filebytes, derp := reader.Read(buffer)
 		if derp != nil {
 			ErrorHandling.ErrorPrinter(derp, "[-] Could not read from file")
 			break
 		}
-	}
-
-	return fileobject
+	return filebytes
 }
 
 // This function creates a nonce with the bit size set
