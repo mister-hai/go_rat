@@ -51,7 +51,7 @@ func ByteSizedSalsa(bytes_in []byte, EncryptionKey []byte) (Salsa []byte, derp e
 	if derp != nil {
 		ErrorHandling.ErrorPrinter(derp, "generic error, fix me plz lol <3!")
 	}
-
+	///now we figure out the key
 
 	if derp != nil {
 		ErrorHandling.ErrorPrinter(derp, "generic error, fix me plz lol <3!")
@@ -61,6 +61,7 @@ func ByteSizedSalsa(bytes_in []byte, EncryptionKey []byte) (Salsa []byte, derp e
 	salsa20.XORKeyStream(out, in, nonce, &key)
 
 	for _, element := range out {
+		// original code treated this like a nullbyte but wat?
 		if element == 0 {
 			ErrorHandling.ErrorPrinter(derp, "generic error, fix me plz lol <3!")
 			//return

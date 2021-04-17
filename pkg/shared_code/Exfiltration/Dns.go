@@ -64,7 +64,7 @@ func DNSExfiltration(ByteArrayInput []byte, DestZone string, MaxMsgSize uint16) 
 	var debug bool = true
 	//the local file to exfiltrate.
 	//var file []byte = ByteArrayInput
-	//a unique marker to identify the file in the dns logs
+	//a unique marker to identify the message in the dns logs
 	var marker string = "herpAderpNotAPerp"
 	// the dns zone to send the queries to.
 	DestZone = "" 
