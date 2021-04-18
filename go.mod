@@ -9,6 +9,7 @@ require (
 	github.com/go-ole/go-ole v1.2.5 // indirect
 	github.com/godbus/dbus/v5 v5.0.4 // indirect
 	github.com/hashicorp/mdns v1.0.3
+	github.com/kevinburke/nacl v0.0.0-20210405173606-cd9060f5f776 // indirect
 	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/mattn/go-isatty v0.0.12 // indirect
 	github.com/miekg/dns v1.1.41 // indirect

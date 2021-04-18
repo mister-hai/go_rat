@@ -32,11 +32,13 @@ import (
 	"encoding/pem"
 	"fmt"
 	"go_rat/pkg/shared_code/Core"
-	"go_rat/pkg/shared_code/ErrorHandling"
 	"io"
 	"io/ioutil"
 	"log"
+	"math/big"
 	"os"
+
+	"golang.org/x/crypto/chacha20poly1305"
 )
 
 /*/ might change parameters
@@ -51,24 +53,46 @@ func Encrypt_file(file_handle string, output_buffer []byte) {
 }
 
 // function to use zlib to compress a byte array
-func ZCompress(input []byte) (herp []byte, derp error) {
+func ZCompress(input []byte) (herp bytes.Buffer, derp error) {
 	var b bytes.Buffer
+	// feed the writer a buffer
 	w := zlib.NewWriter(&b)
-	w.Write([]byte("hello, world\n"))
+	// and the Write method will copy data to that buffer
+	// in this case, the input we provide gets copied into the buffer "b"
+	w.Write(input)
+	// and then we close the connection
 	w.Close()
+	// and copy the buffer to the output
+	//copy(herp, b.Bytes())
+	return herp, derp
+}
+func ZDecompress(DataIn []byte) (DataOut []byte) {
+	byte_reader := bytes.NewReader(DataIn)
+	ZReader, derp := zlib.NewReader(byte_reader)
+	if derp != nil {
+		ErrorPrinter(derp, "generic error, fix me plz lol <3!")
+	}
+	copy(DataOut, DataIn)
+	ZReader.Close()
+	return DataOut
 }
 
-//function to use zlib to decompress a byte array
-func ZDecompress(input []byte) (herp []byte, derp error) {
-	b := bytes.NewReader(input)
-	decrypted_bytes, derp := zlib.NewReader(b)
+// This function creates a nonce with the bit size set
+// by setting the chacha20poly1305.NonceSizeX variable
+func NonceGenerator() (nonce []byte, derp error) {
+	//var n *big.Int
+	bitsize := big.NewInt(24)
+	//nonce = make([]byte, 24)
+	nonce = make([]byte, chacha20poly1305.NonceSizeX)
+	// make random 24 bit prime number
+	n, derp := rand.Int(rand.Reader, bitsize)
 	if derp != nil {
-		ErrorHandling.ErrorPrinter(derp, "generic error, fix me plz lol <3!")
-		//return
+		ErrorPrinter(derp, "[-] Failed to generate 64-bit Random Number")
 	}
-	io.Copy(herp, decrypted_bytes)
-	decrypted_bytes.Close()
-	return herp, derp
+	//copy number into buffer
+	// after converting bigint to byte with internal method
+	copy(nonce, n.Bytes())
+	return nonce, derp
 }
 
 /*/

