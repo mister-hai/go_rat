@@ -53,7 +53,7 @@ import (
 // bytes per read operation
 var FILEREADSPEED int = 36
 var MADEFOR string = "Church of the Subhacker"
-var BANNERSTRING string = "====== mega impressive banner to flex on how leet I am======="
+var BANNERSTRING string = "====== mega impressive banner ======="
 
 func StartLogger(logfile string) (return_code int) {
 	Logs, derp := os.OpenFile(logfile, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
@@ -65,7 +65,7 @@ func StartLogger(logfile string) (return_code int) {
 	LoggerInstance.SetFormatter(Formatter)
 	if derp != nil {
 		// Cannot open log file. Logging to stderr
-		ErrorPrinter(derp, "[-] ERROR: Failure To Open Logfile!")
+		ErrorPrinter(derp, "[-] ERROR: Failure To Open Logfile!", "warn")
 		return 0
 	} else {
 		log.SetOutput(Logs)
@@ -82,6 +82,8 @@ func ErrorPrinter(derp error, message string, action string) error {
 		log.Panic()
 		log.Error(message)
 		//color.Red(message)
+	case "warn":
+		log.Warn()
 	}
 	log.Error(message)
 	color.Red(message)
@@ -131,26 +133,30 @@ func ZCompress(input []byte) (herp bytes.Buffer, derp error) {
 	//copy(herp, b.Bytes())
 	return herp, derp
 }
+
+// compresses []byte with zlib
 func ZDecompress(DataIn []byte) (DataOut []byte) {
 	byte_reader := bytes.NewReader(DataIn)
 	ZReader, derp := zlib.NewReader(byte_reader)
 	if derp != nil {
-		ErrorPrinter(derp, "generic error, fix me plz lol <3!")
+		ErrorPrinter(derp, "generic error, fix me plz lol <3!", "panic")
 	}
 	copy(DataOut, DataIn)
 	ZReader.Close()
 	return DataOut
 }
 
+// opens files for reading and writing
 func OpenFile(filename string) (filebytes []byte) {
 	// open the file
 	herp, derp := os.Open(filename)
 	if derp != nil {
-		ErrorPrinter(derp, "[-] Could not open File")
+		ErrorPrinter(derp, "[-] Could not open File, exiting program", "fatal")
 	}
+	//
 	defer func() {
 		if derp = herp.Close(); derp != nil {
-			ErrorPrinter(derp, "generic error, fix me plz lol <3!")
+			ErrorPrinter(derp, "[-]io: file already closed", "warn")
 		}
 	}()
 	// make io.reader and the buffer it will read into
@@ -161,7 +167,7 @@ func OpenFile(filename string) (filebytes []byte) {
 		// return bytes read as filebytes
 		_, derp := reader.Read(buffer)
 		if derp != nil {
-			ErrorPrinter(derp, "[-] Could not read from file")
+			ErrorPrinter(derp, "[-] Could not read from file", "fatal")
 			break
 		}
 		Debug_print(4, "[+] Bytes read:") //, filebytes)
@@ -180,7 +186,7 @@ func NonceGenerator() (nonce []byte, derp error) {
 	// make random 24 bit prime number
 	n, derp := rand.Int(rand.Reader, bitsize)
 	if derp != nil {
-		ErrorPrinter(derp, "[-] Failed to generate 64-bit Random Number")
+		ErrorPrinter(derp, "[-] Failed to generate 64-bit Random Number", "fatal")
 	}
 	//copy number into buffer
 	// after converting bigint to byte with internal method
