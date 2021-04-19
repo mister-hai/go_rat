@@ -1,4 +1,5 @@
 /*/
+INSERT LEET FANCY BANNER HERE SHOWING HOW MAD SKILLED I AM AT ASCII ART
 
 openssl rand -hex 32
 
@@ -226,18 +227,18 @@ func ExampleNewGCMEncrypter() {
 
 	block, derp := aes.NewCipher(key)
 	if derp != nil {
-		panic(derp.Error())
+		ErrorPrinter(derp, "generic error, fix me plz lol <3!", "panic")
 	}
 
 	// Never use more than 2^32 random nonces with a given key because of the risk of a repeat.
 	nonce := make([]byte, 12)
 	if _, derp := io.ReadFull(rand.Reader, nonce); derp != nil {
-		panic(derp.Error())
+		ErrorPrinter(derp, "generic error, fix me plz lol <3!", "panic")
 	}
 
 	aesgcm, derp := cipher.NewGCM(block)
 	if derp != nil {
-		panic(derp.Error())
+		ErrorPrinter(derp, "generic error, fix me plz lol <3!", "panic")
 	}
 
 	ciphertext := aesgcm.Seal(nil, nonce, plaintext, nil)
@@ -257,12 +258,12 @@ func GCMDecrypter(key []byte, nonce string) {
 
 	block, derp := aes.NewCipher(key)
 	if derp != nil {
-		panic(derp.Error())
+		ErrorPrinter(derp, "generic error, fix me plz lol <3!", "panic")
 	}
 
 	aesgcm, derp := cipher.NewGCM(block)
 	if derp != nil {
-		panic(derp.Error())
+		ErrorPrinter(derp, "generic error, fix me plz lol <3!", "panic")
 	}
 
 	plaintext, derp := aesgcm.Open(nil, nonce, ciphertext, nil)

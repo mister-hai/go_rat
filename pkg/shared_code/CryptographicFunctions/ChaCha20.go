@@ -6,22 +6,20 @@ import (
 	"golang.org/x/crypto/chacha20poly1305"
 )
 
-func ChaChaHatesChaChi(bytes_in []byte, EncryptionKey []byte, nonce []byte) (herp []byte, derp error) {
-	var key []byte
+//decrypting with chacha20
+func ChaChaDecrypt(bytes_in []byte, EncryptionKey []byte, nonce []byte) (herp []byte, derp error) {
 	DataOut := make([]byte, len(bytes_in))
-	if derp != nil {
-		ErrorPrinter(derp, "generic error, fix me plz lol <3!")
-	}
-	key = sha256.Sum256(EncryptionKey)
-	herp, derp := chacha20poly1305.NewX(key)
+	ciphertext, derp := chacha20poly1305.NewX(EncryptionKey)
 	//nonce := make([]byte, chacha20poly1305.NonceSizeX)
-	HaChaChaCha, _ := herp.Open(nil, nonce, HaChaChaCha, nil)
-
-	copy(DataOut, HaChaChaCha)
+	decrypted, derp := ciphertext.Open(nil, nonce, bytes_in, nil)
+	if derp != nil {
+		ErrorPrinter(derp, "[-] FATAL ERROR: Could not decrypt data!", "fatal")
+	}
+	copy(DataOut, decrypted)
 	for _, element := range DataOut {
 		// original code treated this like a nullbyte but wat?
 		if element == 0 {
-			ErrorPrinter(derp, "generic error, fix me plz lol <3!")
+			ErrorPrinter(derp, "nullbyte?", "fatal")
 			//return
 		}
 	}
