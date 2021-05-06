@@ -576,30 +576,38 @@ func FileFlow(filename string, key []byte, nonce []byte) {
 	if Decrypt.set {
 		switch EncryptionType.FlagValue {
 		case "aes256gcm":
-			plaintext, derp = GCMDecrypter(key, nonce, fileobject)
+			plaintext, derp := GCMDecrypter(key, nonce, fileobject)
 			if derp != nil {
 				fmt.Printf("[-] Error: Could not Decrypt File: %s ", derp)
 			}
+			//decompress plaintext
+			DecompressedPlaintext, derp := ZDecompress(plaintext)
+			// process possible errors
+			if derp != nil {
+				fmt.Printf("[-]FILE: ZDecompress: %s", derp)
+			}
+			//Write to file
+			// make a safe filename- to save the file as
+			safefilename := filename + "_Decrypted"
+			WriteFile(DecompressedPlaintext, safefilename)
 		case "salty":
-			plaintext, derp = saltDEcrypt(string(key), fileobject)
+			plaintext, derp := saltDEcrypt(string(key), fileobject)
 			if derp != nil {
 				fmt.Printf("[-] Saltlib could not Decrypt File: %s ", derp)
+			}
+			//decompress plaintext
+			DecompressedPlaintext, derp := ZDecompress(plaintext)
+			// process possible errors
+			if derp != nil {
+				fmt.Printf("[-]FILE: ZDecompress: %s", derp)
+			}
+			//Write to file
+			//fmt.Printf("%s", DecompressedPlaintext)
+			// make a safe filename- to save the file as
+			safefilename := filename + "_Decrypted"
+			WriteFile(DecompressedPlaintext, safefilename)
 		}
-		//decompress plaintext
-		DecompressedPlaintext, derp := ZDecompress(plaintext)
-		// process possible errors
-		if derp != nil {
-			fmt.Printf("[-]FILE: ZDecompress: %s", derp)
-		}
-		//Write to file
-		//fmt.Printf("%s", DecompressedPlaintext)
-		// make a safe filename- to save the file as
-		safefilename := filename + "_Decrypted"
-		WriteFile(DecompressedPlaintext, safefilename)
-	} else
-
-	// if encrypting files
-	if Encrypt.set {
+	} else if Encrypt.set {
 		// compress input file
 		// make a safe filename- to save the file as
 		safefilename := filename + "_Encrypted"
